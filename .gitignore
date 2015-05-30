@@ -1,0 +1,9 @@
+/Library/KSP/
+/Library/NuGet/
+/Output/
+
+AssemblyInfo.cs
+
+*.suo
+*.user
+*.orig
