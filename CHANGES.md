@@ -1,4 +1,4 @@
-## Unreleased
+## v0.1.1
 ##### Fix
 - Fix settings being loaded multiple times which would eventually cause the thermal overlays to fail.
 
