@@ -1,4 +1,4 @@
-# Enhanced Thermal Data
+# Enhanced Thermal Data [![Build status][build-badge]][build]
 
 **Enhanced Thermal Data** is a Kerbal Space Program mod that displays better thermal data to the user. It currently
 supports the following features:
@@ -28,4 +28,6 @@ Enhanced Thermal Data can be configured by creating Module Manager patches again
 `<KSP>/GameData/EnhancedThermalData/Configuration/EnhancedThermalData.cfg`. How to use Module Manager is outside the
 scope of this README, please see the Module Manager documentation for more information.
 
+[build]: https://ci.appveyor.com/project/Apokee/enhancedthermaldata
+[build-badge]: https://ci.appveyor.com/api/projects/status/6mbuc9x563rwup5a?svg=true
 [module-manager]: http://forum.kerbalspaceprogram.com/threads/55219
