@@ -1,4 +1,7 @@
-﻿namespace EnhancedThermalData.Configuration
+﻿using System.Linq;
+using EnhancedThermalData.Diagnostics;
+
+namespace EnhancedThermalData.Configuration
 {
     internal static class Config
     {
@@ -17,16 +20,23 @@
                         {
                             var enhancedThermalDataNode = new EnhancedThermalDataNode();
                             enhancedThermalDataNode.Load(
-                                GameDatabase.Instance.GetConfigNode("ENHANCED_THERMAL_DATA")
+                                GameDatabase.Instance.GetConfigNodes("ENHANCED_THERMAL_DATA").SingleOrDefault()
                             );
 
                             _instance = enhancedThermalDataNode;
+
+                            OnInitialLoad();
                         }
                     }
                 }
 
                 return _instance;
             }
+        }
+
+        private static void OnInitialLoad()
+        {
+            Log.Level = Instance.Diagnostics.LogLevel;
         }
     }
 }

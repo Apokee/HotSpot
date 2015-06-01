@@ -18,18 +18,6 @@ namespace EnhancedThermalData
         #region MonoBehaviour
 
         // ReSharper disable once UnusedMember.Global
-        public void Start()
-        {
-            Config.Instance.Load(GameDatabase
-                .Instance
-                .GetConfigNodes("ENHANCED_THERMAL_DATA")
-                .FirstOrDefault()
-            );
-
-            Log.Level = Config.Instance.Diagnostics.LogLevel;
-        }
-
-        // ReSharper disable once UnusedMember.Global
         public void LateUpdate()
         {
             Log.Trace("Entering EnhancedThermalDataBehaviour.LateUpdate()");
