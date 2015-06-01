@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using EnhancedThermalData.Configuration;
-using EnhancedThermalData.Diagnostics;
 using EnhancedThermalData.Model;
 
 namespace EnhancedThermalData
@@ -9,11 +7,43 @@ namespace EnhancedThermalData
     // ReSharper disable once UnusedMember.Global
     public sealed class EnhancedThermalDataModule : PartModule
     {
-        [KSPField(guiActive = false)]
+        [KSPField(guiActive = false, guiName = "Temperature")]
         // ReSharper disable once MemberCanBePrivate.Global
         public string Temperature;
 
+        [KSPField(guiActive = false, guiName = "Thermal Rate [I]")]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string ThermalRateInternal;
+
+        [KSPField(guiActive = false, guiName = "Thermal Rate [Cd]")]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string ThermalRateConductive;
+
+        [KSPField(guiActive = false, guiName = "Thermal Rate [Cv]")]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string ThermalRateConvective;
+
+        [KSPField(guiActive = false, guiName = "Thermal Rate [R]")]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string ThermalRateRadiative;
+
+        [KSPField(guiActive = false, guiName = "Thermal Rate")]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string ThermalRate;
+
         public override void OnUpdate()
+        {
+            UpdateTemperature();
+            UpdateThermalRateInternal();
+            UpdateThermalRateConductive();
+            UpdateThermalRateConvective();
+            UpdateThermalRateRadiative();
+            UpdateThermalRate();
+        }
+
+        #region Updaters
+
+        private void UpdateTemperature()
         {
             double temp;
             double maxTemp;
@@ -50,6 +80,53 @@ namespace EnhancedThermalData
                 $"{temp:F2}{unit} / {maxTemp:F2}{unit}" :
                 null;
         }
+
+        private void UpdateThermalRateInternal()
+        {
+            Fields["ThermalRateInternal"].guiActive = Config.Instance.ContextMenu.ThermalRateInternal.Enable;
+            ThermalRateInternal = Config.Instance.ContextMenu.ThermalRateInternal.Enable ?
+                $"{part.thermalInternalFlux:F2}kW" :
+                null;
+        }
+
+        private void UpdateThermalRateConductive()
+        {
+            Fields["ThermalRateConductive"].guiActive = Config.Instance.ContextMenu.ThermalRateConductive.Enable;
+            ThermalRateConductive = Config.Instance.ContextMenu.ThermalRateConductive.Enable ?
+                $"{part.thermalConductionFlux:F2}kW" :
+                null;
+        }
+
+        private void UpdateThermalRateConvective()
+        {
+            Fields["ThermalRateConvective"].guiActive = Config.Instance.ContextMenu.ThermalRateConvective.Enable;
+            ThermalRateConvective = Config.Instance.ContextMenu.ThermalRateConvective.Enable ?
+                $"{part.thermalConvectionFlux:F2}kW" :
+                null;
+        }
+
+        private void UpdateThermalRateRadiative()
+        {
+            Fields["ThermalRateRadiative"].guiActive = Config.Instance.ContextMenu.ThermalRateRadiative.Enable;
+            ThermalRateRadiative = Config.Instance.ContextMenu.ThermalRateRadiative.Enable ?
+                $"{part.thermalRadiationFlux:F2}kW" :
+                null;
+        }
+
+        private void UpdateThermalRate()
+        {
+            var thermalRate = part.thermalInternalFlux
+                + part.thermalConductionFlux
+                + part.thermalConvectionFlux
+                + part.thermalRadiationFlux;
+
+            Fields["ThermalRate"].guiActive = Config.Instance.ContextMenu.ThermalRate.Enable;
+            ThermalRate = Config.Instance.ContextMenu.ThermalRate.Enable ?
+                $"{thermalRate:F2}kW" :
+                null;
+        }
+
+        #endregion
 
         #region Helpers
 

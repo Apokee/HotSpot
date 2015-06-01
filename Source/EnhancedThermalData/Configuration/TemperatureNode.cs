@@ -1,23 +1,17 @@
-﻿using System;
-using EnhancedThermalData.Extensions;
+﻿using EnhancedThermalData.Extensions;
 using EnhancedThermalData.Model;
 
 namespace EnhancedThermalData.Configuration
 {
-    internal sealed class TemperatureNode : IConfigNode
+    internal sealed class TemperatureNode : ContextMenuItemNode
     {
-        public bool Enable { get; private set; } = true;
         public TemperatureUnit Unit { get; private set; } = TemperatureUnit.Kelvin;
 
-        public void Load(ConfigNode node)
+        public override void Load(ConfigNode node)
         {
-            Enable = node.Parse<bool>("enable");
-            Unit = node.Parse<TemperatureUnit>("unit");
-        }
+            base.Load(node);
 
-        public void Save(ConfigNode node)
-        {
-            throw new NotImplementedException();
+            Unit = node.Parse<TemperatureUnit>("unit");
         }
     }
 }

@@ -52,6 +52,7 @@
     <Compile Include="Configuration\At.cs" />
     <Compile Include="Configuration\AtUnit.cs" />
     <Compile Include="Configuration\Config.cs" />
+    <Compile Include="Configuration\ContextMenuItemNode.cs" />
     <Compile Include="Configuration\ContextMenuNode.cs" />
     <Compile Include="Configuration\DiagnosticsNode.cs" />
     <Compile Include="Configuration\EnhancedThermalDataNode.cs" />
