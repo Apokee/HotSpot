@@ -7,8 +7,8 @@ supports the following features:
 Replaces the color gradient used for thermal overlays to be more intuitive.
 
 - -273.15°C (Purple) to 0.00°C (Blue)
-- 0.00°C (Blue) to 14.40°C (White)
-- 14.40°C (White) to 100.00°C (Yellow)
+- 0.00°C (Blue) to 14.40°C (Transparent)
+- 14.40°C (Transparent) to 100.00°C (Yellow)
 - 100.00°C (Yellow) to 67% of Maximum (Orange)
 - 67% of Maximum (Orange) to Maximum (Red)
 
