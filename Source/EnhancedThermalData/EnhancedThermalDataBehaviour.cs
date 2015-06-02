@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using EnhancedThermalData.Configuration;
 using EnhancedThermalData.Diagnostics;
@@ -26,7 +27,22 @@ namespace EnhancedThermalData
             {
                 foreach (var part in FlightGlobals.Vessels.SelectMany(i => i.Parts))
                 {
-                    part.UpdateMaterialColor(Gradient(0, part.maxTemp)[part.temperature]);
+                    double gradientMin;
+                    double gradientMax;
+                    double gradientValue;
+
+                    switch (Config.Instance.ThermalOverlay.Mode)
+                    {
+                        case ThermalOverlayMode.Temperature:
+                            gradientMin = 0;
+                            gradientMax = part.maxTemp;
+                            gradientValue = part.temperature;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    part.UpdateMaterialColor(Gradient(gradientMin, gradientMax)[gradientValue]);
                 }
             }
 

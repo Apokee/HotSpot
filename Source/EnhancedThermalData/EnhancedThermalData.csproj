@@ -59,6 +59,7 @@
     <Compile Include="Configuration\GradientNode.cs" />
     <Compile Include="Configuration\StopNode.cs" />
     <Compile Include="Configuration\TemperatureNode.cs" />
+    <Compile Include="Configuration\ThermalOverlayMode.cs" />
     <Compile Include="Configuration\ThermalOverlayNode.cs" />
     <Compile Include="EnhancedThermalDataModule.cs" />
     <Compile Include="Extensions\ConfigNodeExtensions.cs" />

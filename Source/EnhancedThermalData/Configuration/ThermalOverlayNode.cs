@@ -6,6 +6,7 @@ namespace EnhancedThermalData.Configuration
     internal sealed class ThermalOverlayNode : IConfigNode
     {
         public bool Enable { get; private set; } = true;
+        public ThermalOverlayMode Mode { get; private set; } = ThermalOverlayMode.Temperature;
 
         public GradientNode Gradient { get; } = new GradientNode();
 
@@ -14,6 +15,7 @@ namespace EnhancedThermalData.Configuration
             if (node != null)
             {
                 Enable = node.Parse<bool>("enable");
+                Mode = node.Parse<ThermalOverlayMode>("mode");
 
                 Gradient.Load(node.GetNode("GRADIENT"));
             }
