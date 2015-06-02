@@ -49,18 +49,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\At.cs" />
-    <Compile Include="Configuration\AtUnit.cs" />
+    <Compile Include="Configuration\Model\At.cs" />
     <Compile Include="Configuration\Config.cs" />
-    <Compile Include="Configuration\ContextMenuItemNode.cs" />
-    <Compile Include="Configuration\ContextMenuNode.cs" />
-    <Compile Include="Configuration\DiagnosticsNode.cs" />
     <Compile Include="Configuration\EnhancedThermalDataNode.cs" />
     <Compile Include="Configuration\GradientNode.cs" />
-    <Compile Include="Configuration\StopNode.cs" />
-    <Compile Include="Configuration\TemperatureNode.cs" />
-    <Compile Include="Configuration\ThermalOverlayMode.cs" />
-    <Compile Include="Configuration\ThermalOverlayNode.cs" />
     <Compile Include="EnhancedThermalDataModule.cs" />
     <Compile Include="Extensions\ConfigNodeExtensions.cs" />
     <Compile Include="Extensions\PartExtensions.cs" />

@@ -6,6 +6,7 @@ using EnhancedThermalData.Diagnostics;
 using EnhancedThermalData.Extensions;
 using EnhancedThermalData.Model;
 using UnityEngine;
+using static EnhancedThermalData.Configuration.EnhancedThermalDataNode.OverlayNode.OverlayMode;
 
 namespace EnhancedThermalData
 {
@@ -13,8 +14,8 @@ namespace EnhancedThermalData
     // ReSharper disable once UnusedMember.Global
     public class EnhancedThermalDataBehaviour : MonoBehaviour
     {
-        private readonly Dictionary<double, AbsoluteGradient> _gradientCache =
-            new Dictionary<double, AbsoluteGradient>();
+        private readonly Dictionary<string, AbsoluteGradient> _gradientCache =
+            new Dictionary<string, AbsoluteGradient>();
 
         #region MonoBehaviour
 
@@ -23,26 +24,52 @@ namespace EnhancedThermalData
         {
             Log.Trace("Entering EnhancedThermalDataBehaviour.LateUpdate()");
 
-            if (PhysicsGlobals.ThermalColorsDebug && Config.Instance.ThermalOverlay.Enable)
+            if (PhysicsGlobals.ThermalColorsDebug && Config.Instance.Overlay.Enable)
             {
-                foreach (var part in FlightGlobals.Vessels.SelectMany(i => i.Parts))
+                foreach (var vessel in FlightGlobals.Vessels.Where(i => i.loaded))
                 {
-                    double gradientMin;
-                    double gradientMax;
-                    double gradientValue;
+                    double? vesselGradientMin = null;
+                    double? vesselGradientMax = null;
 
-                    switch (Config.Instance.ThermalOverlay.Mode)
+                    switch (Config.Instance.Overlay.Mode)
                     {
-                        case ThermalOverlayMode.Temperature:
-                            gradientMin = 0;
-                            gradientMax = part.maxTemp;
-                            gradientValue = part.temperature;
+                        case Temperature:
+                            break;
+                        case ThermalRateInternal:
+                            vesselGradientMin = vessel.Parts.Select(i => i.thermalInternalFlux).Min();
+                            vesselGradientMax = vessel.Parts.Select(i => i.thermalInternalFlux).Max();
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
 
-                    part.UpdateMaterialColor(Gradient(gradientMin, gradientMax)[gradientValue]);
+                    foreach (var part in vessel.Parts)
+                    {
+                        double partGradientMin;
+                        double partGradientMax;
+                        double gradientValue;
+
+                        switch (Config.Instance.Overlay.Mode)
+                        {
+                            case Temperature:
+                                partGradientMin = 0;
+                                partGradientMax = part.maxTemp;
+                                gradientValue = part.temperature;
+                                break;
+                            case ThermalRateInternal:
+                                // ReSharper disable PossibleInvalidOperationException
+                                partGradientMin = vesselGradientMin.Value;
+                                partGradientMax = vesselGradientMax.Value;
+                                // ReSharper restore PossibleInvalidOperationException
+                                gradientValue = part.thermalInternalFlux;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
+                        var gradient = Gradient(partGradientMin, partGradientMax, Config.Instance.Overlay.Mode);
+                        part.UpdateMaterialColor(gradient[gradientValue]);
+                    }
                 }
             }
 
@@ -53,23 +80,28 @@ namespace EnhancedThermalData
 
         #region Helpers
 
-        private AbsoluteGradient Gradient(double minValue, double maxValue)
+        private AbsoluteGradient Gradient(double minValue, double maxValue, EnhancedThermalDataNode.OverlayNode.OverlayMode mode)
         {
             Log.Trace("Entering EnhancedThermalDataBehaviour.Gradient()");
 
-            AbsoluteGradient gradient;
-            if (!_gradientCache.TryGetValue(maxValue, out gradient))
-            {
-                gradient = new AbsoluteGradient(minValue, maxValue,
-                    Config.Instance.ThermalOverlay.Gradient.Stops
-                );
+            var cacheKey = GradientCacheKey(minValue, maxValue, mode);
 
-                _gradientCache.Add(maxValue, gradient);
+            AbsoluteGradient gradient;
+            if (!_gradientCache.TryGetValue(cacheKey, out gradient))
+            {
+                gradient = new AbsoluteGradient(minValue, maxValue, Config.Instance.Overlay[mode].Gradient.Stops);
+
+                _gradientCache.Add(cacheKey, gradient);
             }
 
             Log.Trace("Leaving EnhancedThermalDataBehaviour.Gradient()");
 
             return gradient;
+        }
+
+        private string GradientCacheKey(double minValue, double maxValue, EnhancedThermalDataNode.OverlayNode.OverlayMode mode)
+        {
+            return $"{minValue}:{maxValue}:{mode}";
         }
 
         #endregion

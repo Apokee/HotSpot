@@ -13,7 +13,7 @@ namespace EnhancedThermalData.Model
 
         public Color this[double value] => _gradient.Evaluate((float)((value - _minValue) / (_maxValue - _minValue)));
 
-        public AbsoluteGradient(double minValue, double maxValue, List<StopNode> stops)
+        public AbsoluteGradient(double minValue, double maxValue, List<GradientNode.StopNode> stops)
         {
             _minValue = minValue;
             _maxValue = maxValue;
@@ -22,7 +22,7 @@ namespace EnhancedThermalData.Model
             _gradient.SetKeys(GetColorKeys(stopList), GetAlphaKeys(stopList));
         }
 
-        private GradientColorKey[] GetColorKeys(IEnumerable<StopNode> stops)
+        private GradientColorKey[] GetColorKeys(IEnumerable<GradientNode.StopNode> stops)
         {
             return stops
                 .Select(i => i.TryConvertToColorKey(_minValue, _maxValue))
@@ -31,7 +31,7 @@ namespace EnhancedThermalData.Model
                 .ToArray();
         }
 
-        private GradientAlphaKey[] GetAlphaKeys(IEnumerable<StopNode> stops)
+        private GradientAlphaKey[] GetAlphaKeys(IEnumerable<GradientNode.StopNode> stops)
         {
             return stops
                 .Select(i => i.TryConvertToAlphaKey(_minValue, _maxValue))
