@@ -49,7 +49,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\Model\At.cs" />
+    <Compile Include="Configuration\ContextMenuNode.cs" />
+    <Compile Include="Configuration\ContextMenu\ContextMenuItemNode.cs" />
+    <Compile Include="Configuration\ContextMenu\TemperatureNode.cs" />
+    <Compile Include="Configuration\DiagnosticsNode.cs" />
+    <Compile Include="Configuration\OverlayNode.cs" />
+    <Compile Include="Configuration\Overlay\GradientNode.cs" />
+    <Compile Include="Configuration\Overlay\Gradient\StopNode.cs" />
+    <Compile Include="Configuration\Overlay\Metric.cs" />
+    <Compile Include="Configuration\Overlay\MetricNode.cs" />
+    <Compile Include="Model\At.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="EnhancedThermalDataModule.cs" />
     <Compile Include="Extensions\ConfigNodeExtensions.cs" />
@@ -61,5 +70,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\AbsoluteGradient.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

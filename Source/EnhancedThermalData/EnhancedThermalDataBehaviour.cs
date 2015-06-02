@@ -6,7 +6,7 @@ using EnhancedThermalData.Diagnostics;
 using EnhancedThermalData.Extensions;
 using EnhancedThermalData.Model;
 using UnityEngine;
-using static EnhancedThermalData.Configuration.Config.OverlayNode.OverlayMode;
+using static EnhancedThermalData.Configuration.Overlay.Metric;
 
 namespace EnhancedThermalData
 {
@@ -67,7 +67,9 @@ namespace EnhancedThermalData
                                 throw new ArgumentOutOfRangeException();
                         }
 
-                        var gradient = Gradient(partGradientMin, partGradientMax, Config.Instance.Overlay.Mode);
+                        var gradientName = Config.Instance.Overlay.GetMetric(Config.Instance.Overlay.Mode).Gradient;
+                        var gradient = Gradient(partGradientMin, partGradientMax, gradientName);
+
                         part.UpdateMaterialColor(gradient[gradientValue]);
                     }
                 }
@@ -80,16 +82,16 @@ namespace EnhancedThermalData
 
         #region Helpers
 
-        private AbsoluteGradient Gradient(double minValue, double maxValue, Config.OverlayNode.OverlayMode mode)
+        private AbsoluteGradient Gradient(double minValue, double maxValue, string gradientName)
         {
             Log.Trace("Entering EnhancedThermalDataBehaviour.Gradient()");
 
-            var cacheKey = GradientCacheKey(minValue, maxValue, mode);
+            var cacheKey = GradientCacheKey(minValue, maxValue, gradientName);
 
             AbsoluteGradient gradient;
             if (!_gradientCache.TryGetValue(cacheKey, out gradient))
             {
-                gradient = new AbsoluteGradient(minValue, maxValue, Config.Instance.Overlay[mode].Gradient.Stops);
+                gradient = new AbsoluteGradient(minValue, maxValue, Config.Instance.Overlay.GetGradient(gradientName).Stops);
 
                 _gradientCache.Add(cacheKey, gradient);
             }
@@ -99,9 +101,9 @@ namespace EnhancedThermalData
             return gradient;
         }
 
-        private static string GradientCacheKey(double minValue, double maxValue, Config.OverlayNode.OverlayMode mode)
+        private static string GradientCacheKey(double minValue, double maxValue, string gradientName)
         {
-            return $"{minValue}:{maxValue}:{mode}";
+            return $"{minValue}:{maxValue}:{gradientName}";
         }
 
         #endregion

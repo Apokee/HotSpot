@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using EnhancedThermalData.Configuration;
+using EnhancedThermalData.Configuration.Overlay.Gradient;
 using UnityEngine;
 
 namespace EnhancedThermalData.Model
@@ -14,7 +14,7 @@ namespace EnhancedThermalData.Model
         public Color this[double value] => _gradient.Evaluate((float)((value - _minValue) / (_maxValue - _minValue)));
 
         public AbsoluteGradient(double minValue, double maxValue,
-            List<Config.OverlayNode.ModeNode.GradientNode.StopNode> stops
+            List<StopNode> stops
         )
         {
             _minValue = minValue;
@@ -24,7 +24,7 @@ namespace EnhancedThermalData.Model
             _gradient.SetKeys(GetColorKeys(stopList), GetAlphaKeys(stopList));
         }
 
-        private GradientColorKey[] GetColorKeys(IEnumerable<Config.OverlayNode.ModeNode.GradientNode.StopNode> stops)
+        private GradientColorKey[] GetColorKeys(IEnumerable<StopNode> stops)
         {
             return stops
                 .Select(i => i.TryConvertToColorKey(_minValue, _maxValue))
@@ -33,7 +33,7 @@ namespace EnhancedThermalData.Model
                 .ToArray();
         }
 
-        private GradientAlphaKey[] GetAlphaKeys(IEnumerable<Config.OverlayNode.ModeNode.GradientNode.StopNode> stops)
+        private GradientAlphaKey[] GetAlphaKeys(IEnumerable<StopNode> stops)
         {
             return stops
                 .Select(i => i.TryConvertToAlphaKey(_minValue, _maxValue))

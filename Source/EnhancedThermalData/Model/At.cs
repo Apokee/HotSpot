@@ -1,4 +1,4 @@
-﻿namespace EnhancedThermalData.Configuration.Model
+﻿namespace EnhancedThermalData.Model
 {
     internal struct At
     {
