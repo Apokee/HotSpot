@@ -6,7 +6,7 @@ using EnhancedThermalData.Diagnostics;
 using EnhancedThermalData.Extensions;
 using EnhancedThermalData.Model;
 using UnityEngine;
-using static EnhancedThermalData.Configuration.EnhancedThermalDataNode.OverlayNode.OverlayMode;
+using static EnhancedThermalData.Configuration.Config.OverlayNode.OverlayMode;
 
 namespace EnhancedThermalData
 {
@@ -80,7 +80,7 @@ namespace EnhancedThermalData
 
         #region Helpers
 
-        private AbsoluteGradient Gradient(double minValue, double maxValue, EnhancedThermalDataNode.OverlayNode.OverlayMode mode)
+        private AbsoluteGradient Gradient(double minValue, double maxValue, Config.OverlayNode.OverlayMode mode)
         {
             Log.Trace("Entering EnhancedThermalDataBehaviour.Gradient()");
 
@@ -99,7 +99,7 @@ namespace EnhancedThermalData
             return gradient;
         }
 
-        private string GradientCacheKey(double minValue, double maxValue, EnhancedThermalDataNode.OverlayNode.OverlayMode mode)
+        private string GradientCacheKey(double minValue, double maxValue, Config.OverlayNode.OverlayMode mode)
         {
             return $"{minValue}:{maxValue}:{mode}";
         }
