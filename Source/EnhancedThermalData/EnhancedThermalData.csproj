@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="Configuration\Model\At.cs" />
     <Compile Include="Configuration\Config.cs" />
-    <Compile Include="Configuration\GradientNode.cs" />
     <Compile Include="EnhancedThermalDataModule.cs" />
     <Compile Include="Extensions\ConfigNodeExtensions.cs" />
     <Compile Include="Extensions\PartExtensions.cs" />
