@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EnhancedThermalData.Configuration.Overlay;
 using EnhancedThermalData.Extensions;
+using EnhancedThermalData.Model;
 
 namespace EnhancedThermalData.Configuration
 {

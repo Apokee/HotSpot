@@ -6,7 +6,7 @@ using EnhancedThermalData.Diagnostics;
 using EnhancedThermalData.Extensions;
 using EnhancedThermalData.Model;
 using UnityEngine;
-using static EnhancedThermalData.Configuration.Overlay.Metric;
+using static EnhancedThermalData.Model.Metric;
 
 namespace EnhancedThermalData
 {
@@ -39,6 +39,22 @@ namespace EnhancedThermalData
                             vesselGradientMin = vessel.Parts.Select(i => i.thermalInternalFlux).Min();
                             vesselGradientMax = vessel.Parts.Select(i => i.thermalInternalFlux).Max();
                             break;
+                        case ThermalRateConductive:
+                            vesselGradientMin = vessel.Parts.Select(i => i.thermalConductionFlux).Min();
+                            vesselGradientMax = vessel.Parts.Select(i => i.thermalConductionFlux).Max();
+                            break;
+                        case ThermalRateConvective:
+                            vesselGradientMin = vessel.Parts.Select(i => i.thermalConvectionFlux).Min();
+                            vesselGradientMax = vessel.Parts.Select(i => i.thermalConvectionFlux).Max();
+                            break;
+                        case ThermalRateRadiative:
+                            vesselGradientMin = vessel.Parts.Select(i => i.thermalRadiationFlux).Min();
+                            vesselGradientMax = vessel.Parts.Select(i => i.thermalRadiationFlux).Max();
+                            break;
+                        case ThermalRate:
+                            vesselGradientMin = vessel.Parts.Select(i => i.GetThermalFlux()).Min();
+                            vesselGradientMax = vessel.Parts.Select(i => i.GetThermalFlux()).Max();
+                            break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -62,6 +78,34 @@ namespace EnhancedThermalData
                                 partGradientMax = vesselGradientMax.Value;
                                 // ReSharper restore PossibleInvalidOperationException
                                 gradientValue = part.thermalInternalFlux;
+                                break;
+                            case ThermalRateConductive:
+                                // ReSharper disable PossibleInvalidOperationException
+                                partGradientMin = vesselGradientMin.Value;
+                                partGradientMax = vesselGradientMax.Value;
+                                // ReSharper restore PossibleInvalidOperationException
+                                gradientValue = part.thermalConductionFlux;
+                                break;
+                            case ThermalRateConvective:
+                                // ReSharper disable PossibleInvalidOperationException
+                                partGradientMin = vesselGradientMin.Value;
+                                partGradientMax = vesselGradientMax.Value;
+                                // ReSharper restore PossibleInvalidOperationException
+                                gradientValue = part.thermalConvectionFlux;
+                                break;
+                            case ThermalRateRadiative:
+                                // ReSharper disable PossibleInvalidOperationException
+                                partGradientMin = vesselGradientMin.Value;
+                                partGradientMax = vesselGradientMax.Value;
+                                // ReSharper restore PossibleInvalidOperationException
+                                gradientValue = part.thermalRadiationFlux;
+                                break;
+                            case ThermalRate:
+                                // ReSharper disable PossibleInvalidOperationException
+                                partGradientMin = vesselGradientMin.Value;
+                                partGradientMax = vesselGradientMax.Value;
+                                // ReSharper restore PossibleInvalidOperationException
+                                gradientValue = part.GetThermalFlux();
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();

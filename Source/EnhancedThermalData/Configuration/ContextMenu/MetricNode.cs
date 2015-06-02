@@ -2,12 +2,13 @@
 using EnhancedThermalData.Extensions;
 using EnhancedThermalData.Model;
 
-namespace EnhancedThermalData.Configuration.Overlay
+namespace EnhancedThermalData.Configuration.ContextMenu
 {
     internal sealed class MetricNode : IConfigNode
     {
         public Metric Name { get; private set; }
-        public string Gradient { get; private set; }
+        public bool Enable { get; private set; }
+        public Unit Unit { get; private set; }
 
         public MetricNode(ConfigNode node)
         {
@@ -19,7 +20,8 @@ namespace EnhancedThermalData.Configuration.Overlay
             if (node != null)
             {
                 Name = node.Parse<Metric>("name");
-                Gradient = node.GetValue("gradient");
+                Enable = node.Parse<bool>("enable");
+                Unit = node.Parse<Unit>("unit");
             }
         }
 
