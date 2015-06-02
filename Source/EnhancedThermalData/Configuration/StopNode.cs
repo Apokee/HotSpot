@@ -67,7 +67,7 @@ namespace EnhancedThermalData.Configuration
             }
         }
 
-        public GradientColorKey? TryConvertToColorKey(double maxValue)
+        public GradientColorKey? TryConvertToColorKey(double minValue, double maxValue)
         {
             if (At != null && Color != null)
             {
@@ -76,7 +76,7 @@ namespace EnhancedThermalData.Configuration
                     case AtUnit.Percentage:
                         return new GradientColorKey(Color.Value, At.Value.Value / 100);
                     case AtUnit.Kelvin:
-                        return new GradientColorKey(Color.Value, (float)(At.Value.Value / maxValue));
+                        return new GradientColorKey(Color.Value, (float)((At.Value.Value - minValue) / (maxValue - minValue)));
                     default:
                         throw new ArgumentOutOfRangeException(nameof(At.Value.Unit));
                 }
@@ -85,7 +85,7 @@ namespace EnhancedThermalData.Configuration
             return null;
         }
 
-        public GradientAlphaKey? TryConvertToAlphaKey(double maxValue)
+        public GradientAlphaKey? TryConvertToAlphaKey(double minValue, double maxValue)
         {
             if (At != null && Alpha != null)
             {
@@ -94,7 +94,7 @@ namespace EnhancedThermalData.Configuration
                     case AtUnit.Percentage:
                         return new GradientAlphaKey(Alpha.Value, At.Value.Value / 100);
                     case AtUnit.Kelvin:
-                        return new GradientAlphaKey(Alpha.Value, (float)(At.Value.Value / maxValue));
+                        return new GradientAlphaKey(Alpha.Value, (float)((At.Value.Value - minValue) / (maxValue - minValue)));
                     default:
                         throw new ArgumentOutOfRangeException(nameof(At.Value.Unit));
                 }

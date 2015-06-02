@@ -26,7 +26,7 @@ namespace EnhancedThermalData
             {
                 foreach (var part in FlightGlobals.Vessels.SelectMany(i => i.Parts))
                 {
-                    part.UpdateMaterialColor(Gradient(part.maxTemp)[part.temperature]);
+                    part.UpdateMaterialColor(Gradient(0, part.maxTemp)[part.temperature]);
                 }
             }
 
@@ -37,15 +37,14 @@ namespace EnhancedThermalData
 
         #region Helpers
 
-        private AbsoluteGradient Gradient(double maxValue)
+        private AbsoluteGradient Gradient(double minValue, double maxValue)
         {
             Log.Trace("Entering EnhancedThermalDataBehaviour.Gradient()");
 
             AbsoluteGradient gradient;
             if (!_gradientCache.TryGetValue(maxValue, out gradient))
             {
-                gradient = new AbsoluteGradient(
-                    maxValue,
+                gradient = new AbsoluteGradient(minValue, maxValue,
                     Config.Instance.ThermalOverlay.Gradient.Stops
                 );
 
