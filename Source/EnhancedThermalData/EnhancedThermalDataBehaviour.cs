@@ -99,7 +99,7 @@ namespace EnhancedThermalData
             return gradient;
         }
 
-        private string GradientCacheKey(double minValue, double maxValue, Config.OverlayNode.OverlayMode mode)
+        private static string GradientCacheKey(double minValue, double maxValue, Config.OverlayNode.OverlayMode mode)
         {
             return $"{minValue}:{maxValue}:{mode}";
         }
