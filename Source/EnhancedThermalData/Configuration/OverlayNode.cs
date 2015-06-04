@@ -13,19 +13,19 @@ namespace EnhancedThermalData.Configuration
         private readonly Dictionary<string, GradientNode> _gradients = new Dictionary<string, GradientNode>();
 
         public bool Enable { get; private set; } = true;
-        public Metric Mode { get; private set; } = Metric.Temperature;
+        public Metric Metric { get; private set; } = Metric.Temperature;
 
         public IEnumerable<MetricNode> Metrics => _metrics.Values;
         public IEnumerable<GradientNode> Gradients => _gradients.Values;
 
-        public MetricNode GetMetric(Metric name)
+        public MetricNode GetMetric(Metric metric)
         {
-            return _metrics[name];
+            return _metrics[metric];
         }
 
-        public GradientNode GetGradient(string name)
+        public GradientNode GetGradient(string gradient)
         {
-            return _gradients[name];
+            return _gradients[gradient];
         }
 
         public void Load(ConfigNode node)
@@ -33,7 +33,7 @@ namespace EnhancedThermalData.Configuration
             if (node != null)
             {
                 Enable = node.Parse<bool>("enable");
-                Mode = node.Parse<Metric>("mode");
+                Metric = node.Parse<Metric>("metric");
 
                 foreach (var metric in node.GetNodes("METRIC").Select(i => new MetricNode(i)))
                 {
