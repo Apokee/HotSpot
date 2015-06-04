@@ -31,7 +31,7 @@ namespace EnhancedThermalData
                     double? vesselGradientMin = null;
                     double? vesselGradientMax = null;
 
-                    switch (Config.Instance.Overlay.Mode)
+                    switch (Config.Instance.Overlay.Metric)
                     {
                         case Temperature:
                             break;
@@ -65,7 +65,7 @@ namespace EnhancedThermalData
                         double partGradientMax;
                         double gradientValue;
 
-                        switch (Config.Instance.Overlay.Mode)
+                        switch (Config.Instance.Overlay.Metric)
                         {
                             case Temperature:
                                 partGradientMin = 0;
@@ -111,7 +111,7 @@ namespace EnhancedThermalData
                                 throw new ArgumentOutOfRangeException();
                         }
 
-                        var gradientName = Config.Instance.Overlay.GetMetric(Config.Instance.Overlay.Mode).Gradient;
+                        var gradientName = Config.Instance.Overlay.GetMetric(Config.Instance.Overlay.Metric).Gradient;
                         var gradient = Gradient(partGradientMin, partGradientMax, gradientName);
 
                         part.UpdateMaterialColor(gradient[gradientValue]);
