@@ -1,14 +1,17 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using EnhancedThermalData.Diagnostics;
 
 namespace EnhancedThermalData.Configuration
 {
-    internal static class Config
+    internal sealed class Config : IConfigNode
     {
-        private static readonly object InstanceLock = new object();
-        private static EnhancedThermalDataNode _instance;
+        #region Singleton
 
-        public static EnhancedThermalDataNode Instance
+        private static readonly object InstanceLock = new object();
+        private static Config _instance;
+
+        public static Config Instance
         {
             get
             {
@@ -18,12 +21,14 @@ namespace EnhancedThermalData.Configuration
                     {
                         if (_instance == null)
                         {
-                            var enhancedThermalDataNode = new EnhancedThermalDataNode();
-                            enhancedThermalDataNode.Load(
+                            var config = new Config();
+                            config.Load(
                                 GameDatabase.Instance.GetConfigNodes("ENHANCED_THERMAL_DATA").SingleOrDefault()
                             );
 
-                            _instance = enhancedThermalDataNode;
+                            Log.Info($"BLAH: {GameDatabase.Instance.GetConfigNodes("ENHANCED_THERMAL_DATA").SingleOrDefault()}");
+
+                            _instance = config;
 
                             OnInitialLoad();
                         }
@@ -37,6 +42,27 @@ namespace EnhancedThermalData.Configuration
         private static void OnInitialLoad()
         {
             Log.Level = Instance.Diagnostics.LogLevel;
+        }
+
+        #endregion
+
+        public ContextMenuNode ContextMenu { get; } = new ContextMenuNode();
+        public OverlayNode Overlay { get; } = new OverlayNode();
+        public DiagnosticsNode Diagnostics { get; } = new DiagnosticsNode();
+
+        public void Load(ConfigNode node)
+        {
+            if (node != null)
+            {
+                ContextMenu.Load(node.GetNode("CONTEXT_MENU"));
+                Overlay.Load(node.GetNode("OVERLAY"));
+                Diagnostics.Load(node.GetNode("DIAGNOSTICS"));
+            }
+        }
+
+        public void Save(ConfigNode node)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,42 +1,76 @@
 ﻿using System;
-using System.Linq;
 using EnhancedThermalData.Configuration;
-using EnhancedThermalData.Diagnostics;
+using EnhancedThermalData.Extensions;
 using EnhancedThermalData.Model;
+using static EnhancedThermalData.Model.Unit;
 
 namespace EnhancedThermalData
 {
     // ReSharper disable once UnusedMember.Global
     public sealed class EnhancedThermalDataModule : PartModule
     {
-        [KSPField(guiActive = false)]
+        [KSPField(guiActive = false, guiName = "Temperature")]
         // ReSharper disable once MemberCanBePrivate.Global
         public string Temperature;
 
+        [KSPField(guiActive = false, guiName = "Thermal Rate [I]")]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string ThermalRateInternal;
+
+        [KSPField(guiActive = false, guiName = "Thermal Rate [Cd]")]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string ThermalRateConductive;
+
+        [KSPField(guiActive = false, guiName = "Thermal Rate [Cv]")]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string ThermalRateConvective;
+
+        [KSPField(guiActive = false, guiName = "Thermal Rate [R]")]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string ThermalRateRadiative;
+
+        [KSPField(guiActive = false, guiName = "Thermal Rate")]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string ThermalRate;
+
         public override void OnUpdate()
         {
+            UpdateTemperature();
+            UpdateThermalRateInternal();
+            UpdateThermalRateConductive();
+            UpdateThermalRateConvective();
+            UpdateThermalRateRadiative();
+            UpdateThermalRate();
+        }
+
+        #region Updaters
+
+        private void UpdateTemperature()
+        {
+            var metric = Config.Instance.ContextMenu.GetMetric(Metric.Temperature);
+
             double temp;
             double maxTemp;
             string unit;
 
-            switch (Config.Instance.ContextMenu.Temperature.Unit)
+            switch (metric.Unit)
             {
-                case TemperatureUnit.Kelvin:
+                case Kelvin:
                     temp = part.temperature;
                     maxTemp = part.maxTemp;
                     unit = "K";
                     break;
-                case TemperatureUnit.Rankine:
+                case Rankine:
                     temp = ConvertKelvinToRankine(part.temperature);
                     maxTemp = ConvertKelvinToRankine(part.maxTemp);
                     unit = "°R";
                     break;
-                case TemperatureUnit.Celsius:
+                case Celsius:
                     temp = ConvertKelvinToCelsius(part.temperature);
                     maxTemp = ConvertKelvinToCelsius(part.maxTemp);
                     unit = "°C";
                     break;
-                case TemperatureUnit.Fahrenheit:
+                case Fahrenheit:
                     temp = ConvertKelvinToFahrenheit(part.temperature);
                     maxTemp = ConvertKelvinToFahrenheit(part.maxTemp);
                     unit = "°F";
@@ -45,11 +79,51 @@ namespace EnhancedThermalData
                     throw new ArgumentOutOfRangeException();
             }
 
-            Fields["Temperature"].guiActive = Config.Instance.ContextMenu.Temperature.Enable;
-            Temperature = Config.Instance.ContextMenu.Temperature.Enable ?
-                $"{temp:F2}{unit} / {maxTemp:F2}{unit}" :
-                null;
+            Fields["Temperature"].guiActive = metric.Enable;
+            Temperature = metric.Enable ? $"{temp:F2}{unit} / {maxTemp:F2}{unit}" : null;
         }
+
+        private void UpdateThermalRateInternal()
+        {
+            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRateInternal);
+
+            Fields["ThermalRateInternal"].guiActive = metric.Enable;
+            ThermalRateInternal = metric.Enable ? $"{part.thermalInternalFlux:F2}kW" : null;
+        }
+
+        private void UpdateThermalRateConductive()
+        {
+            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRateConductive);
+
+            Fields["ThermalRateConductive"].guiActive = metric.Enable;
+            ThermalRateConductive = metric.Enable ? $"{part.thermalConductionFlux:F2}kW" : null;
+        }
+
+        private void UpdateThermalRateConvective()
+        {
+            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRateConvective);
+
+            Fields["ThermalRateConvective"].guiActive = metric.Enable;
+            ThermalRateConvective = metric.Enable ? $"{part.thermalConvectionFlux:F2}kW" : null;
+        }
+
+        private void UpdateThermalRateRadiative()
+        {
+            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRateRadiative);
+
+            Fields["ThermalRateRadiative"].guiActive = metric.Enable;
+            ThermalRateRadiative = metric.Enable ? $"{part.thermalRadiationFlux:F2}kW" : null;
+        }
+
+        private void UpdateThermalRate()
+        {
+            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRate);
+
+            Fields["ThermalRate"].guiActive = metric.Enable;
+            ThermalRate = metric.Enable ? $"{part.GetThermalFlux():F2}kW" : null;
+        }
+
+        #endregion
 
         #region Helpers
 

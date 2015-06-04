@@ -1,4 +1,4 @@
-﻿namespace EnhancedThermalData.Configuration
+﻿namespace EnhancedThermalData.Model
 {
     internal struct At
     {
@@ -25,6 +25,12 @@
             }
 
             return $"{Value}{unitStr}";
+        }
+
+        public enum AtUnit
+        {
+            Percentage,
+            Kelvin,
         }
     }
 }

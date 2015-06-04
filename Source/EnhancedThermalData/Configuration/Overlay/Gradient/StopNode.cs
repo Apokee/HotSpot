@@ -2,9 +2,10 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using EnhancedThermalData.Diagnostics;
+using EnhancedThermalData.Model;
 using UnityEngine;
 
-namespace EnhancedThermalData.Configuration
+namespace EnhancedThermalData.Configuration.Overlay.Gradient
 {
     internal sealed class StopNode : IConfigNode
     {
@@ -67,16 +68,16 @@ namespace EnhancedThermalData.Configuration
             }
         }
 
-        public GradientColorKey? TryConvertToColorKey(double maxValue)
+        public GradientColorKey? TryConvertToColorKey(double minValue, double maxValue)
         {
             if (At != null && Color != null)
             {
                 switch (At.Value.Unit)
                 {
-                    case AtUnit.Percentage:
+                    case Model.At.AtUnit.Percentage:
                         return new GradientColorKey(Color.Value, At.Value.Value / 100);
-                    case AtUnit.Kelvin:
-                        return new GradientColorKey(Color.Value, (float)(At.Value.Value / maxValue));
+                    case Model.At.AtUnit.Kelvin:
+                        return new GradientColorKey(Color.Value, (float)((At.Value.Value - minValue) / (maxValue - minValue)));
                     default:
                         throw new ArgumentOutOfRangeException(nameof(At.Value.Unit));
                 }
@@ -85,16 +86,16 @@ namespace EnhancedThermalData.Configuration
             return null;
         }
 
-        public GradientAlphaKey? TryConvertToAlphaKey(double maxValue)
+        public GradientAlphaKey? TryConvertToAlphaKey(double minValue, double maxValue)
         {
             if (At != null && Alpha != null)
             {
                 switch (At.Value.Unit)
                 {
-                    case AtUnit.Percentage:
+                    case Model.At.AtUnit.Percentage:
                         return new GradientAlphaKey(Alpha.Value, At.Value.Value / 100);
-                    case AtUnit.Kelvin:
-                        return new GradientAlphaKey(Alpha.Value, (float)(At.Value.Value / maxValue));
+                    case Model.At.AtUnit.Kelvin:
+                        return new GradientAlphaKey(Alpha.Value, (float)((At.Value.Value - minValue) / (maxValue - minValue)));
                     default:
                         throw new ArgumentOutOfRangeException(nameof(At.Value.Unit));
                 }
@@ -132,14 +133,14 @@ namespace EnhancedThermalData.Configuration
             return null;
         }
 
-        private static AtUnit? TryParseAtUnit(string str)
+        private static At.AtUnit? TryParseAtUnit(string str)
         {
             switch (str)
             {
                 case "%":
-                    return AtUnit.Percentage;
+                    return Model.At.AtUnit.Percentage;
                 case "K":
-                    return AtUnit.Kelvin;
+                    return Model.At.AtUnit.Kelvin;
                 default:
                     return null;
             }

@@ -1,10 +1,14 @@
 ﻿namespace EnhancedThermalData.Model
 {
-    internal enum TemperatureUnit
+    internal enum Unit
     {
+        // Temperature
         Kelvin,
         Rankine,
         Celsius,
         Fahrenheit,
+
+        // Power
+        Kilowatt,
     }
 }

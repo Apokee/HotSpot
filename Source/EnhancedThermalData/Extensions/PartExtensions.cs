@@ -13,5 +13,14 @@ namespace EnhancedThermalData.Extensions
         {
             (MaterialColorUpdaterField.GetValue(part) as MaterialColorUpdater)?.Update(color);
         }
+
+        public static double GetThermalFlux(this Part part)
+        {
+            return part.thermalInternalFlux
+                + part.thermalConductionFlux
+                + part.thermalConvectionFlux
+                + part.thermalRadiationFlux
+                + part.thermalRadiationFlux;
+        }
     }
 }
