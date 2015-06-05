@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using EnhancedThermalData.Configuration;
 using EnhancedThermalData.Diagnostics;
@@ -14,9 +13,6 @@ namespace EnhancedThermalData
     // ReSharper disable once UnusedMember.Global
     public class EnhancedThermalDataBehaviour : MonoBehaviour
     {
-        private readonly Dictionary<string, AbsoluteGradient> _gradientCache =
-            new Dictionary<string, AbsoluteGradient>();
-
         #region MonoBehaviour
 
         // ReSharper disable once UnusedMember.Global
@@ -126,28 +122,17 @@ namespace EnhancedThermalData
 
         #region Helpers
 
-        private AbsoluteGradient Gradient(double minValue, double maxValue, string gradientName)
+        private static AbsoluteGradient Gradient(double minValue, double maxValue, string gradientName)
         {
             Log.Trace("Entering EnhancedThermalDataBehaviour.Gradient()");
 
-            var cacheKey = GradientCacheKey(minValue, maxValue, gradientName);
-
-            AbsoluteGradient gradient;
-            if (!_gradientCache.TryGetValue(cacheKey, out gradient))
-            {
-                gradient = new AbsoluteGradient(minValue, maxValue, Config.Instance.Overlay.GetGradient(gradientName).Stops);
-
-                _gradientCache.Add(cacheKey, gradient);
-            }
+            var gradient = new AbsoluteGradient(minValue, maxValue,
+                Config.Instance.Overlay.GetGradient(gradientName).Stops
+            );
 
             Log.Trace("Leaving EnhancedThermalDataBehaviour.Gradient()");
 
             return gradient;
-        }
-
-        private static string GradientCacheKey(double minValue, double maxValue, string gradientName)
-        {
-            return $"{minValue}:{maxValue}:{gradientName}";
         }
 
         #endregion
