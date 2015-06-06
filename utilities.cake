@@ -81,6 +81,39 @@ public string Which(string executable)
     return null;
 }
 
+public string GetGitRevision(bool useShort)
+{
+    var git = Which("git");
+
+    if (git != null)
+    {
+        IEnumerable<string> output;
+
+        var shortOption = useShort ? "--short" : "";
+        StartProcess(git,
+            new ProcessSettings { RedirectStandardOutput = true, Arguments = $"rev-parse {shortOption} HEAD"},
+            out output
+        );
+
+        var outputList = output.ToList();
+        if (outputList.Count == 1)
+        {
+            return outputList[0];
+        }
+        else
+        {
+            throw new Exception("Could not read revision from git");
+        }
+    }
+
+    return null;
+}
+
+public SemVer GetVersion()
+{
+    return new SemVer(System.IO.File.ReadAllText("VERSION"));
+}
+
 public sealed class SemVer
 {
     private static readonly Regex Pattern = new Regex(
@@ -107,8 +140,18 @@ public sealed class SemVer
             Major = uint.Parse(match.Groups["major"].Value);
             Minor = uint.Parse(match.Groups["minor"].Value);
             Patch = uint.Parse(match.Groups["patch"].Value);
-            Pre = match.Groups["pre"].Value;
-            Build = match.Groups["build"].Value;
+
+            var preGroup = match.Groups["pre"];
+            if (preGroup.Success)
+            {
+                Pre = preGroup.Value;
+            }
+
+            var buildGroup = match.Groups["build"];
+            if (buildGroup.Success)
+            {
+                Build = buildGroup.Value;
+            }
         }
         else
         {
@@ -116,8 +159,34 @@ public sealed class SemVer
         }
     }
 
+    public SemVer(uint major = 0, uint minor = 0, uint patch = 0, string pre = null, string build = null)
+    {
+        Major = major;
+        Minor = minor;
+        Patch = patch;
+        Pre = pre;
+        Build = build;
+
+        _string = $"{Major}.{Minor}.{Patch}";
+
+        if (pre != null)
+        {
+            _string += $"-{Pre}";
+        }
+
+        if (build != null)
+        {
+            _string += $"+{Build}";
+        }
+    }
+
     public override string ToString()
     {
         return _string;
+    }
+
+    public static implicit operator string(SemVer version)
+    {
+        return version.ToString();
     }
 }

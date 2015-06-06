@@ -18,13 +18,13 @@ install:
         Start-FileDownload "$kspLibsUrl/$kspLib" -FileName "$kspLibsDir/$kspLib"
       }
 
-before_build:
-  ps: |
-      $env:BUILD_VERSION = (cat VERSION)
-
 build_script:
   ps: |
       ./build -configuration="$env:CONFIGURATION"
+
+after_build:
+  ps: |
+      $env:BUILD_VERSION = (cat Output/VERSION)
 
 test: off
 
