@@ -19,11 +19,11 @@ public sealed class BuildConfiguration
 
 var target = Argument<string>("target", "Package");
 var configuration = Argument<string>("configuration", "Debug");
+var release = Argument<bool>("release", false);
 
 var buildConfiguration = GetBuildConfiguration<BuildConfiguration>();
 
 var solution = GetSolution();
-var version = GetVersion();
 
 var identifier = "EnhancedThermalData";
 var outputDirectory = "Output";
@@ -85,6 +85,33 @@ Task("Restore")
     NuGetRestore(solution);
 });
 
+Task("BuildBuildVersion")
+    .Does(() =>
+{
+    string buildVersion;
+
+    var version = GetVersion();
+    var rev = GetGitRevision(useShort: true);
+
+    if (rev != null && !release)
+    {
+        if (version.Build == null)
+        {
+            buildVersion = new SemVer(version.Major, version.Minor, version.Patch, version.Pre, rev);
+        }
+        else
+        {
+            throw new Exception("VERSION already contains build metadata");
+        }
+    }
+    else
+    {
+        buildVersion = version;
+    }
+
+    System.IO.File.WriteAllText("Output/VERSION", buildVersion);
+});
+
 Task("BuildAssemblyInfo")
     .Does(() =>
 {
@@ -96,6 +123,7 @@ Task("Build")
     .IsDependentOn("CleanBuild")
     .IsDependentOn("Init")
     .IsDependentOn("Restore")
+    .IsDependentOn("BuildBuildVersion")
     .IsDependentOn("BuildAssemblyInfo")
     .Does(() =>
 {
@@ -146,26 +174,28 @@ Task("Package")
 {
     CreateDirectory(packageDirectory);
 
-    var assemblyInfo = ParseAssemblyInfo($"Source/{identifier}/Properties/AssemblyInfo.cs");
-
-    Zip(stageDirectory, File($"{packageDirectory}/{identifier}-{assemblyInfo.AssemblyInformationalVersion}.zip"));
+    Zip(stageDirectory, File($"{packageDirectory}/{identifier}-{GetBuildVersion()}.zip"));
 });
 
 RunTarget(target);
 
-private Version GetVersion()
-{
-    return new Version(System.IO.File.ReadAllText("VERSION"));
-}
-
 private void BuildAssemblyInfo(string file)
 {
+    var version = GetBuildVersion();
+
     var output = TransformTextFile($"{file}.in")
         .WithToken("VERSION", version)
         .WithToken("VERSION.MAJOR", version.Major)
         .WithToken("VERSION.MINOR", version.Minor)
-        .WithToken("VERSION.PATCH", version.Revision)
+        .WithToken("VERSION.PATCH", version.Patch)
+        .WithToken("VERSION.PRE", version.Pre)
+        .WithToken("VERSION.BUILD", version.Build)
         .ToString();
 
     System.IO.File.WriteAllText(file, output);
+}
+
+private SemVer GetBuildVersion()
+{
+    return new SemVer(System.IO.File.ReadAllText("Output/VERSION"));
 }
