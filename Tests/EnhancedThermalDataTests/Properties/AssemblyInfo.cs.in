@@ -12,6 +12,6 @@
 [assembly: AssemblyConfiguration("Release")]
 #endif
 
-[assembly: AssemblyVersion("<%VERSION.MAJOR%>")]
-[assembly: AssemblyFileVersion("<%VERSION%>")]
+[assembly: AssemblyVersion("<%VERSION.MAJOR%>.<%VERSION.MINOR%>")]
+[assembly: AssemblyFileVersion("<%VERSION.MAJOR%>.<%VERSION.MINOR%>.<%VERSION.PATCH%>")]
 [assembly: AssemblyInformationalVersion("<%VERSION%>")]

@@ -80,3 +80,44 @@ public string Which(string executable)
 
     return null;
 }
+
+public sealed class SemVer
+{
+    private static readonly Regex Pattern = new Regex(
+        @"^(?<major>[1-9]\d*?|0)\.(?<minor>[1-9]\d*?|0)\.(?<patch>[1-9]\d*?|0)(?:-(?<pre>[\dA-Z-]+))?(?:\+(?<build>[\dA-Z-]+))?$",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled
+    );
+
+    private string _string;
+
+    public uint Major { get; }
+    public uint Minor { get; }
+    public uint Patch { get; }
+    public string Pre { get; }
+    public string Build { get; }
+
+    public SemVer(string s)
+    {
+        _string = s.Trim();
+
+        var match = Pattern.Match(_string);
+
+        if (match.Success)
+        {
+            Major = uint.Parse(match.Groups["major"].Value);
+            Minor = uint.Parse(match.Groups["minor"].Value);
+            Patch = uint.Parse(match.Groups["patch"].Value);
+            Pre = match.Groups["pre"].Value;
+            Build = match.Groups["build"].Value;
+        }
+        else
+        {
+            throw new FormatException($"Unable to parse semantic version: {_string}");
+        }
+    }
+
+    public override string ToString()
+    {
+        return _string;
+    }
+}

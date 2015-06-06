@@ -14,8 +14,8 @@ using System.Runtime.CompilerServices;
 #endif
 
 [assembly: KSPAssembly("EnhancedThermalData", <%VERSION.MAJOR%>, <%VERSION.MINOR%>)]
-[assembly: AssemblyVersion("<%VERSION.MAJOR%>")]
-[assembly: AssemblyFileVersion("<%VERSION%>")]
+[assembly: AssemblyVersion("<%VERSION.MAJOR%>.<%VERSION.MINOR%>")]
+[assembly: AssemblyFileVersion("<%VERSION.MAJOR%>.<%VERSION.MINOR%>.<%VERSION.PATCH%>")]
 [assembly: AssemblyInformationalVersion("<%VERSION%>")]
 
 [assembly: InternalsVisibleTo("EnhancedThermalDataTests")]

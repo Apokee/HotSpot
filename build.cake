@@ -153,9 +153,9 @@ Task("Package")
 
 RunTarget(target);
 
-private Version GetVersion()
+private SemVer GetVersion()
 {
-    return new Version(System.IO.File.ReadAllText("VERSION"));
+    return new SemVer(System.IO.File.ReadAllText("VERSION"));
 }
 
 private void BuildAssemblyInfo(string file)
@@ -164,7 +164,9 @@ private void BuildAssemblyInfo(string file)
         .WithToken("VERSION", version)
         .WithToken("VERSION.MAJOR", version.Major)
         .WithToken("VERSION.MINOR", version.Minor)
-        .WithToken("VERSION.PATCH", version.Revision)
+        .WithToken("VERSION.PATCH", version.Patch)
+        .WithToken("VERSION.PRE", version.Pre)
+        .WithToken("VERSION.BUILD", version.Build)
         .ToString();
 
     System.IO.File.WriteAllText(file, output);
