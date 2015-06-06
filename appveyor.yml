@@ -20,10 +20,16 @@ install:
 
 before_build:
   ps: |
-      $isMasterBranch = $env:APPVEYOR_REPO_BRANCH -eq "master";
-      $isReleaseConfiguration = $env:CONFIGURATION -eq "Release";
-      $isTagged = $env:APPVEYOR_REPO_TAG -eq "true";
-      $env:X_IS_RELEASE = $isMasterBranch -and $isReleaseConfiguration -and $isTagged;
+      $isMasterBranch = $env:APPVEYOR_REPO_BRANCH -eq "master"
+      $isReleaseConfiguration = $env:CONFIGURATION -eq "Release"
+      $isTagged = $env:APPVEYOR_REPO_TAG -eq "true"
+      $env:X_IS_RELEASE = $isMasterBranch -and $isReleaseConfiguration -and $isTagged
+
+      if ($env:X_IS_RELEASE -eq "True") {
+        Add-AppveyorMessage "Building RELEASE version"
+      } else {
+        Add-AppveyorMessage "Building NON-RELEASE version"
+      }
 
 build_script:
   ps: |
