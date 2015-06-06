@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnhancedThermalData.Extensions
+namespace EnhancedThermalData
 {
     internal static class ConfigNodeExtensions
     {

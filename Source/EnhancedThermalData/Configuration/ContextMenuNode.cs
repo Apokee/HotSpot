@@ -8,20 +8,22 @@ namespace EnhancedThermalData.Configuration
 {
     internal sealed class ContextMenuNode : IConfigNode
     {
-        private Dictionary<Metric, MetricNode> _metrics = new Dictionary<Metric, MetricNode>(); 
-
-        public IEnumerable<MetricNode> Metrics => _metrics.Values;
+        private Dictionary<string, MetricNode> _metricDictionary = new Dictionary<string, MetricNode>(); 
 
         public MetricNode GetMetric(Metric metric)
         {
-            return _metrics[metric];
+            return _metricDictionary[metric.Name];
         }
 
         public void Load(ConfigNode node)
         {
             if (node != null)
             {
-                _metrics = node.GetNodes("METRIC").Select(i => new MetricNode(i)).ToDictionary(i => i.Name);
+                _metricDictionary = node
+                    .GetNodes("METRIC")
+                    .Where(i => !i.GetValue("name").EndsWith("Template"))
+                    .Select(i => new MetricNode(i))
+                    .ToDictionary(i => i.Name.Name);
             }
         }
 
