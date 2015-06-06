@@ -1,5 +1,16 @@
-﻿namespace EnhancedThermalData.Diagnostics
+﻿namespace EnhancedThermalData
 {
+    public enum LogLevel : byte
+    {
+        // ReSharper disable once UnusedMember.Global
+        Off = 0,
+        Error = 1,
+        Warning = 2,
+        Info = 3,
+        Debug = 4,
+        Trace = 5,
+    }
+
     internal static class Log
     {
         // ReSharper disable once MemberCanBePrivate.Global
@@ -7,7 +18,11 @@
 
         static Log()
         {
+#if DEBUG
+            Level = LogLevel.Debug;
+#else
             Level = LogLevel.Info;
+#endif
         }
 
         public static void Error(string message)

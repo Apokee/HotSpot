@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using UnityEngine;
 
-namespace EnhancedThermalData.Extensions
+namespace EnhancedThermalData
 {
     internal static class PartExtensions
     {

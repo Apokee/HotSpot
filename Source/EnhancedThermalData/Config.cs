@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using EnhancedThermalData.Diagnostics;
+using EnhancedThermalData.Configuration;
 
-namespace EnhancedThermalData.Configuration
+namespace EnhancedThermalData
 {
     internal sealed class Config : IConfigNode
     {
@@ -21,16 +21,15 @@ namespace EnhancedThermalData.Configuration
                     {
                         if (_instance == null)
                         {
-                            var config = new Config();
-                            config.Load(
-                                GameDatabase.Instance.GetConfigNodes("ENHANCED_THERMAL_DATA").SingleOrDefault()
-                            );
+                            
+                            var node = GameDatabase
+                                .Instance
+                                .GetConfigNodes("ENHANCED_THERMAL_DATA")
+                                .SingleOrDefault();
 
-                            Log.Info($"BLAH: {GameDatabase.Instance.GetConfigNodes("ENHANCED_THERMAL_DATA").SingleOrDefault()}");
+                            _instance = new Config(node);
 
-                            _instance = config;
-
-                            OnInitialLoad();
+                            OnInitialLoad(node);
                         }
                     }
                 }
@@ -39,9 +38,14 @@ namespace EnhancedThermalData.Configuration
             }
         }
 
-        private static void OnInitialLoad()
+        private static void OnInitialLoad(ConfigNode node)
         {
             Log.Level = Instance.Diagnostics.LogLevel;
+
+            Log.Debug(node != null ?
+                $"Exploded Configuration:{Environment.NewLine}{node}" :
+                "No configuration found."
+            );
         }
 
         #endregion
@@ -49,6 +53,11 @@ namespace EnhancedThermalData.Configuration
         public ContextMenuNode ContextMenu { get; } = new ContextMenuNode();
         public OverlayNode Overlay { get; } = new OverlayNode();
         public DiagnosticsNode Diagnostics { get; } = new DiagnosticsNode();
+
+        private Config(ConfigNode node)
+        {
+            Load(node);
+        }
 
         public void Load(ConfigNode node)
         {

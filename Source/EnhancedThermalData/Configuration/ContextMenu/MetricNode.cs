@@ -1,5 +1,4 @@
 ﻿using System;
-using EnhancedThermalData.Extensions;
 using EnhancedThermalData.Model;
 
 namespace EnhancedThermalData.Configuration.ContextMenu
@@ -19,7 +18,7 @@ namespace EnhancedThermalData.Configuration.ContextMenu
         {
             if (node != null)
             {
-                Name = node.Parse<Metric>("name");
+                Name = Metric.Parse(node.GetValue("name"));
                 Enable = node.Parse<bool>("enable");
                 Unit = node.Parse<Unit>("unit");
             }
