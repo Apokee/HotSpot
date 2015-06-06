@@ -1,5 +1,4 @@
 ﻿using System;
-using EnhancedThermalData.Extensions;
 
 namespace EnhancedThermalData.Configuration.ContextMenu
 {

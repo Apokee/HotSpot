@@ -1,6 +1,4 @@
 ﻿using System;
-using EnhancedThermalData.Configuration;
-using EnhancedThermalData.Extensions;
 using EnhancedThermalData.Model;
 using static EnhancedThermalData.Model.Unit;
 
@@ -12,6 +10,10 @@ namespace EnhancedThermalData
         [KSPField(guiActive = false, guiName = "Temperature")]
         // ReSharper disable once MemberCanBePrivate.Global
         public string Temperature;
+
+        [KSPField(guiActive = false, guiName = "Thermal Rate")]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public string ThermalRate;
 
         [KSPField(guiActive = false, guiName = "Thermal Rate [I]")]
         // ReSharper disable once MemberCanBePrivate.Global
@@ -29,18 +31,14 @@ namespace EnhancedThermalData
         // ReSharper disable once MemberCanBePrivate.Global
         public string ThermalRateRadiative;
 
-        [KSPField(guiActive = false, guiName = "Thermal Rate")]
-        // ReSharper disable once MemberCanBePrivate.Global
-        public string ThermalRate;
-
         public override void OnUpdate()
         {
             UpdateTemperature();
+            UpdateThermalRate();
             UpdateThermalRateInternal();
             UpdateThermalRateConductive();
             UpdateThermalRateConvective();
             UpdateThermalRateRadiative();
-            UpdateThermalRate();
         }
 
         #region Updaters
@@ -83,6 +81,14 @@ namespace EnhancedThermalData
             Temperature = metric.Enable ? $"{temp:F2}{unit} / {maxTemp:F2}{unit}" : null;
         }
 
+        private void UpdateThermalRate()
+        {
+            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRate);
+
+            Fields["ThermalRate"].guiActive = metric.Enable;
+            ThermalRate = metric.Enable ? $"{part.GetThermalFlux():F2}kW" : null;
+        }
+
         private void UpdateThermalRateInternal()
         {
             var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRateInternal);
@@ -113,14 +119,6 @@ namespace EnhancedThermalData
 
             Fields["ThermalRateRadiative"].guiActive = metric.Enable;
             ThermalRateRadiative = metric.Enable ? $"{part.thermalRadiationFlux:F2}kW" : null;
-        }
-
-        private void UpdateThermalRate()
-        {
-            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRate);
-
-            Fields["ThermalRate"].guiActive = metric.Enable;
-            ThermalRate = metric.Enable ? $"{part.GetThermalFlux():F2}kW" : null;
         }
 
         #endregion

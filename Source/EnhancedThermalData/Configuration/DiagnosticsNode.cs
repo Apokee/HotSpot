@@ -1,6 +1,4 @@
 ﻿using System;
-using EnhancedThermalData.Diagnostics;
-using EnhancedThermalData.Extensions;
 
 namespace EnhancedThermalData.Configuration
 {

@@ -1,11 +1,7 @@
-﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using EnhancedThermalData.Configuration;
-using EnhancedThermalData.Diagnostics;
-using EnhancedThermalData.Extensions;
 using EnhancedThermalData.Model;
 using UnityEngine;
-using static EnhancedThermalData.Model.Metric;
 
 namespace EnhancedThermalData
 {
@@ -22,95 +18,25 @@ namespace EnhancedThermalData
 
             if (PhysicsGlobals.ThermalColorsDebug && Config.Instance.Overlay.Enable)
             {
+                var metric = Config.Instance.Overlay.Metric;
+
                 foreach (var vessel in FlightGlobals.Vessels.Where(i => i.loaded))
                 {
-                    double? vesselGradientMin = null;
-                    double? vesselGradientMax = null;
-
-                    switch (Config.Instance.Overlay.Metric)
-                    {
-                        case Temperature:
-                            break;
-                        case ThermalRateInternal:
-                            vesselGradientMin = vessel.Parts.Select(i => i.thermalInternalFlux).Min();
-                            vesselGradientMax = vessel.Parts.Select(i => i.thermalInternalFlux).Max();
-                            break;
-                        case ThermalRateConductive:
-                            vesselGradientMin = vessel.Parts.Select(i => i.thermalConductionFlux).Min();
-                            vesselGradientMax = vessel.Parts.Select(i => i.thermalConductionFlux).Max();
-                            break;
-                        case ThermalRateConvective:
-                            vesselGradientMin = vessel.Parts.Select(i => i.thermalConvectionFlux).Min();
-                            vesselGradientMax = vessel.Parts.Select(i => i.thermalConvectionFlux).Max();
-                            break;
-                        case ThermalRateRadiative:
-                            vesselGradientMin = vessel.Parts.Select(i => i.thermalRadiationFlux).Min();
-                            vesselGradientMax = vessel.Parts.Select(i => i.thermalRadiationFlux).Max();
-                            break;
-                        case ThermalRate:
-                            vesselGradientMin = vessel.Parts.Select(i => i.GetThermalFlux()).Min();
-                            vesselGradientMax = vessel.Parts.Select(i => i.GetThermalFlux()).Max();
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                    var vesselVariables = metric.GetVesselValues(vessel);
 
                     foreach (var part in vessel.Parts)
                     {
-                        double partGradientMin;
-                        double partGradientMax;
-                        double gradientValue;
+                        var partVariables = metric.GetPartValues(part);
+                        var partCurrent = metric.GetPartCurrent(part);
 
-                        switch (Config.Instance.Overlay.Metric)
-                        {
-                            case Temperature:
-                                partGradientMin = 0;
-                                partGradientMax = part.maxTemp;
-                                gradientValue = part.temperature;
-                                break;
-                            case ThermalRateInternal:
-                                // ReSharper disable PossibleInvalidOperationException
-                                partGradientMin = vesselGradientMin.Value;
-                                partGradientMax = vesselGradientMax.Value;
-                                // ReSharper restore PossibleInvalidOperationException
-                                gradientValue = part.thermalInternalFlux;
-                                break;
-                            case ThermalRateConductive:
-                                // ReSharper disable PossibleInvalidOperationException
-                                partGradientMin = vesselGradientMin.Value;
-                                partGradientMax = vesselGradientMax.Value;
-                                // ReSharper restore PossibleInvalidOperationException
-                                gradientValue = part.thermalConductionFlux;
-                                break;
-                            case ThermalRateConvective:
-                                // ReSharper disable PossibleInvalidOperationException
-                                partGradientMin = vesselGradientMin.Value;
-                                partGradientMax = vesselGradientMax.Value;
-                                // ReSharper restore PossibleInvalidOperationException
-                                gradientValue = part.thermalConvectionFlux;
-                                break;
-                            case ThermalRateRadiative:
-                                // ReSharper disable PossibleInvalidOperationException
-                                partGradientMin = vesselGradientMin.Value;
-                                partGradientMax = vesselGradientMax.Value;
-                                // ReSharper restore PossibleInvalidOperationException
-                                gradientValue = part.thermalRadiationFlux;
-                                break;
-                            case ThermalRate:
-                                // ReSharper disable PossibleInvalidOperationException
-                                partGradientMin = vesselGradientMin.Value;
-                                partGradientMax = vesselGradientMax.Value;
-                                // ReSharper restore PossibleInvalidOperationException
-                                gradientValue = part.GetThermalFlux();
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
+                        var color = Config
+                            .Instance
+                            .Overlay
+                            .GetActiveMetric()
+                            .GetActiveScheme()
+                            .EvaluateColor(partCurrent, MergeVariables(vesselVariables, partVariables));
 
-                        var gradientName = Config.Instance.Overlay.GetMetric(Config.Instance.Overlay.Metric).Gradient;
-                        var gradient = Gradient(partGradientMin, partGradientMax, gradientName);
-
-                        part.UpdateMaterialColor(gradient[gradientValue]);
+                        part.UpdateMaterialColor(color ?? Part.defaultHighlightNone);
                     }
                 }
             }
@@ -118,21 +44,23 @@ namespace EnhancedThermalData
             Log.Trace("Leaving EnhancedThermalDataBehaviour.LateUpdate()");
         }
 
-        #endregion
-
-        #region Helpers
-
-        private static AbsoluteGradient Gradient(double minValue, double maxValue, string gradientName)
+        private static Dictionary<Variable, double> MergeVariables(
+            Dictionary<Variable, double> vesselVariables, Dictionary<Variable, double> partVariables
+        )
         {
-            Log.Trace("Entering EnhancedThermalDataBehaviour.Gradient()");
+            var result = new Dictionary<Variable, double>();
 
-            var gradient = new AbsoluteGradient(minValue, maxValue,
-                Config.Instance.Overlay.GetGradient(gradientName).Stops
-            );
+            foreach(var kv in vesselVariables)
+            {
+                result[kv.Key] = kv.Value;
+            }
 
-            Log.Trace("Leaving EnhancedThermalDataBehaviour.Gradient()");
+            foreach (var kv in partVariables)
+            {
+                result[kv.Key] = kv.Value;
+            }
 
-            return gradient;
+            return result;
         }
 
         #endregion
