@@ -111,7 +111,7 @@ Task("BuildBuildVersion")
     }
 
     System.IO.File.WriteAllText("Output/VERSION", buildVersion);
-    System.IO.File.WriteAllText("Output/PRELEASE", (buildVersion.Pre != null).ToString());
+    System.IO.File.WriteAllText("Output/PRELEASE", (buildVersion.Pre != null).ToString().ToLower());
     System.IO.File.WriteAllText("Output/CHANGELOG", changeLog.LatestChanges);
 });
 
