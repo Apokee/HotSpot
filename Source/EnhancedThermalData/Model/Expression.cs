@@ -48,7 +48,7 @@ namespace EnhancedThermalData.Model
                 return _variable.Value.ToString();
             }
 
-            throw new InvalidOperationException($"Expression is not set.");
+            throw new InvalidOperationException("Expression is not set.");
         }
 
         public static Expression Parse(string s)

@@ -8,27 +8,27 @@ namespace EnhancedThermalData
     public sealed class EnhancedThermalDataModule : PartModule
     {
         [KSPField(guiActive = false, guiName = "Temperature")]
-        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once NotAccessedField.Global
         public string Temperature;
 
         [KSPField(guiActive = false, guiName = "Thermal Rate")]
-        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once NotAccessedField.Global
         public string ThermalRate;
 
         [KSPField(guiActive = false, guiName = "Thermal Rate [I]")]
-        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once NotAccessedField.Global
         public string ThermalRateInternal;
 
         [KSPField(guiActive = false, guiName = "Thermal Rate [Cd]")]
-        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once NotAccessedField.Global
         public string ThermalRateConductive;
 
         [KSPField(guiActive = false, guiName = "Thermal Rate [Cv]")]
-        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once NotAccessedField.Global
         public string ThermalRateConvective;
 
         [KSPField(guiActive = false, guiName = "Thermal Rate [R]")]
-        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once NotAccessedField.Global
         public string ThermalRateRadiative;
 
         public override void OnUpdate()
