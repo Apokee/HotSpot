@@ -23,9 +23,9 @@ before_build:
       $isMasterBranch = $env:APPVEYOR_REPO_BRANCH -eq "master"
       $isReleaseConfiguration = $env:CONFIGURATION -eq "Release"
       $isTagged = $env:APPVEYOR_REPO_TAG -eq "true"
-      $env:X_RELEASE = $isMasterBranch -and $isReleaseConfiguration -and $isTagged
+      $env:BUILD_RELEASE = $isMasterBranch -and $isReleaseConfiguration -and $isTagged
 
-      if ($env:X_RELEASE -eq "True") {
+      if ($env:BUILD_RELEASE -eq "True") {
         Add-AppveyorMessage "Building RELEASE version"
       } else {
         Add-AppveyorMessage "Building NON-RELEASE version"
@@ -33,7 +33,7 @@ before_build:
 
 build_script:
   ps: |
-      if ($env:X_RELEASE -eq "True") {
+      if ($env:BUILD_RELEASE -eq "True") {
         ./build -configuration="$env:CONFIGURATION" -release=true
       } else {
         ./build -configuration="$env:CONFIGURATION"
@@ -42,6 +42,17 @@ build_script:
 after_build:
   ps: |
       $env:BUILD_VERSION = (cat Output/VERSION)
+      $env:BUILD_PRELEASE = (cat Output/PRELEASE)
+      $env:BUILD_CHANGELOG = (cat Output/CHANGELOG)
+
+      $versionMessage = "Version: $env:BUILD_VERSION"
+
+      if ($env:BUILD_PRELEASE -eq "true") {
+        $versionMessage += " (PRELEASE)"
+      }
+
+      Add-AppveyorMessage "$versionMessage"
+      Add-AppveyorMessage "Changes:`n$env:BUILD_CHANGELOG"
 
 test: off
 
@@ -52,10 +63,11 @@ artifacts:
 deploy:
   - provider: GitHub
     release: v$(BUILD_VERSION)
+    description: $(BUILD_CHANGELOG)
     auth_token:
       secure: EmsGaC6JRUeanKOhuSCl3ka+kK0czrAG7LHBaYONuUWfV/rIARRFkwoSKZiZHWTe
     artifact: ZipPackage
-    draft: true
-    prerelease: false
+    draft: false
+    prerelease: $(BUILD_PRELEASE)
     on:
-      x_release: True
+      build_release: True

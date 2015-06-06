@@ -88,9 +88,10 @@ Task("Restore")
 Task("BuildBuildVersion")
     .Does(() =>
 {
-    string buildVersion;
+    SemVer buildVersion;
 
-    var version = GetVersion();
+    var changeLog = GetChangeLog();
+    var version = changeLog.LatestVersion;
     var rev = GetGitRevision(useShort: true);
 
     if (rev != null && !release)
@@ -110,6 +111,8 @@ Task("BuildBuildVersion")
     }
 
     System.IO.File.WriteAllText("Output/VERSION", buildVersion);
+    System.IO.File.WriteAllText("Output/PRELEASE", (buildVersion.Pre != null).ToString().ToLower());
+    System.IO.File.WriteAllText("Output/CHANGELOG", changeLog.LatestChanges);
 });
 
 Task("BuildAssemblyInfo")
@@ -175,6 +178,18 @@ Task("Package")
     CreateDirectory(packageDirectory);
 
     Zip(stageDirectory, File($"{packageDirectory}/{identifier}-{GetBuildVersion()}.zip"));
+});
+
+Task("Version")
+    .Does(() =>
+{
+    Information(GetVersion());
+});
+
+Task("ChangeLog")
+    .Does(() =>
+{
+    Information(GetChangeLog().LatestChanges);
 });
 
 RunTarget(target);

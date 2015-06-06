@@ -1,4 +1,4 @@
-## Unreleased
+## v0.1.2-alpha
 ##### New
 - Added thermal rate metrics to both overlays and context menu. These measure the change in thermal energy of a part
   over time in units of energy/time, i.e. power. There are four discrete thermal rates: internal, conductive,
