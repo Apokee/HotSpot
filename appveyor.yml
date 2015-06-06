@@ -23,9 +23,9 @@ before_build:
       $isMasterBranch = $env:APPVEYOR_REPO_BRANCH -eq "master"
       $isReleaseConfiguration = $env:CONFIGURATION -eq "Release"
       $isTagged = $env:APPVEYOR_REPO_TAG -eq "true"
-      $env:X_IS_RELEASE = $isMasterBranch -and $isReleaseConfiguration -and $isTagged
+      $env:X_RELEASE = $isMasterBranch -and $isReleaseConfiguration -and $isTagged
 
-      if ($env:X_IS_RELEASE -eq "True") {
+      if ($env:X_RELEASE -eq "True") {
         Add-AppveyorMessage "Building RELEASE version"
       } else {
         Add-AppveyorMessage "Building NON-RELEASE version"
@@ -33,7 +33,7 @@ before_build:
 
 build_script:
   ps: |
-      if ($env:X_IS_RELEASE -eq "True") {
+      if ($env:X_RELEASE -eq "True") {
         ./build -configuration="$env:CONFIGURATION" -release=true
       } else {
         ./build -configuration="$env:CONFIGURATION"
@@ -58,4 +58,4 @@ deploy:
     draft: true
     prerelease: false
     on:
-      x_is_release: True
+      x_release: True
