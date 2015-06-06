@@ -18,9 +18,20 @@ install:
         Start-FileDownload "$kspLibsUrl/$kspLib" -FileName "$kspLibsDir/$kspLib"
       }
 
+before_build:
+  ps: |
+      $isMasterBranch = $env:APPVEYOR_REPO_BRANCH -eq "master";
+      $isReleaseConfiguration = $env:CONFIGURATION -eq "Release";
+      $isTagged = $env:APPVEYOR_REPO_TAG -eq "true";
+      $env:X_IS_RELEASE = $isMasterBranch -and $isReleaseConfiguration -and $isTagged;
+
 build_script:
   ps: |
-      ./build -configuration="$env:CONFIGURATION"
+      if ($env:X_IS_RELEASE -eq "True") {
+        ./build -configuration="$env:CONFIGURATION" -release=true
+      } else {
+        ./build -configuration="$env:CONFIGURATION"
+      }
 
 after_build:
   ps: |
@@ -41,6 +52,4 @@ deploy:
     draft: true
     prerelease: false
     on:
-      branch: master
-      configuration: Release
-      appveyor_repo_tag: true
+      x_is_release: True

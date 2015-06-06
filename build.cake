@@ -19,6 +19,7 @@ public sealed class BuildConfiguration
 
 var target = Argument<string>("target", "Package");
 var configuration = Argument<string>("configuration", "Debug");
+var release = Argument<bool>("release", false);
 
 var buildConfiguration = GetBuildConfiguration<BuildConfiguration>();
 
@@ -92,7 +93,7 @@ Task("BuildBuildVersion")
     var version = GetVersion();
     var rev = GetGitRevision(useShort: true);
 
-    if (rev != null)
+    if (rev != null && !release)
     {
         if (version.Build == null)
         {
