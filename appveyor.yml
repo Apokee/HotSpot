@@ -45,6 +45,15 @@ after_build:
       $env:BUILD_PRELEASE = (cat Output/PRELEASE)
       $env:BUILD_CHANGELOG = (cat Output/CHANGELOG)
 
+      $versionMessage = "Version: $env:BUILD_VERSION"
+
+      if ($env:BUILD_PRELEASE -eq "true") {
+        $versionMessage += " (PRELEASE)"
+      }
+
+      Add-AppveyorMessage "$versionMessage"
+      Add-AppveyorMessage "Changes:`n$env:BUILD_CHANGELOG"
+
 test: off
 
 artifacts:
