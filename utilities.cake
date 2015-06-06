@@ -111,7 +111,59 @@ public string GetGitRevision(bool useShort)
 
 public SemVer GetVersion()
 {
-    return new SemVer(System.IO.File.ReadAllText("VERSION"));
+    return GetChangeLog().LatestVersion;
+}
+
+public ChangeLog GetChangeLog()
+{
+    return new ChangeLog("CHANGES.md");
+}
+
+public sealed class ChangeLog
+{
+    private static readonly Regex VersionPattern = new Regex(@"^## v(?<version>.+)$", RegexOptions.Compiled);
+
+    public SemVer LatestVersion { get; }
+    public string LatestChanges { get; }
+
+    public ChangeLog(string path)
+    {
+        var lines = System.IO.File.ReadAllLines(path);
+
+        var latestChanges = new List<string>();
+
+        if (lines.Any())
+        {
+            var versionMatch = VersionPattern.Match(lines[0]);
+
+            if (versionMatch.Success)
+            {
+                LatestVersion = new SemVer(versionMatch.Groups["version"].Value);
+            }
+            else
+            {
+                throw new Exception("Changes file is in incorrect format.");
+            }
+
+            foreach (var line in lines.Skip(1))
+            {
+                if (!VersionPattern.IsMatch(line))
+                {
+                    latestChanges.Add(line);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            LatestChanges = string.Join("\n", latestChanges.ToArray());
+        }
+        else
+        {
+            throw new Exception("Changes file is empty");
+        }
+    }
 }
 
 public sealed class SemVer
