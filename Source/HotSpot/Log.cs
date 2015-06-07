@@ -1,0 +1,73 @@
+﻿namespace HotSpot
+{
+    public enum LogLevel : byte
+    {
+        // ReSharper disable once UnusedMember.Global
+        Off = 0,
+        Error = 1,
+        Warning = 2,
+        Info = 3,
+        Debug = 4,
+        Trace = 5,
+    }
+
+    internal static class Log
+    {
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static LogLevel Level { get; set; }
+
+        static Log()
+        {
+#if DEBUG
+            Level = LogLevel.Debug;
+#else
+            Level = LogLevel.Info;
+#endif
+        }
+
+        public static void Error(string message)
+        {
+            if ((byte)LogLevel.Error <= (byte)Level)
+            {
+                UnityEngine.Debug.LogError($"{Prefix(LogLevel.Error)} {message}");
+            }
+        }
+
+        public static void Warning(string message)
+        {
+            if ((byte)LogLevel.Warning <= (byte)Level)
+            {
+                UnityEngine.Debug.LogWarning($"{Prefix(LogLevel.Warning)} {message}");
+            }
+        }
+
+        public static void Info(string message)
+        {
+            if ((byte)LogLevel.Info <= (byte)Level)
+            {
+                UnityEngine.Debug.Log($"{Prefix(LogLevel.Info)} {message}");
+            }
+        }
+
+        public static void Debug(string message)
+        {
+            if ((byte)LogLevel.Debug <= (byte)Level)
+            {
+                UnityEngine.Debug.Log($"{Prefix(LogLevel.Debug)} {message}");
+            }
+        }
+
+        public static void Trace(string message)
+        {
+            if ((byte)LogLevel.Trace <= (byte)Level)
+            {
+                UnityEngine.Debug.Log($"{Prefix(LogLevel.Trace)} {message}");
+            }
+        }
+
+        private static string Prefix(LogLevel level)
+        {
+            return $"[HotSpot] [{level}]:";
+        }
+    }
+}

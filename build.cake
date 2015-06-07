@@ -25,7 +25,7 @@ var buildConfiguration = GetBuildConfiguration<BuildConfiguration>();
 
 var solution = GetSolution();
 
-var identifier = "EnhancedThermalData";
+var identifier = "HotSpot";
 var outputDirectory = "Output";
 var buildDirectory = Directory($"{outputDirectory}/Build/{configuration}");
 var binDirectory = Directory($"{buildDirectory}/Common/bin");

@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{26BDAE1E-3F27-4A7B-81A1-C461F96A3064}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HotSpot</RootNamespace>
+    <AssemblyName>HotSpot</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <OutputPath>..\..\Output\Build\$(Configuration)\Common\bin\</OutputPath>
+    <IntermediateOutputPath>..\..\Output\Build\$(Configuration)\Common\obj\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\Library\KSP\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\..\Library\KSP\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\Library\KSP\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\ContextMenuNode.cs" />
+    <Compile Include="Configuration\ContextMenu\ContextMenuItemNode.cs" />
+    <Compile Include="Configuration\ContextMenu\MetricNode.cs" />
+    <Compile Include="Configuration\DiagnosticsNode.cs" />
+    <Compile Include="Configuration\OverlayNode.cs" />
+    <Compile Include="Model\EvaluatedGradientNode.cs" />
+    <Compile Include="Model\EvaluatedStopNode.cs" />
+    <Compile Include="Configuration\Overlay\GradientNode.cs" />
+    <Compile Include="Configuration\Overlay\OnConflict.cs" />
+    <Compile Include="Configuration\Overlay\StopNode.cs" />
+    <Compile Include="Configuration\Overlay\SchemeNode.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Model\Expression.cs" />
+    <Compile Include="Configuration\Overlay\MetricNode.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="HotSpotModule.cs" />
+    <Compile Include="Extensions\ConfigNodeExtensions.cs" />
+    <Compile Include="Extensions\PartExtensions.cs" />
+    <Compile Include="Log.cs" />
+    <Compile Include="HotSpotBehaviour.cs" />
+    <Compile Include="Model\Metric.cs" />
+    <Compile Include="Model\Unit.cs" />
+    <Compile Include="Model\Variable.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
