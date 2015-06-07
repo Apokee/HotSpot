@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyTitle("EnhancedThermalData")]
-[assembly: AssemblyDescription("Kerbal Space Program mod to add useful thermal data.")]
-[assembly: AssemblyProduct("EnhancedThermalData")]
-[assembly: AssemblyCompany("EnhancedThermalData Contributors")]
+[assembly: AssemblyTitle("HotSpot")]
+[assembly: AssemblyDescription("Kerbal Space Program mod to add contextual and overlay data.")]
+[assembly: AssemblyProduct("HotSpot")]
+[assembly: AssemblyCompany("HotSpot Contributors")]
 [assembly: AssemblyCopyright("Copyright © 2015")]
 
 #if DEBUG
@@ -13,9 +13,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("Release")]
 #endif
 
-[assembly: KSPAssembly("EnhancedThermalData", <%VERSION.MAJOR%>, <%VERSION.MINOR%>)]
+[assembly: KSPAssembly("HotSpot", <%VERSION.MAJOR%>, <%VERSION.MINOR%>)]
 [assembly: AssemblyVersion("<%VERSION.MAJOR%>.<%VERSION.MINOR%>")]
 [assembly: AssemblyFileVersion("<%VERSION.MAJOR%>.<%VERSION.MINOR%>.<%VERSION.PATCH%>")]
 [assembly: AssemblyInformationalVersion("<%VERSION%>")]
 
-[assembly: InternalsVisibleTo("EnhancedThermalDataTests")]
+[assembly: InternalsVisibleTo("HotSpotTests")]

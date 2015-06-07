@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 
-[assembly: AssemblyTitle("EnhancedThermalDataTests")]
-[assembly: AssemblyDescription("Tests for EnhancedThermalData")]
-[assembly: AssemblyProduct("EnhancedThermalData")]
-[assembly: AssemblyCompany("EnhancedThermalData Contributors")]
+[assembly: AssemblyTitle("HotSpotTests")]
+[assembly: AssemblyDescription("Tests for HotSpot")]
+[assembly: AssemblyProduct("HotSpot")]
+[assembly: AssemblyCompany("HotSpot Contributors")]
 [assembly: AssemblyCopyright("Copyright © 2015")]
 
 #if DEBUG
