@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnhancedThermalData.Configuration
+namespace HotSpot.Configuration
 {
     internal sealed class DiagnosticsNode : IConfigNode
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace EnhancedThermalData.Model
+namespace HotSpot.Model
 {
     internal sealed class Metric
     {

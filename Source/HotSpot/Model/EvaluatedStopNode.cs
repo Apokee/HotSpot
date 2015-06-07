@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using EnhancedThermalData.Configuration.Overlay;
+using HotSpot.Configuration.Overlay;
 using UnityEngine;
 
-namespace EnhancedThermalData.Model
+namespace HotSpot.Model
 {
     internal sealed class EvaluatedStopNode
     {

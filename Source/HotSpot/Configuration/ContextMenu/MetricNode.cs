@@ -1,7 +1,7 @@
 ﻿using System;
-using EnhancedThermalData.Model;
+using HotSpot.Model;
 
-namespace EnhancedThermalData.Configuration.ContextMenu
+namespace HotSpot.Configuration.ContextMenu
 {
     internal sealed class MetricNode : IConfigNode
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace EnhancedThermalData.Model
+namespace HotSpot.Model
 {
     internal sealed class Expression
     {

@@ -1,4 +1,4 @@
-﻿namespace EnhancedThermalData.Configuration.Overlay
+﻿namespace HotSpot.Configuration.Overlay
 {
     public enum OnConflict
     {

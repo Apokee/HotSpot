@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EnhancedThermalData.Configuration.Overlay;
-using EnhancedThermalData.Model;
+using HotSpot.Configuration.Overlay;
+using HotSpot.Model;
 
-namespace EnhancedThermalData.Configuration
+namespace HotSpot.Configuration
 {
     internal sealed class OverlayNode : IConfigNode
     {

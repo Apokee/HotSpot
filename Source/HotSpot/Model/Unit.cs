@@ -1,4 +1,4 @@
-﻿namespace EnhancedThermalData.Model
+﻿namespace HotSpot.Model
 {
     internal enum Unit
     {

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using EnhancedThermalData.Model;
+using HotSpot.Model;
 using UnityEngine;
 
-namespace EnhancedThermalData.Configuration.Overlay
+namespace HotSpot.Configuration.Overlay
 {
     internal sealed class StopNode : IConfigNode
     {

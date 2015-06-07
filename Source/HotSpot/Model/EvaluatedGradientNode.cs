@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EnhancedThermalData.Configuration.Overlay;
+using HotSpot.Configuration.Overlay;
 using UnityEngine;
 
-namespace EnhancedThermalData.Model
+namespace HotSpot.Model
 {
     internal sealed class EvaluatedGradientNode
     {

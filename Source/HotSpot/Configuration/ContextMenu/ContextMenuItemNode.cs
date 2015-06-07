@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnhancedThermalData.Configuration.ContextMenu
+namespace HotSpot.Configuration.ContextMenu
 {
     internal class ContextMenuItemNode : IConfigNode
     {

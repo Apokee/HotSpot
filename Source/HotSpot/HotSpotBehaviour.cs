@@ -1,20 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
-using EnhancedThermalData.Model;
+using HotSpot.Model;
 using UnityEngine;
 
-namespace EnhancedThermalData
+namespace HotSpot
 {
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     // ReSharper disable once UnusedMember.Global
-    public class EnhancedThermalDataBehaviour : MonoBehaviour
+    public class HotSpotBehaviour : MonoBehaviour
     {
         #region MonoBehaviour
 
         // ReSharper disable once UnusedMember.Global
         public void LateUpdate()
         {
-            Log.Trace("Entering EnhancedThermalDataBehaviour.LateUpdate()");
+            Log.Trace("Entering HotSpotBehaviour.LateUpdate()");
 
             if (PhysicsGlobals.ThermalColorsDebug && Config.Instance.Overlay.Enable)
             {
@@ -41,7 +41,7 @@ namespace EnhancedThermalData
                 }
             }
 
-            Log.Trace("Leaving EnhancedThermalDataBehaviour.LateUpdate()");
+            Log.Trace("Leaving HotSpotBehaviour.LateUpdate()");
         }
 
         private static Dictionary<Variable, double> MergeVariables(

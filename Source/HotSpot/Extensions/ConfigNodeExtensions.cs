@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnhancedThermalData
+namespace HotSpot
 {
     internal static class ConfigNodeExtensions
     {

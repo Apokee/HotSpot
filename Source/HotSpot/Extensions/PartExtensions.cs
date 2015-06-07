@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using UnityEngine;
 
-namespace EnhancedThermalData
+namespace HotSpot
 {
     internal static class PartExtensions
     {

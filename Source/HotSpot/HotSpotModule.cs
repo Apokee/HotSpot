@@ -1,11 +1,10 @@
 ﻿using System;
-using EnhancedThermalData.Model;
-using static EnhancedThermalData.Model.Unit;
+using HotSpot.Model;
 
-namespace EnhancedThermalData
+namespace HotSpot
 {
     // ReSharper disable once UnusedMember.Global
-    public sealed class EnhancedThermalDataModule : PartModule
+    public sealed class HotSpotModule : PartModule
     {
         [KSPField(guiActive = false, guiName = "Temperature")]
         // ReSharper disable once NotAccessedField.Global
@@ -53,22 +52,22 @@ namespace EnhancedThermalData
 
             switch (metric.Unit)
             {
-                case Kelvin:
+                case Unit.Kelvin:
                     temp = part.temperature;
                     maxTemp = part.maxTemp;
                     unit = "K";
                     break;
-                case Rankine:
+                case Unit.Rankine:
                     temp = ConvertKelvinToRankine(part.temperature);
                     maxTemp = ConvertKelvinToRankine(part.maxTemp);
                     unit = "°R";
                     break;
-                case Celsius:
+                case Unit.Celsius:
                     temp = ConvertKelvinToCelsius(part.temperature);
                     maxTemp = ConvertKelvinToCelsius(part.maxTemp);
                     unit = "°C";
                     break;
-                case Fahrenheit:
+                case Unit.Fahrenheit:
                     temp = ConvertKelvinToFahrenheit(part.temperature);
                     maxTemp = ConvertKelvinToFahrenheit(part.maxTemp);
                     unit = "°F";

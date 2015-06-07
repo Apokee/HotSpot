@@ -1,4 +1,4 @@
-﻿namespace EnhancedThermalData
+﻿namespace HotSpot
 {
     public enum LogLevel : byte
     {
@@ -67,7 +67,7 @@
 
         private static string Prefix(LogLevel level)
         {
-            return $"[EnhancedThermalData] [{level}]:";
+            return $"[HotSpot] [{level}]:";
         }
     }
 }

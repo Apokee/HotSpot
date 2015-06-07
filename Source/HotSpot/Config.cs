@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using EnhancedThermalData.Configuration;
+using HotSpot.Configuration;
 
-namespace EnhancedThermalData
+namespace HotSpot
 {
     internal sealed class Config : IConfigNode
     {
@@ -24,7 +24,7 @@ namespace EnhancedThermalData
                             
                             var node = GameDatabase
                                 .Instance
-                                .GetConfigNodes("ENHANCED_THERMAL_DATA")
+                                .GetConfigNodes("HOT_SPOT")
                                 .SingleOrDefault();
 
                             _instance = new Config(node);

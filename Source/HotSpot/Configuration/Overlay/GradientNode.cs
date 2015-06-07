@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EnhancedThermalData.Model;
+using HotSpot.Model;
 
-namespace EnhancedThermalData.Configuration.Overlay
+namespace HotSpot.Configuration.Overlay
 {
     internal class GradientNode : IConfigNode
     {

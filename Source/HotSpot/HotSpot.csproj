@@ -64,11 +64,11 @@
     <Compile Include="Model\Expression.cs" />
     <Compile Include="Configuration\Overlay\MetricNode.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="EnhancedThermalDataModule.cs" />
+    <Compile Include="HotSpotModule.cs" />
     <Compile Include="Extensions\ConfigNodeExtensions.cs" />
     <Compile Include="Extensions\PartExtensions.cs" />
     <Compile Include="Log.cs" />
-    <Compile Include="EnhancedThermalDataBehaviour.cs" />
+    <Compile Include="HotSpotBehaviour.cs" />
     <Compile Include="Model\Metric.cs" />
     <Compile Include="Model\Unit.cs" />
     <Compile Include="Model\Variable.cs" />

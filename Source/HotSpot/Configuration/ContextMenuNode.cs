@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EnhancedThermalData.Configuration.ContextMenu;
-using EnhancedThermalData.Model;
+using HotSpot.Configuration.ContextMenu;
+using HotSpot.Model;
 
-namespace EnhancedThermalData.Configuration
+namespace HotSpot.Configuration
 {
     internal sealed class ContextMenuNode : IConfigNode
     {

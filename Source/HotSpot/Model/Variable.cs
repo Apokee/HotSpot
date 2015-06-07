@@ -1,4 +1,4 @@
-﻿namespace EnhancedThermalData.Model
+﻿namespace HotSpot.Model
 {
     public enum Variable
     {
