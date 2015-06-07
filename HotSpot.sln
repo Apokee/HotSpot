@@ -7,9 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{3C3EA3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FE967A1B-0E46-46D0-B7A2-097B02012880}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnhancedThermalData", "Source\EnhancedThermalData\EnhancedThermalData.csproj", "{26BDAE1E-3F27-4A7B-81A1-C461F96A3064}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotSpot", "Source\HotSpot\HotSpot.csproj", "{26BDAE1E-3F27-4A7B-81A1-C461F96A3064}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnhancedThermalDataTests", "Tests\EnhancedThermalDataTests\EnhancedThermalDataTests.csproj", "{277D410A-9E8C-41DA-8235-FB7A9940681B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotSpotTests", "Tests\HotSpotTests\HotSpotTests.csproj", "{277D410A-9E8C-41DA-8235-FB7A9940681B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
