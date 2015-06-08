@@ -108,16 +108,26 @@ namespace HotSpot.Model
 
         public static Metric Parse(string s)
         {
-            var field = typeof(Metric).GetField(s, BindingFlags.Static | BindingFlags.Public);
+            var metric = TryParse(s);
 
-            if (field != null)
+            if (metric != null)
             {
-                return (Metric)field.GetValue(null);
+                return metric;
             }
             else
             {
                 throw new FormatException($"Could not parse Metric: {s}");
             }
+        }
+
+        public static Metric TryParse(string s)
+        {
+            if (s != null)
+            {
+                return (Metric)typeof(Metric).GetField(s, BindingFlags.Static | BindingFlags.Public)?.GetValue(null);
+            }
+
+            return null;
         }
     }
 }

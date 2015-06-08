@@ -4,7 +4,7 @@ using HotSpot.Configuration;
 
 namespace HotSpot
 {
-    internal sealed class Config : IConfigNode
+    internal sealed class Config
     {
         #region Singleton
 
@@ -27,7 +27,7 @@ namespace HotSpot
                                 .GetConfigNodes("HOT_SPOT")
                                 .SingleOrDefault();
 
-                            _instance = new Config(node);
+                            _instance = TryParse(node) ?? new Config();
 
                             OnInitialLoad(node);
                         }
@@ -50,28 +50,37 @@ namespace HotSpot
 
         #endregion
 
-        public ContextMenuNode ContextMenu { get; } = new ContextMenuNode();
-        public OverlayNode Overlay { get; } = new OverlayNode();
-        public DiagnosticsNode Diagnostics { get; } = new DiagnosticsNode();
+        public ContextMenuNode ContextMenu { get; }
+        public OverlayNode Overlay { get; }
+        public DiagnosticsNode Diagnostics { get; }
 
-        private Config(ConfigNode node)
+        private Config()
         {
-            Load(node);
+            ContextMenu = ContextMenuNode.GetDefault();
+            Overlay = OverlayNode.GetDefault();
+            Diagnostics = DiagnosticsNode.GetDefault();
         }
 
-        public void Load(ConfigNode node)
+        private Config(ContextMenuNode contextMenu, OverlayNode overlay, DiagnosticsNode diagnostics)
+        {
+            ContextMenu = contextMenu;
+            Overlay = overlay;
+            Diagnostics = diagnostics;
+        }
+
+        public static Config TryParse(ConfigNode node)
         {
             if (node != null)
             {
-                ContextMenu.Load(node.GetNode("CONTEXT_MENU"));
-                Overlay.Load(node.GetNode("OVERLAY"));
-                Diagnostics.Load(node.GetNode("DIAGNOSTICS"));
-            }
-        }
+                var contextMenu = ContextMenuNode.TryParse(node.GetNode("CONTEXT_MENU")) ?? ContextMenuNode.GetDefault();
+                var overlay = OverlayNode.TryParse(node.GetNode("OVERLAY")) ?? OverlayNode.GetDefault();
+                var diagnostics = DiagnosticsNode.TryParse(node.GetNode("DIAGNOSTICS")) ?? DiagnosticsNode.GetDefault();
 
-        public void Save(ConfigNode node)
-        {
-            throw new NotImplementedException();
+                return new Config(contextMenu, overlay, diagnostics);
+            }
+
+            Log.Warning("Could not parse missing HOT_SPOT node");
+            return null;
         }
     }
 }

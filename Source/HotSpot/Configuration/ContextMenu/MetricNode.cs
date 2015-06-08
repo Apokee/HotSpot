@@ -3,30 +3,35 @@ using HotSpot.Model;
 
 namespace HotSpot.Configuration.ContextMenu
 {
-    internal sealed class MetricNode : IConfigNode
+    internal sealed class MetricNode
     {
-        public Metric Name { get; private set; }
-        public bool Enable { get; private set; }
-        public Unit Unit { get; private set; }
+        public Metric Name { get; }
+        public bool Enable { get; }
+        public Unit Unit { get; }
 
-        public MetricNode(ConfigNode node)
+        private MetricNode(Metric name, bool enable, Unit unit)
         {
-            Load(node);
+            Name = name;
+            Enable = enable;
+            Unit = unit;
         }
 
-        public void Load(ConfigNode node)
+        public static MetricNode TryParse(ConfigNode node)
         {
             if (node != null)
             {
-                Name = Metric.Parse(node.GetValue("name"));
-                Enable = node.Parse<bool>("enable");
-                Unit = node.Parse<Unit>("unit");
-            }
-        }
+                var name = Metric.TryParse(node.GetValue("name"));
+                var enable = node.TryParse<bool>("enable") ?? true;
+                var unit = node.TryParse<Unit>("unit");
 
-        public void Save(ConfigNode node)
-        {
-            throw new NotImplementedException();
+                if (name != null && unit != null)
+                {
+                    return new MetricNode(name, enable, unit.Value);
+                }
+            }
+
+            Log.Warning($"Could not parse config node:{Environment.NewLine}{node}");
+            return null;
         }
     }
 }

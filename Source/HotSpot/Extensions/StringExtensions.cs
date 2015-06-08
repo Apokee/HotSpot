@@ -4,15 +4,26 @@ namespace HotSpot
 {
     public static class StringExtensions
     {
-        public static bool TryParseEnum<T>(this string s, out T result)
-            where T : struct, IConvertible
+        public static T? TryParse<T>(this string s) where T : struct
         {
-            var retValue = s != null && Enum.IsDefined(typeof(T), s);
-            result = retValue ?
-                (T)Enum.Parse(typeof(T), s) :
-                default(T);
+            if (s != null)
+            {
+                if (typeof(T).IsEnum)
+                {
+                    return Enum.IsDefined(typeof(T), s) ? (T)Enum.Parse(typeof(T), s) : (T?)null;
+                }
+                else
+                {
+                    var parsed = Convert.ChangeType(s, typeof(T));
 
-            return retValue;
+                    if (parsed != null)
+                    {
+                        return (T)parsed;
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

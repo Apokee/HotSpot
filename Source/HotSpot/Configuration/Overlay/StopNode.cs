@@ -7,42 +7,24 @@ using UnityEngine;
 
 namespace HotSpot.Configuration.Overlay
 {
-    internal sealed class StopNode : IConfigNode
+    internal sealed class StopNode
     {
         private static readonly Regex ColorRegex =
             new Regex(@"^#(?<color>[0-9A-F]{6})$", RegexOptions.IgnoreCase);
 
-        public string Name { get; private set; }
-        public Expression Value { get; private set; }
-        public double Factor { get; private set; }
-        public Color? Color { get; private set; }
-        public float? Alpha { get; private set; }
+        public string Name { get; }
+        public Expression Value { get; }
+        public double Factor { get; }
+        public Color? Color { get; }
+        public float? Alpha { get; }
 
-        public StopNode(ConfigNode node)
+        private StopNode(string name, Expression value, double factor, Color? color, float? alpha)
         {
-            Load(node);
-        }
-
-        public void Load(ConfigNode node)
-        {
-            if (node != null)
-            {
-                Name = node.GetValue("name");
-                Value = Expression.Parse(node.GetValue("value"));
-                Factor = node.HasValue("factor") ? node.Parse<double>("factor") : 1.0;
-                Color = TryParseColor(node.GetValue("color"));
-                Alpha = TryParseSingle(node.GetValue("alpha"));
-
-                if (Color == null && Alpha == null)
-                {
-                    Log.Warning($"STOP node does not contain an `color` or `alpha` property: {node}");
-                }
-            }
-        }
-
-        public void Save(ConfigNode node)
-        {
-            throw new NotImplementedException();
+            Name = name;
+            Value = value;
+            Factor = factor;
+            Color = color;
+            Alpha = alpha;
         }
 
         public EvaluatedStopNode Evaluate(Dictionary<Variable, double> variables)
@@ -50,12 +32,24 @@ namespace HotSpot.Configuration.Overlay
             return new EvaluatedStopNode(this, variables);
         }
 
-        public override string ToString()
+        public static StopNode TryParse(ConfigNode node)
         {
-            var node = new ConfigNode();
-            Save(node);
+            if (node != null)
+            {
+                var name = node.GetValue("name");
+                var value = Expression.TryParse(node.GetValue("value"));
+                var factor = node.TryParse<double>("factor") ?? 1.0;
+                var color = TryParseColor(node.GetValue("color"));
+                var alpha = node.TryParse<float>("alpha");
 
-            return node.GetNode("STOP").ToString();
+                if (name != null && value != null && (color != null || alpha != null))
+                {
+                    return new StopNode(name, value, factor, color, alpha);
+                }
+            }
+
+            Log.Warning($"Could not parse config node:{Environment.NewLine}{node}");
+            return null;
         }
 
         #region Helpers
@@ -94,12 +88,6 @@ namespace HotSpot.Configuration.Overlay
         {
             const float max = byte.MaxValue;
             return new Color(r / max, g / max, b / max, a);
-        }
-
-        private static float? TryParseSingle(string str)
-        {
-            float value;
-            return float.TryParse(str, out value) ? value : (float?)null;
         }
 
         private static uint? TryParseUInt32Hex(string str)
