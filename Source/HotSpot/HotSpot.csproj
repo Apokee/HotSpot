@@ -50,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\ContextMenuNode.cs" />
-    <Compile Include="Configuration\ContextMenu\ContextMenuItemNode.cs" />
     <Compile Include="Configuration\ContextMenu\MetricNode.cs" />
     <Compile Include="Configuration\DiagnosticsNode.cs" />
     <Compile Include="Configuration\OverlayNode.cs" />

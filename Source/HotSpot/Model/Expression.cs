@@ -51,23 +51,25 @@ namespace HotSpot.Model
             throw new InvalidOperationException("Expression is not set.");
         }
 
-        public static Expression Parse(string s)
+        public static Expression TryParse(string s)
         {
-            Variable variable;
-            double constant;
+            var variable = s.TryParse<Variable>();
 
-            if (s.TryParseEnum(out variable))
+            if (variable != null)
             {
-                return new Expression(variable);
-            }
-            else if (double.TryParse(s, out constant))
-            {
-                return new Expression(constant);
+                return new Expression(variable.Value);
             }
             else
             {
-                throw new FormatException($"Invalid expression: '{s}'");
+                var constant = s.TryParse<double>();
+
+                if (constant != null)
+                {
+                    return new Expression(constant.Value);
+                }
             }
+
+            return null;
         }
     }
 }

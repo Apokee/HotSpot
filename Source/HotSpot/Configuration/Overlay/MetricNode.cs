@@ -5,41 +5,48 @@ using HotSpot.Model;
 
 namespace HotSpot.Configuration.Overlay
 {
-    internal sealed class MetricNode : IConfigNode
+    internal sealed class MetricNode
     {
-        private Dictionary<string, SchemeNode> _schemes = new Dictionary<string, SchemeNode>();
+        private readonly Dictionary<string, SchemeNode> _schemes;
 
-        public Metric Name { get; private set; }
-        public string Scheme { get; private set; }
+        public Metric Name { get; }
+        public string Scheme { get; }
 
-        public MetricNode(ConfigNode node)
+        private MetricNode(Metric name, string scheme, SchemeNode[] schemes)
         {
-            Load(node);
-        }
+            Name = name;
+            Scheme = scheme;
 
-        public void Load(ConfigNode node)
-        {
-            if (node != null)
-            {
-                Name = Metric.Parse(node.GetValue("name"));
-                Scheme = node.GetValue("scheme");
-
-                _schemes = node
-                    .GetNodes("SCHEME")
-                    .Where(i => !i.GetValue("name").EndsWith("Template"))
-                    .Select(i => new SchemeNode(i))
-                    .ToDictionary(i => i.Name);
-            }
-        }
-
-        public void Save(ConfigNode node)
-        {
-            throw new NotImplementedException();
+            _schemes = schemes.ToDictionary(i => i.Name);
         }
 
         public SchemeNode GetActiveScheme()
         {
             return _schemes[Scheme];
+        }
+
+        public static MetricNode TryParse(ConfigNode node)
+        {
+            if (node != null)
+            {
+                var name = Metric.TryParse(node.GetValue("name"));
+                var scheme = node.GetValue("scheme");
+
+                var schemes = node
+                    .GetNodes("SCHEME")
+                    .Where(i => !i.GetValue("name").EndsWith("Template"))
+                    .Select(SchemeNode.TryParse)
+                    .Where(i => i != null)
+                    .ToArray();
+
+                if (name != null && scheme != null)
+                {
+                    return new MetricNode(name, scheme, schemes);
+                }
+            }
+
+            Log.Warning($"Could not parse config node:{Environment.NewLine}{node}");
+            return null;
         }
     }
 }
