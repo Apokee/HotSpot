@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HotSpot.Model;
+using HotSpot.Reflection;
 using UnityEngine;
 
 namespace HotSpot
@@ -9,6 +10,8 @@ namespace HotSpot
     // ReSharper disable once UnusedMember.Global
     public class HotSpotBehaviour : MonoBehaviour
     {
+        private bool _lastThermalColorsDebug;
+
         #region MonoBehaviour
 
         // ReSharper disable once UnusedMember.Global
@@ -16,33 +19,56 @@ namespace HotSpot
         {
             Log.Trace("Entering HotSpotBehaviour.LateUpdate()");
 
-            if (PhysicsGlobals.ThermalColorsDebug && Config.Instance.Overlay.Enable)
+            if (Config.Instance.Overlay.Enable)
             {
-                var metric = Config.Instance.Overlay.Metric;
-
-                foreach (var vessel in FlightGlobals.Vessels.Where(i => i.loaded))
+                if (_lastThermalColorsDebug != PhysicsGlobals.ThermalColorsDebug)
                 {
-                    var vesselVariables = metric.GetVesselValues(vessel);
+                    Log.Debug("PhysicsGlobals.ThermalColorsDebug has been toggled");
 
-                    foreach (var part in vessel.Parts)
+                    var flightOverlays = FindObjectOfType<FlightOverlays>();
+
+                    if (flightOverlays)
                     {
-                        var partVariables = metric.GetPartValues(part);
-                        var partCurrent = metric.GetPartCurrent(part);
+                        Log.Debug("Found FlightOverlays, removing its ScreenMessage");
 
-                        var color = Config
-                            .Instance
-                            .Overlay
-                            .GetActiveMetric()
-                            .GetActiveScheme()
-                            .EvaluateColor(partCurrent, MergeVariables(vesselVariables, partVariables));
+                        ScreenMessages.RemoveMessage(flightOverlays.GetScreenMessage());
+                    }
+                }
 
-                        part.UpdateMaterialColor(color ?? Part.defaultHighlightNone);
+                if (PhysicsGlobals.ThermalColorsDebug)
+                {
+                    var metric = Config.Instance.Overlay.Metric;
+
+                    foreach (var vessel in FlightGlobals.Vessels.Where(i => i.loaded))
+                    {
+                        var vesselVariables = metric.GetVesselValues(vessel);
+
+                        foreach (var part in vessel.Parts)
+                        {
+                            var partVariables = metric.GetPartValues(part);
+                            var partCurrent = metric.GetPartCurrent(part);
+
+                            var color = Config
+                                .Instance
+                                .Overlay
+                                .GetActiveMetric()
+                                .GetActiveScheme()
+                                .EvaluateColor(partCurrent, MergeVariables(vesselVariables, partVariables));
+
+                            part.UpdateMaterialColor(color ?? Part.defaultHighlightNone);
+                        }
                     }
                 }
             }
 
+            _lastThermalColorsDebug = PhysicsGlobals.ThermalColorsDebug;
+
             Log.Trace("Leaving HotSpotBehaviour.LateUpdate()");
         }
+
+        #endregion
+
+        #region Helpers
 
         private static Dictionary<Variable, double> MergeVariables(
             Dictionary<Variable, double> vesselVariables, Dictionary<Variable, double> partVariables
