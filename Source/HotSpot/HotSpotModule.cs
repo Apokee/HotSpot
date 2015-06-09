@@ -3,7 +3,6 @@ using HotSpot.Model;
 
 namespace HotSpot
 {
-    // ReSharper disable once UnusedMember.Global
     public sealed class HotSpotModule : PartModule
     {
         [KSPField(guiActive = false, guiName = "Temperature")]

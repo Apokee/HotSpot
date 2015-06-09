@@ -7,7 +7,6 @@ using UnityEngine;
 namespace HotSpot
 {
     [KSPAddon(KSPAddon.Startup.Flight, false)]
-    // ReSharper disable once UnusedMember.Global
     public class HotSpotBehaviour : MonoBehaviour
     {
         private bool _lastThermalColorsDebug;
@@ -16,7 +15,6 @@ namespace HotSpot
 
         #region MonoBehaviour
 
-        // ReSharper disable once UnusedMember.Global
         public void LateUpdate()
         {
             Log.Trace("Entering HotSpotBehaviour.LateUpdate()");
@@ -31,8 +29,6 @@ namespace HotSpot
 
             Log.Trace("Leaving HotSpotBehaviour.LateUpdate()");
         }
-
-        #endregion
 
         private void LateUpdateScreenMessage(Metric metric)
         {
@@ -89,6 +85,8 @@ namespace HotSpot
                 }
             }
         }
+
+        #endregion
 
         #region Helpers
 
