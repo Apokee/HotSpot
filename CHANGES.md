@@ -5,6 +5,8 @@
   convective, and radiative. There is also a general thermal rate metric which is the combination of the previous
   four. The overlays for thermal rate are purely relative, i.e. the part with the lowest will be purple and the part
   with the highest thermal rate will be red, regardless of their absolute values.
+- The screen message displayed when overlays are enabled/disabled are now customized based on the current metric and
+  scheme. The screen message can also be disabled entirely in the configuration.
 
 ##### Change
 - *Incompatible:* Configuration structure has changed significantly.
