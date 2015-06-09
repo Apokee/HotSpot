@@ -8,6 +8,7 @@ namespace HotSpot.Model
     internal sealed class Metric
     {
         public static readonly Metric Temperature = new Metric("Temperature",
+            "Temperature",
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.temperature),
@@ -24,6 +25,7 @@ namespace HotSpot.Model
         );
 
         public static readonly Metric ThermalRate = new Metric("ThermalRate",
+            "Thermal Rate",
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.GetThermalFlux()),
@@ -34,6 +36,7 @@ namespace HotSpot.Model
         );
 
         public static readonly Metric ThermalRateInternal = new Metric("ThermalRateInternal",
+            "Internal Thermal Rate",
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalInternalFlux),
@@ -44,6 +47,7 @@ namespace HotSpot.Model
         );
 
         public static readonly Metric ThermalRateConductive = new Metric("ThermalRateConductive",
+            "Conductive Thermal Rate",
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalConductionFlux),
@@ -54,6 +58,7 @@ namespace HotSpot.Model
         );
 
         public static readonly Metric ThermalRateConvective = new Metric("ThermalRateConvective",
+            "Convective Thermal Rate",
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalConvectionFlux),
@@ -64,6 +69,7 @@ namespace HotSpot.Model
         );
 
         public static readonly Metric ThermalRateRadiative = new Metric("ThermalRateRadiative",
+            "Radiative Thermal Rate",
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalRadiationFlux),
@@ -78,14 +84,16 @@ namespace HotSpot.Model
         private readonly Func<Part, double> _getPartCurrent;
 
         public string Name { get; }
+        public string FriendlyName { get; }
 
-        private Metric(string name,
+        private Metric(string name, string friendlyName,
             Func<Vessel, Dictionary<Variable, double>> getVesselValues,
             Func<Part, Dictionary<Variable, double>> getPartValues,
             Func<Part, double> getPartCurrent
         )
         {
             Name = name;
+            FriendlyName = friendlyName;
             _getVesselValues = getVesselValues;
             _getPartValues = getPartValues;
             _getPartCurrent = getPartCurrent;
