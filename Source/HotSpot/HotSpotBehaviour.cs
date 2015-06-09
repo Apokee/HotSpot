@@ -31,7 +31,7 @@ namespace HotSpot
                     {
                         Log.Debug("Found FlightOverlays, removing its ScreenMessage");
 
-                        ScreenMessages.RemoveMessage(flightOverlays.GetScreenMessage());
+                        ScreenMessages.RemoveMessage(flightOverlays.TryGetScreenMessage());
                     }
                 }
 
@@ -55,7 +55,7 @@ namespace HotSpot
                                 .GetActiveScheme()
                                 .EvaluateColor(partCurrent, MergeVariables(vesselVariables, partVariables));
 
-                            part.UpdateMaterialColor(color ?? Part.defaultHighlightNone);
+                            part.TryGetMaterialColorUpdater()?.Update(color ?? Part.defaultHighlightNone);
                         }
                     }
                 }

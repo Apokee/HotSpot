@@ -20,7 +20,7 @@ namespace HotSpot.Reflection
             }
         }
 
-        public static ScreenMessage GetScreenMessage(this FlightOverlays flightOverlays)
+        public static ScreenMessage TryGetScreenMessage(this FlightOverlays flightOverlays)
         {
             return (ScreenMessage)ScreenMessageField?.GetValue(flightOverlays);
         }
