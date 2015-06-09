@@ -52,6 +52,7 @@
     <Compile Include="Configuration\ContextMenuNode.cs" />
     <Compile Include="Configuration\ContextMenu\MetricNode.cs" />
     <Compile Include="Configuration\DiagnosticsNode.cs" />
+    <Compile Include="Configuration\GuiNode.cs" />
     <Compile Include="Configuration\OverlayNode.cs" />
     <Compile Include="HotSpotGuiBehavior.cs" />
     <Compile Include="Model\EvaluatedGradientNode.cs" />

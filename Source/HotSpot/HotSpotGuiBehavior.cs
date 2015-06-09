@@ -1,4 +1,5 @@
-﻿using HotSpot.Reflection;
+﻿using System;
+using HotSpot.Reflection;
 using UnityEngine;
 
 namespace HotSpot
@@ -6,11 +7,52 @@ namespace HotSpot
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public sealed class HotSpotGuiBehavior : MonoBehaviour
     {
-        private bool _lastThermalColorsDebug;
         private readonly ScreenMessage _screenMessage =
             new ScreenMessage(string.Empty, 4, ScreenMessageStyle.LOWER_CENTER);
 
+        private bool _lastThermalColorsDebug;
+        private ApplicationLauncherButton _applicationLauncherButton;
+
         #region MonoBehaiour
+
+        public void Start()
+        {
+            Log.Trace("Entering HotSpotGuiBehavior.Start()");
+
+            var buttonTexture = GameDatabase
+                .Instance
+                .GetTexture(Config.Instance.Gui.ButtonTexture, asNormalMap: false);
+
+            if (buttonTexture != null)
+            {
+                Log.Debug($"Found button texture at: {Config.Instance.Gui.ButtonTexture}");
+
+                _applicationLauncherButton = ApplicationLauncher.Instance.AddModApplication(
+                    () => OnAppLauncherEvent(AppLauncherEvent.OnTrue),
+                    () => OnAppLauncherEvent(AppLauncherEvent.OnFalse),
+                    () => OnAppLauncherEvent(AppLauncherEvent.OnHover),
+                    () => OnAppLauncherEvent(AppLauncherEvent.OnHoverOut),
+                    () => OnAppLauncherEvent(AppLauncherEvent.OnEnable),
+                    () => OnAppLauncherEvent(AppLauncherEvent.OnDisable),
+                    ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW,
+                    buttonTexture
+                );
+            }
+            else
+            {
+                Log.Warning(
+                    $"Could not find button texture at: {Config.Instance.Gui.ButtonTexture} not creating" +
+                    " Application Launcher button."
+                );
+            }
+
+            Log.Trace("Leaving HotSpotGuiBehavior.Start()");
+        }
+
+        public void OnDestroy()
+        {
+            ApplicationLauncher.Instance.RemoveModApplication(_applicationLauncherButton);
+        }
 
         public void LateUpdate()
         {
@@ -52,6 +94,49 @@ namespace HotSpot
             }
 
             _lastThermalColorsDebug = PhysicsGlobals.ThermalColorsDebug;
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void OnAppLauncherEvent(AppLauncherEvent appLauncherEvent)
+        {
+            Log.Trace("Entering PlaneMode.OnAppLauncherEvent()");
+
+            switch (appLauncherEvent)
+            {
+                case AppLauncherEvent.OnTrue:
+                    break;
+                case AppLauncherEvent.OnFalse:
+                    break;
+                case AppLauncherEvent.OnHover:
+                    break;
+                case AppLauncherEvent.OnHoverOut:
+                    break;
+                case AppLauncherEvent.OnEnable:
+                    break;
+                case AppLauncherEvent.OnDisable:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(appLauncherEvent));
+            }
+
+            Log.Trace("Leaving PlaneMode.OnAppLauncherEvent()");
+        }
+
+        #endregion
+
+        #region NestedTypes
+
+        private enum AppLauncherEvent
+        {
+            OnTrue,
+            OnFalse,
+            OnHover,
+            OnHoverOut,
+            OnEnable,
+            OnDisable,
         }
 
         #endregion

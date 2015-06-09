@@ -50,18 +50,20 @@ namespace HotSpot
 
         #endregion
 
+        public GuiNode Gui { get; }
         public ContextMenuNode ContextMenu { get; }
         public OverlayNode Overlay { get; }
         public DiagnosticsNode Diagnostics { get; }
 
         private Config()
         {
+            Gui = GuiNode.GetDefault();
             ContextMenu = ContextMenuNode.GetDefault();
             Overlay = OverlayNode.GetDefault();
             Diagnostics = DiagnosticsNode.GetDefault();
         }
 
-        private Config(ContextMenuNode contextMenu, OverlayNode overlay, DiagnosticsNode diagnostics)
+        private Config(GuiNode gui, ContextMenuNode contextMenu, OverlayNode overlay, DiagnosticsNode diagnostics)
         {
             ContextMenu = contextMenu;
             Overlay = overlay;
@@ -72,11 +74,19 @@ namespace HotSpot
         {
             if (node != null)
             {
-                var contextMenu = ContextMenuNode.TryParse(node.GetNode("CONTEXT_MENU")) ?? ContextMenuNode.GetDefault();
-                var overlay = OverlayNode.TryParse(node.GetNode("OVERLAY")) ?? OverlayNode.GetDefault();
-                var diagnostics = DiagnosticsNode.TryParse(node.GetNode("DIAGNOSTICS")) ?? DiagnosticsNode.GetDefault();
+                var gui = GuiNode.TryParse(node.GetNode("GUI")) ??
+                    GuiNode.GetDefault();
 
-                return new Config(contextMenu, overlay, diagnostics);
+                var contextMenu = ContextMenuNode.TryParse(node.GetNode("CONTEXT_MENU")) ??
+                    ContextMenuNode.GetDefault();
+
+                var overlay = OverlayNode.TryParse(node.GetNode("OVERLAY")) ??
+                    OverlayNode.GetDefault();
+
+                var diagnostics = DiagnosticsNode.TryParse(node.GetNode("DIAGNOSTICS")) ??
+                    DiagnosticsNode.GetDefault();
+
+                return new Config(gui, contextMenu, overlay, diagnostics);
             }
 
             Log.Warning("Could not parse missing HOT_SPOT node");
