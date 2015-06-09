@@ -11,6 +11,7 @@ namespace HotSpot
     public class HotSpotBehaviour : MonoBehaviour
     {
         private bool _lastThermalColorsDebug;
+        private ScreenMessage _screenMessage = new ScreenMessage(string.Empty, 4, ScreenMessageStyle.LOWER_CENTER);
 
         #region MonoBehaviour
 
@@ -21,52 +22,69 @@ namespace HotSpot
 
             if (Config.Instance.Overlay.Enable)
             {
-                if (_lastThermalColorsDebug != PhysicsGlobals.ThermalColorsDebug)
-                {
-                    Log.Debug("PhysicsGlobals.ThermalColorsDebug has been toggled");
+                var metric = Config.Instance.Overlay.Metric;
 
-                    var flightOverlays = FindObjectOfType<FlightOverlays>();
-
-                    if (flightOverlays)
-                    {
-                        Log.Debug("Found FlightOverlays, removing its ScreenMessage");
-
-                        ScreenMessages.RemoveMessage(flightOverlays.TryGetScreenMessage());
-                    }
-                }
-
-                if (PhysicsGlobals.ThermalColorsDebug)
-                {
-                    var metric = Config.Instance.Overlay.Metric;
-
-                    foreach (var vessel in FlightGlobals.Vessels.Where(i => i.loaded))
-                    {
-                        var vesselVariables = metric.GetVesselValues(vessel);
-
-                        foreach (var part in vessel.Parts)
-                        {
-                            var partVariables = metric.GetPartValues(part);
-                            var partCurrent = metric.GetPartCurrent(part);
-
-                            var color = Config
-                                .Instance
-                                .Overlay
-                                .GetActiveMetric()
-                                .GetActiveScheme()
-                                .EvaluateColor(partCurrent, MergeVariables(vesselVariables, partVariables));
-
-                            part.TryGetMaterialColorUpdater()?.Update(color ?? Part.defaultHighlightNone);
-                        }
-                    }
-                }
+                LateUpdateScreenMessage(metric);
+                LateUpdateColor(metric);
             }
-
-            _lastThermalColorsDebug = PhysicsGlobals.ThermalColorsDebug;
 
             Log.Trace("Leaving HotSpotBehaviour.LateUpdate()");
         }
 
         #endregion
+
+        private void LateUpdateScreenMessage(Metric metric)
+        {
+            if (_lastThermalColorsDebug != PhysicsGlobals.ThermalColorsDebug)
+            {
+                Log.Debug("PhysicsGlobals.ThermalColorsDebug has been toggled");
+
+                var flightOverlays = FindObjectOfType<FlightOverlays>();
+
+                if (flightOverlays != null)
+                {
+                    Log.Debug("Found FlightOverlays, removing its ScreenMessage");
+
+                    ScreenMessages.RemoveMessage(flightOverlays.TryGetScreenMessage());
+                }
+
+                if (Config.Instance.Overlay.EnableScreenMessage)
+                {
+                    var state = PhysicsGlobals.ThermalColorsDebug ? "Enabled" : "Disabled";
+
+                    // TODO: Also display the scheme being used
+                    ScreenMessages.PostScreenMessage($"{metric.FriendlyName} Overlay: {state}", _screenMessage);
+                }
+            }
+
+            _lastThermalColorsDebug = PhysicsGlobals.ThermalColorsDebug;
+        }
+
+        private static void LateUpdateColor(Metric metric)
+        {
+            if (PhysicsGlobals.ThermalColorsDebug)
+            {
+                foreach (var vessel in FlightGlobals.Vessels.Where(i => i.loaded))
+                {
+                    var vesselVariables = metric.GetVesselValues(vessel);
+
+                    foreach (var part in vessel.Parts)
+                    {
+                        var partVariables = metric.GetPartValues(part);
+                        var partCurrent = metric.GetPartCurrent(part);
+
+                        var color = Config
+                            .Instance
+                            .Overlay
+                            .GetActiveMetric()
+                            .GetActiveScheme()
+                            .EvaluateColor(partCurrent, MergeVariables(vesselVariables, partVariables));
+
+                        part.TryGetMaterialColorUpdater()?.Update(color ?? Part.defaultHighlightNone);
+                    }
+                }
+            }
+        }
 
         #region Helpers
 
