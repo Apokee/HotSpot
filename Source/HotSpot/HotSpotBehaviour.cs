@@ -11,7 +11,8 @@ namespace HotSpot
     public class HotSpotBehaviour : MonoBehaviour
     {
         private bool _lastThermalColorsDebug;
-        private ScreenMessage _screenMessage = new ScreenMessage(string.Empty, 4, ScreenMessageStyle.LOWER_CENTER);
+        private readonly ScreenMessage _screenMessage =
+            new ScreenMessage(string.Empty, 4, ScreenMessageStyle.LOWER_CENTER);
 
         #region MonoBehaviour
 
