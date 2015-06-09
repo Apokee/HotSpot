@@ -50,10 +50,13 @@ namespace HotSpot
 
                 if (Config.Instance.Overlay.EnableScreenMessage)
                 {
-                    var state = PhysicsGlobals.ThermalColorsDebug ? "Enabled" : "Disabled";
+                    var scheme = Config.Instance.Overlay.GetActiveMetric().GetActiveScheme();
 
-                    // TODO: Also display the scheme being used
-                    ScreenMessages.PostScreenMessage($"{metric.FriendlyName} Overlay: {state}", _screenMessage);
+                    var metricMsg = metric.FriendlyName;
+                    var schemMsg = scheme.FriendlyName == null ? string.Empty : $" ({scheme.FriendlyName})";
+                    var stateMsg = PhysicsGlobals.ThermalColorsDebug ? "Enabled" : "Disabled";
+
+                    ScreenMessages.PostScreenMessage($"{metricMsg}{schemMsg} Overlay: {stateMsg}", _screenMessage);
                 }
             }
 

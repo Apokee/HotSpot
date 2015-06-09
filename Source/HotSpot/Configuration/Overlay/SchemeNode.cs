@@ -11,10 +11,12 @@ namespace HotSpot.Configuration.Overlay
         private readonly GradientNode[] _gradients; 
 
         public string Name { get; }
+        public string FriendlyName { get; }
 
-        private SchemeNode(string name, GradientNode[] gradients)
+        private SchemeNode(string name, string friendlyName, GradientNode[] gradients)
         {
             Name = name;
+            FriendlyName = friendlyName;
             _gradients = gradients;
         }
 
@@ -32,6 +34,7 @@ namespace HotSpot.Configuration.Overlay
             if (node != null)
             {
                 var name = node.GetValue("name");
+                var friendlyName = node.GetValue("friendlyName");
                 var gradients = node
                     .GetNodes("GRADIENT")
                     .Where(i => !i.GetValue("name").EndsWith("Template"))
@@ -41,7 +44,7 @@ namespace HotSpot.Configuration.Overlay
 
                 if (name != null)
                 {
-                    return new SchemeNode(name, gradients);
+                    return new SchemeNode(name, friendlyName, gradients);
                 }
             }
 
