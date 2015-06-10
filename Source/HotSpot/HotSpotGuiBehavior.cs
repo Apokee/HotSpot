@@ -7,11 +7,16 @@ namespace HotSpot
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public sealed class HotSpotGuiBehavior : MonoBehaviour
     {
+        private const int ConfigWindowId = 0x36F2911D; // Random
+
         private readonly ScreenMessage _screenMessage =
             new ScreenMessage(string.Empty, 4, ScreenMessageStyle.LOWER_CENTER);
 
         private bool _lastThermalColorsDebug;
         private ApplicationLauncherButton _applicationLauncherButton;
+
+        private bool _showConfigWindow;
+        private Rect _configWindowRect;
 
         #region MonoBehaiour
 
@@ -52,6 +57,21 @@ namespace HotSpot
         public void OnDestroy()
         {
             ApplicationLauncher.Instance.RemoveModApplication(_applicationLauncherButton);
+        }
+
+        // ReSharper disable once InconsistentNaming
+        public void OnGUI()
+        {
+            if (_showConfigWindow)
+            {
+                if (_configWindowRect == default(Rect))
+                {
+                    _configWindowRect = new Rect(0, 0, 300, 600);
+                }
+
+                GUI.skin = HighLogic.Skin;
+                _configWindowRect = GUILayout.Window(ConfigWindowId, _configWindowRect, OnConfigWindow, "Hot Spot");
+            }
         }
 
         public void LateUpdate()
@@ -107,8 +127,10 @@ namespace HotSpot
             switch (appLauncherEvent)
             {
                 case AppLauncherEvent.OnTrue:
+                    _showConfigWindow = true;
                     break;
                 case AppLauncherEvent.OnFalse:
+                    _showConfigWindow = false;
                     break;
                 case AppLauncherEvent.OnHover:
                     break;
@@ -123,6 +145,16 @@ namespace HotSpot
             }
 
             Log.Trace("Leaving PlaneMode.OnAppLauncherEvent()");
+        }
+
+        private void OnConfigWindow(int windowId)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Button("Context");
+            GUILayout.Button("Overlay");
+            GUILayout.EndHorizontal();
+
+            GUI.DragWindow();
         }
 
         #endregion
