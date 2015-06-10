@@ -7,16 +7,19 @@ namespace HotSpot.Configuration
 {
     internal sealed class ContextMenuNode
     {
-        private readonly Dictionary<string, MetricNode> _metrics; 
+        private readonly Dictionary<string, MetricNode> _metricsDictionary;
+        
+        public MetricNode[] Metrics { get; } 
 
         private ContextMenuNode(MetricNode[] metrics)
         {
-            _metrics = metrics.ToDictionary(i => i.Name.Name);
+            Metrics = metrics;
+            _metricsDictionary = metrics.ToDictionary(i => i.Name.Name);
         }
 
         public MetricNode GetMetric(Metric metric)
         {
-            return _metrics[metric.Name];
+            return _metricsDictionary[metric.Name];
         }
 
         public static ContextMenuNode GetDefault()

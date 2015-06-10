@@ -66,7 +66,7 @@ namespace HotSpot
             {
                 if (_configWindowRect == default(Rect))
                 {
-                    _configWindowRect = new Rect(0, 0, 300, 600);
+                    _configWindowRect = new Rect(0, 0, 400, 500);
                 }
 
                 GUI.skin = HighLogic.Skin;
@@ -150,9 +150,20 @@ namespace HotSpot
         private void OnConfigWindow(int windowId)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Button("Context");
-            GUILayout.Button("Overlay");
+                GUILayout.Button("Context");
+                GUILayout.Button("Overlay");
             GUILayout.EndHorizontal();
+
+            GUILayout.BeginScrollView(new Vector2(), GUI.skin.scrollView);
+                GUILayout.BeginVertical();
+                    foreach (var config in Config.Instance.ContextMenu.Metrics)
+                    {
+                        GUILayout.BeginHorizontal();
+                            GUILayout.Toggle(true, config.Name.FriendlyName);
+                        GUILayout.EndHorizontal();
+                    }
+                GUILayout.EndVertical();
+            GUILayout.EndScrollView();
 
             GUI.DragWindow();
         }
