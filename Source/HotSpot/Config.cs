@@ -65,6 +65,7 @@ namespace HotSpot
 
         private Config(GuiNode gui, ContextMenuNode contextMenu, OverlayNode overlay, DiagnosticsNode diagnostics)
         {
+            Gui = gui;
             ContextMenu = contextMenu;
             Overlay = overlay;
             Diagnostics = diagnostics;
