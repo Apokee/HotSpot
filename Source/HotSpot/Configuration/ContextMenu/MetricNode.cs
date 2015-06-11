@@ -6,7 +6,7 @@ namespace HotSpot.Configuration.ContextMenu
     internal sealed class MetricNode
     {
         public Metric Name { get; }
-        public bool Enable { get; }
+        public bool Enable { get; set; }
         public Unit Unit { get; }
 
         private MetricNode(Metric name, bool enable, Unit unit)

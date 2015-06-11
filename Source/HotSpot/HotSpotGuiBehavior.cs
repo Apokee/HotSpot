@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using HotSpot.Reflection;
 using UnityEngine;
 
@@ -17,12 +18,19 @@ namespace HotSpot
 
         private bool _showConfigWindow;
         private Rect _configWindowRect;
+        private ConfigWindowTab _configWindowTabActive = ConfigWindowTab.Context;
+        private Dictionary<string, bool> _configWindowContextMetricEnabled = new Dictionary<string, bool>(); 
 
         #region MonoBehaiour
 
         public void Start()
         {
             Log.Trace("Entering HotSpotGuiBehavior.Start()");
+
+            foreach (var metricNode in Config.Instance.ContextMenu.Metrics)
+            {
+                _configWindowContextMetricEnabled[metricNode.Name.Name] = metricNode.Enable;
+            }
 
             var buttonTexture = GameDatabase
                 .Instance
@@ -150,22 +158,42 @@ namespace HotSpot
         private void OnConfigWindow(int windowId)
         {
             GUILayout.BeginHorizontal();
-                GUILayout.Button("Context");
-                GUILayout.Button("Overlay");
+            if (GUILayout.Button("Context"))
+            {
+                _configWindowTabActive = ConfigWindowTab.Context;
+            }
+            if (GUILayout.Button("Overlay"))
+            {
+                _configWindowTabActive = ConfigWindowTab.Overlay;
+            }
             GUILayout.EndHorizontal();
 
             GUILayout.BeginScrollView(new Vector2(), GUI.skin.scrollView);
-                GUILayout.BeginVertical();
-                    foreach (var config in Config.Instance.ContextMenu.Metrics)
-                    {
-                        GUILayout.BeginHorizontal();
-                            GUILayout.Toggle(true, config.Name.FriendlyName);
-                        GUILayout.EndHorizontal();
-                    }
-                GUILayout.EndVertical();
+            switch (_configWindowTabActive)
+            {
+                case ConfigWindowTab.Context:
+                    OnContextTab();
+                    break;
+                case ConfigWindowTab.Overlay:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
             GUILayout.EndScrollView();
 
             GUI.DragWindow();
+        }
+
+        private void OnContextTab()
+        {
+            GUILayout.BeginVertical();
+            foreach (var metricNode in Config.Instance.ContextMenu.Metrics)
+            {
+                GUILayout.BeginHorizontal();
+                metricNode.Enable = GUILayout.Toggle(metricNode.Enable, metricNode.Name.FriendlyName);
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.EndVertical();
         }
 
         #endregion
@@ -180,6 +208,12 @@ namespace HotSpot
             OnHoverOut,
             OnEnable,
             OnDisable,
+        }
+
+        private enum ConfigWindowTab
+        {
+            Context,
+            Overlay
         }
 
         #endregion

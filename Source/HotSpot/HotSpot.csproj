@@ -77,6 +77,8 @@
     <Compile Include="Reflection\FlightOverlaysExtensions.cs" />
     <Compile Include="Reflection\PartExtensions.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Configuration\LoadTime\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
