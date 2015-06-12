@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using HotSpot.Model;
 using HotSpot.Reflection;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ namespace HotSpot
         private bool _showConfigWindow;
         private Rect _configWindowRect;
         private ConfigWindowTab _configWindowTabActive = ConfigWindowTab.Context;
+        private bool _configWindowContextShowTemperatureUnit;
         private bool _configWindowOverlayShowMetrics;
         private bool _configWindowOverlayShowSchemes;
 
@@ -185,8 +187,62 @@ namespace HotSpot
             foreach (var metricNode in Config.Instance.ContextMenu.Metrics)
             {
                 GUILayout.BeginHorizontal();
+
                 metricNode.Enable = GUILayout.Toggle(metricNode.Enable, metricNode.Name.FriendlyName);
+
+                var isTemperatureMetric = metricNode.Name.Name == "Temperature";
+
+                if (isTemperatureMetric)
+                {
+                    GUILayout.FlexibleSpace();
+
+                    if (GUILayout.Button("Unit"))
+                    {
+                        _configWindowContextShowTemperatureUnit = !_configWindowContextShowTemperatureUnit;
+                    }
+                }
+
                 GUILayout.EndHorizontal();
+
+                if (_configWindowContextShowTemperatureUnit && isTemperatureMetric)
+                {
+                    var temperatureMetricNode = Config
+                        .Instance
+                        .ContextMenu
+                        .Metrics
+                        .SingleOrDefault(i => i.Name.Name == "Temperature");
+
+                    if (temperatureMetricNode != null)
+                    {
+                        GUILayout.BeginVertical();
+                        var units = new[] { Unit.Kelvin, Unit.Rankine, Unit.Celsius, Unit.Fahrenheit };
+
+                        int unitIndex;
+                        switch (temperatureMetricNode.Unit)
+                        {
+                            case Unit.Kelvin:
+                                unitIndex = 0;
+                                break;
+                            case Unit.Rankine:
+                                unitIndex = 1;
+                                break;
+                            case Unit.Celsius:
+                                unitIndex = 2;
+                                break;
+                            case Unit.Fahrenheit:
+                                unitIndex = 3;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
+                        var newUnitIndex = GUILayout.SelectionGrid(unitIndex, units.Select(i => i.ToString()).ToArray(), 2);
+
+                        temperatureMetricNode.Unit = units[newUnitIndex];
+
+                        GUILayout.EndVertical();
+                    }
+                }
             }
             GUILayout.EndVertical();
         }

@@ -7,7 +7,7 @@ namespace HotSpot.Configuration.ContextMenu
     {
         public Metric Name { get; }
         public bool Enable { get; set; }
-        public Unit Unit { get; }
+        public Unit Unit { get; set;  }
 
         private MetricNode(Metric name, bool enable, Unit unit)
         {
