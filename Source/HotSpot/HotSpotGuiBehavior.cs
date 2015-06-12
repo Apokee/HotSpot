@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using HotSpot.Reflection;
 using UnityEngine;
 
@@ -19,18 +19,13 @@ namespace HotSpot
         private bool _showConfigWindow;
         private Rect _configWindowRect;
         private ConfigWindowTab _configWindowTabActive = ConfigWindowTab.Context;
-        private Dictionary<string, bool> _configWindowContextMetricEnabled = new Dictionary<string, bool>(); 
+        private bool _configWindowOverlayShowMetrics;
 
         #region MonoBehaiour
 
         public void Start()
         {
             Log.Trace("Entering HotSpotGuiBehavior.Start()");
-
-            foreach (var metricNode in Config.Instance.ContextMenu.Metrics)
-            {
-                _configWindowContextMetricEnabled[metricNode.Name.Name] = metricNode.Enable;
-            }
 
             var buttonTexture = GameDatabase
                 .Instance
@@ -168,18 +163,17 @@ namespace HotSpot
             }
             GUILayout.EndHorizontal();
 
-            GUILayout.BeginScrollView(new Vector2(), GUI.skin.scrollView);
             switch (_configWindowTabActive)
             {
                 case ConfigWindowTab.Context:
                     OnContextTab();
                     break;
                 case ConfigWindowTab.Overlay:
+                    OnOverlayTab();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            GUILayout.EndScrollView();
 
             GUI.DragWindow();
         }
@@ -193,6 +187,52 @@ namespace HotSpot
                 metricNode.Enable = GUILayout.Toggle(metricNode.Enable, metricNode.Name.FriendlyName);
                 GUILayout.EndHorizontal();
             }
+            GUILayout.EndVertical();
+        }
+
+        private void OnOverlayTab()
+        {
+            var overlayMetric = Config.Instance.Overlay.Metric;
+
+            GUILayout.BeginVertical();
+            GUILayout.BeginHorizontal();
+
+            GUILayout.Label("Metric:",
+                new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, GUILayout.Width(75));
+            GUILayout.Label(overlayMetric.FriendlyName);
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Select", GUILayout.Width(50)))
+            {
+                _configWindowOverlayShowMetrics = !_configWindowOverlayShowMetrics;
+            }
+
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginVertical();
+
+            if (_configWindowOverlayShowMetrics)
+            {
+                var metrics = Config.Instance.Overlay.Metrics;
+
+                var metricIndex = 0;
+                for (var i = 0; i < metrics.Length; i++)
+                {
+                    if (Config.Instance.Overlay.Metric.Name == metrics[i].Name.Name)
+                    {
+                        metricIndex = i;
+                        break;
+                    }
+                }
+
+                var newMetricIndex = GUILayout.SelectionGrid(
+                    metricIndex, metrics.Select(i => i.Name.FriendlyName).ToArray(), 1
+                );
+
+                Config.Instance.Overlay.Metric = metrics[newMetricIndex].Name;
+            }
+
+            GUILayout.EndVertical();
+
             GUILayout.EndVertical();
         }
 

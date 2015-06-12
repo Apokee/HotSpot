@@ -8,23 +8,25 @@ namespace HotSpot.Configuration
 {
     internal sealed class OverlayNode
     {
-        private readonly Dictionary<string, MetricNode> _metrics;
+        private readonly Dictionary<string, MetricNode> _metricsDictionary;
 
         public bool Enable { get; }
         public bool EnableScreenMessage { get; }
-        public Metric Metric { get; }
+        public Metric Metric { get; set; }
+        public MetricNode[] Metrics { get; }
 
         private OverlayNode(bool enable, bool enableScreenMessage, Metric metric, MetricNode[] metrics)
         {
             Enable = enable;
             EnableScreenMessage = enableScreenMessage;
             Metric = metric;
-            _metrics = metrics.ToDictionary(i => i.Name.Name);
+            Metrics = metrics;
+            _metricsDictionary = metrics.ToDictionary(i => i.Name.Name);
         }
 
         public MetricNode GetActiveMetric()
         {
-            return _metrics[Metric.Name];
+            return _metricsDictionary[Metric.Name];
         }
 
         public static OverlayNode GetDefault()
