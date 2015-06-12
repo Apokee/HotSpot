@@ -72,7 +72,13 @@ namespace HotSpot
             {
                 if (_configWindowRect == default(Rect))
                 {
-                    _configWindowRect = new Rect(0, 0, 300, 400);
+                    const int width = 300;
+                    const int height = 400;
+
+                    var x = (Screen.width / 2) - (width / 2);
+                    var y = (Screen.height / 2) - (height / 2);
+
+                    _configWindowRect = new Rect(x, y, width, height);
                 }
 
                 GUI.skin = HighLogic.Skin;
