@@ -20,6 +20,7 @@ namespace HotSpot
         private Rect _configWindowRect;
         private ConfigWindowTab _configWindowTabActive = ConfigWindowTab.Context;
         private bool _configWindowOverlayShowMetrics;
+        private bool _configWindowOverlayShowSchemes;
 
         #region MonoBehaiour
 
@@ -69,7 +70,7 @@ namespace HotSpot
             {
                 if (_configWindowRect == default(Rect))
                 {
-                    _configWindowRect = new Rect(0, 0, 400, 500);
+                    _configWindowRect = new Rect(0, 0, 300, 400);
                 }
 
                 GUI.skin = HighLogic.Skin;
@@ -192,14 +193,13 @@ namespace HotSpot
 
         private void OnOverlayTab()
         {
-            var overlayMetric = Config.Instance.Overlay.Metric;
-
             GUILayout.BeginVertical();
+
             GUILayout.BeginHorizontal();
 
             GUILayout.Label("Metric:",
-                new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, GUILayout.Width(75));
-            GUILayout.Label(overlayMetric.FriendlyName);
+                new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, GUILayout.Width(55));
+            GUILayout.Label(Config.Instance.Overlay.Metric.FriendlyName);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Select", GUILayout.Width(50)))
             {
@@ -207,8 +207,6 @@ namespace HotSpot
             }
 
             GUILayout.EndHorizontal();
-
-            GUILayout.BeginVertical();
 
             if (_configWindowOverlayShowMetrics)
             {
@@ -231,7 +229,40 @@ namespace HotSpot
                 Config.Instance.Overlay.Metric = metrics[newMetricIndex].Name;
             }
 
-            GUILayout.EndVertical();
+            GUILayout.BeginHorizontal();
+
+            GUILayout.Label("Scheme:",
+                new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, GUILayout.Width(55));
+            GUILayout.Label(Config.Instance.Overlay.GetActiveMetric().GetActiveScheme().FriendlyName);
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Select", GUILayout.Width(50)))
+            {
+                _configWindowOverlayShowSchemes = !_configWindowOverlayShowSchemes;
+            }
+
+            GUILayout.EndHorizontal();
+
+            if (_configWindowOverlayShowSchemes)
+            {
+                var scheme = Config.Instance.Overlay.GetActiveMetric().GetActiveScheme();
+                var schemes = Config.Instance.Overlay.GetActiveMetric().Schemes;
+
+                var schemeIndex = 0;
+                for (var i = 0; i < schemes.Length; i++)
+                {
+                    if (scheme.Name == schemes[i].Name)
+                    {
+                        schemeIndex = i;
+                        break;
+                    }
+                }
+
+                var newSchemeIndex = GUILayout.SelectionGrid(
+                    schemeIndex, schemes.Select(i => i.FriendlyName).ToArray(), 1
+                );
+
+                Config.Instance.Overlay.GetActiveMetric().Scheme = schemes[newSchemeIndex].Name;
+            }
 
             GUILayout.EndVertical();
         }
