@@ -27,6 +27,7 @@ var solution = GetSolution();
 
 var identifier = "HotSpot";
 var outputDirectory = "Output";
+var artworkDirectory = Directory(GetNuGetPackageDirectory("Apokee.Artwork")) + Directory("Content");
 var buildDirectory = Directory($"{outputDirectory}/Build/{configuration}");
 var binDirectory = Directory($"{buildDirectory}/Common/bin");
 var stageDirectory = Directory($"{outputDirectory}/Stage/{configuration}");
@@ -138,15 +139,18 @@ Task("Stage")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var pluginsDirectory = System.IO.Path.Combine(stageModDirectory, "Plugins");
+    var pluginsDirectory = $"{stageModDirectory}/Plugins";
+    var texturesDirectory = $"{stageModDirectory}/Textures";
 
     CreateDirectory(stageGameDataDirectory);
     CreateDirectory(stageModDirectory);
     CreateDirectory(pluginsDirectory);
+    CreateDirectory(texturesDirectory);
 
     CopyFiles($"{binDirectory}/*", pluginsDirectory);
     CopyDirectory("Configuration", $"{stageModDirectory}/Configuration");
     CopyDirectory("Patches", $"{stageModDirectory}/Patches");
+    CopyFile($"{artworkDirectory}/hotspot-white-38x38.png", $"{texturesDirectory}/AppLauncher.png");
     CopyFileToDirectory("CHANGES.md", stageModDirectory);
     CopyFileToDirectory("LICENSE.md", stageModDirectory);
     CopyFileToDirectory("README.md", stageModDirectory);
@@ -213,4 +217,15 @@ private void BuildAssemblyInfo(string file)
 private SemVer GetBuildVersion()
 {
     return new SemVer(System.IO.File.ReadAllText("Output/VERSION"));
+}
+
+private string GetNuGetPackageDirectory(string package)
+{
+    return System.IO.Directory
+        .GetDirectories("Library/NuGet")
+        .Select(i => new DirectoryInfo(i))
+        .Where(i => i.Name.StartsWith(package))
+        .OrderByDescending(i => new Version(i.Name.Substring(package.Length + 1, i.Name.Length - package.Length - 1)))
+        .First()
+        .FullName;
 }
