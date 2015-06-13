@@ -27,6 +27,6 @@ Hot Spot can be configured by creating Module Manager patches against the defaul
 `<KSP>/GameData/HotSpot/Configuration/HotSpot.cfg`. How to use Module Manager is outside the scope of this README,
 please see the Module Manager documentation for more information.
 
-[build]: https://ci.appveyor.com/project/Apokee/hotspot
-[build-badge]: https://ci.appveyor.com/api/projects/status/ik9la5jusinnpu5n?svg=true
+[build]: https://ci.appveyor.com/project/Apokee/hotspot/branch/develop
+[build-badge]: https://ci.appveyor.com/api/projects/status/ik9la5jusinnpu5n/branch/develop?svg=true
 [module-manager]: http://forum.kerbalspaceprogram.com/threads/55219
