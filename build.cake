@@ -86,7 +86,7 @@ Task("Restore")
     NuGetRestore(solution);
 });
 
-Task("BuildBuildVersion")
+Task("BuildVersionInfo")
     .Does(() =>
 {
     SemVer buildVersion;
@@ -127,7 +127,7 @@ Task("Build")
     .IsDependentOn("CleanBuild")
     .IsDependentOn("Init")
     .IsDependentOn("Restore")
-    .IsDependentOn("BuildBuildVersion")
+    .IsDependentOn("BuildVersionInfo")
     .IsDependentOn("BuildAssemblyInfo")
     .Does(() =>
 {
