@@ -18,11 +18,7 @@
 
         static Log()
         {
-#if DEBUG
-            Level = LogLevel.Debug;
-#else
-            Level = LogLevel.Info;
-#endif
+            Level = LogLevel.Trace;
         }
 
         public static void Error(string message)

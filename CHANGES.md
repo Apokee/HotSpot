@@ -7,6 +7,9 @@
   with the highest thermal rate will be red, regardless of their absolute values.
 - The screen message displayed when overlays are enabled/disabled are now customized based on the current metric and
   scheme. The screen message can also be disabled entirely in the configuration.
+- Added a GUI which allows changing various options dynamically, including: context menu metrics to enable/disable,
+  the temperature unit, the overlay metric, and the gradient scheme for the metric. Currently this options are not
+  persisted between loads.
 
 ##### Change
 - *Incompatible:* Configuration structure has changed significantly.
