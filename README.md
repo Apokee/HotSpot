@@ -1,9 +1,9 @@
 # Hot Spot [![Build status][build-badge]][build]
 
-**Hot Spot** is a [MIT-licensed](LICENSE.md) Kerbal Space Program mod that displays better thermal metric data to the
-user. It currently supports the following metrics:
+**Hot Spot** is a [MIT-licensed](LICENSE.md) Kerbal Space Program mod that displays better thermal data. It currently
+supports the following metrics:
 
-- Temperature
+- Internal Temperature
 - Thermal Rate
 
 Thermal rate is the rate at which thermal energy is added or removed from a part. It is measured as energy per unit
@@ -11,7 +11,7 @@ time, i.e. [*power*][wiki-power]. Positive thermal rates indicate a part is gain
 rates indicate a part is losing thermal energy. There are multiple kinds of thermal rates:
 
 - *Internal Thermal Rate* - The change in thermal energy due to reactions/processes occuring within the part itself.
-- *Conductive Thremal Rate* - The change in thermal energy due to being in contact with other parts.
+- *Conductive Thermal Rate* - The change in thermal energy due to being in contact with other parts.
 - *Convective Thermal Rate* - The change in thermal energy due to being in contact with a fluid, like the atmosphere.
 - *Radiative Thermal Rate* - The change in thermal energy due to the emission or absorption of light.
 - *Thermal Rate* - An aggregate value of the four previous rates.
@@ -46,10 +46,22 @@ The *Maximum* value depends on the scheme used:
 - *Vessel Absolute* - The maximum temperature of any part in the vessel.
 
 ## Installation
-To install, extract the contents of the archive to your KSP directory. This should create an `HotSpot` directory under
-the `<KSP>/GameData` directory. All dependencies should also be installed.
+### CKAN
+Hot Spot's CKAN identifier is `HotSpot`. It may be installed from the command line with:
 
-Dependencies:
+```
+> ckan install HotSpot
+```
+
+It can be installed from the GUI.
+
+### Manual
+1. Download the distribution package from [Kerbal Stuff][kerbalstuff] or [GitHub][github-releases].
+2. Extract the contents of the archive to your KSP directory. This should create an `HotSpot` directory under
+the `<KSP>/GameData` directory.
+3. Follow the installation instructions for all dependencies.
+
+#### Dependencies
 - [Module Manager][module-manager]
 
 ## Usage
@@ -64,6 +76,8 @@ please see the Module Manager documentation for more information.
 
 [build]: https://ci.appveyor.com/project/Apokee/hotspot/branch/develop
 [build-badge]: https://ci.appveyor.com/api/projects/status/ik9la5jusinnpu5n/branch/develop?svg=true
+[github-releases]: https://github.com/Apokee/HotSpot/releases
+[kerbalstuff]: https://kerbalstuff.com/mod/937/Hot%20Spot
 [module-manager]: http://forum.kerbalspaceprogram.com/threads/55219
 [wiki-celsius]: https://en.wikipedia.org/wiki/Celsius
 [wiki-fahrenheit]: https://en.wikipedia.org/wiki/Fahrenheit
