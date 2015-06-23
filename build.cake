@@ -19,14 +19,15 @@ public sealed class BuildConfiguration
 
 var target = Argument<string>("target", "Package");
 var configuration = Argument<string>("configuration", "Debug");
+var release = Argument<bool>("release", false);
 
 var buildConfiguration = GetBuildConfiguration<BuildConfiguration>();
 
 var solution = GetSolution();
-var version = GetVersion();
 
-var identifier = "EnhancedThermalData";
+var identifier = "HotSpot";
 var outputDirectory = "Output";
+var artworkDirectory = Directory(GetNuGetPackageDirectory("Apokee.Artwork")) + Directory("Content");
 var buildDirectory = Directory($"{outputDirectory}/Build/{configuration}");
 var binDirectory = Directory($"{buildDirectory}/Common/bin");
 var stageDirectory = Directory($"{outputDirectory}/Stage/{configuration}");
@@ -85,6 +86,36 @@ Task("Restore")
     NuGetRestore(solution);
 });
 
+Task("BuildVersionInfo")
+    .Does(() =>
+{
+    SemVer buildVersion;
+
+    var changeLog = GetChangeLog();
+    var version = changeLog.LatestVersion;
+    var rev = GetGitRevision(useShort: true);
+
+    if (rev != null && !release)
+    {
+        if (version.Build == null)
+        {
+            buildVersion = new SemVer(version.Major, version.Minor, version.Patch, version.Pre, rev);
+        }
+        else
+        {
+            throw new Exception("VERSION already contains build metadata");
+        }
+    }
+    else
+    {
+        buildVersion = version;
+    }
+
+    System.IO.File.WriteAllText("Output/VERSION", buildVersion);
+    System.IO.File.WriteAllText("Output/PRELEASE", (buildVersion.Pre != null).ToString().ToLower());
+    System.IO.File.WriteAllText("Output/CHANGELOG", changeLog.LatestChanges);
+});
+
 Task("BuildAssemblyInfo")
     .Does(() =>
 {
@@ -96,6 +127,7 @@ Task("Build")
     .IsDependentOn("CleanBuild")
     .IsDependentOn("Init")
     .IsDependentOn("Restore")
+    .IsDependentOn("BuildVersionInfo")
     .IsDependentOn("BuildAssemblyInfo")
     .Does(() =>
 {
@@ -107,15 +139,18 @@ Task("Stage")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var pluginsDirectory = System.IO.Path.Combine(stageModDirectory, "Plugins");
+    var pluginsDirectory = $"{stageModDirectory}/Plugins";
+    var texturesDirectory = $"{stageModDirectory}/Textures";
 
     CreateDirectory(stageGameDataDirectory);
     CreateDirectory(stageModDirectory);
     CreateDirectory(pluginsDirectory);
+    CreateDirectory(texturesDirectory);
 
     CopyFiles($"{binDirectory}/*", pluginsDirectory);
     CopyDirectory("Configuration", $"{stageModDirectory}/Configuration");
     CopyDirectory("Patches", $"{stageModDirectory}/Patches");
+    CopyFile($"{artworkDirectory}/hotspot-white-38x38.png", $"{texturesDirectory}/AppLauncher.png");
     CopyFileToDirectory("CHANGES.md", stageModDirectory);
     CopyFileToDirectory("LICENSE.md", stageModDirectory);
     CopyFileToDirectory("README.md", stageModDirectory);
@@ -146,26 +181,51 @@ Task("Package")
 {
     CreateDirectory(packageDirectory);
 
-    var assemblyInfo = ParseAssemblyInfo($"Source/{identifier}/Properties/AssemblyInfo.cs");
+    Zip(stageDirectory, File($"{packageDirectory}/{identifier}-{GetBuildVersion()}.zip"));
+});
 
-    Zip(stageDirectory, File($"{packageDirectory}/{identifier}-{assemblyInfo.AssemblyInformationalVersion}.zip"));
+Task("Version")
+    .Does(() =>
+{
+    Information(GetVersion());
+});
+
+Task("ChangeLog")
+    .Does(() =>
+{
+    Information(GetChangeLog().LatestChanges);
 });
 
 RunTarget(target);
 
-private Version GetVersion()
-{
-    return new Version(System.IO.File.ReadAllText("VERSION"));
-}
-
 private void BuildAssemblyInfo(string file)
 {
+    var version = GetBuildVersion();
+
     var output = TransformTextFile($"{file}.in")
         .WithToken("VERSION", version)
         .WithToken("VERSION.MAJOR", version.Major)
         .WithToken("VERSION.MINOR", version.Minor)
-        .WithToken("VERSION.PATCH", version.Revision)
+        .WithToken("VERSION.PATCH", version.Patch)
+        .WithToken("VERSION.PRE", version.Pre)
+        .WithToken("VERSION.BUILD", version.Build)
         .ToString();
 
     System.IO.File.WriteAllText(file, output);
+}
+
+private SemVer GetBuildVersion()
+{
+    return new SemVer(System.IO.File.ReadAllText("Output/VERSION"));
+}
+
+private string GetNuGetPackageDirectory(string package)
+{
+    return System.IO.Directory
+        .GetDirectories("Library/NuGet")
+        .Select(i => new DirectoryInfo(i))
+        .Where(i => i.Name.StartsWith(package))
+        .OrderByDescending(i => new Version(i.Name.Substring(package.Length + 1, i.Name.Length - package.Length - 1)))
+        .First()
+        .FullName;
 }

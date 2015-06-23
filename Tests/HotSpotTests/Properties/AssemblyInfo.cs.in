@@ -1,0 +1,17 @@
+﻿using System.Reflection;
+
+[assembly: AssemblyTitle("HotSpotTests")]
+[assembly: AssemblyDescription("Tests for HotSpot")]
+[assembly: AssemblyProduct("HotSpot")]
+[assembly: AssemblyCompany("HotSpot Contributors")]
+[assembly: AssemblyCopyright("Copyright © 2015")]
+
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
+
+[assembly: AssemblyVersion("<%VERSION.MAJOR%>.<%VERSION.MINOR%>")]
+[assembly: AssemblyFileVersion("<%VERSION.MAJOR%>.<%VERSION.MINOR%>.<%VERSION.PATCH%>")]
+[assembly: AssemblyInformationalVersion("<%VERSION%>")]
