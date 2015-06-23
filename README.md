@@ -53,7 +53,7 @@ Hot Spot's CKAN identifier is `HotSpot`. It may be installed from the command li
 > ckan install HotSpot
 ```
 
-It can be installed from the GUI.
+It can also be installed from the GUI.
 
 ### Manual
 1. Download the distribution package from [Kerbal Stuff][kerbalstuff] or [GitHub][github-releases].
