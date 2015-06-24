@@ -3,8 +3,13 @@
 **Hot Spot** is a [MIT-licensed](LICENSE.md) Kerbal Space Program mod that displays better thermal data. It currently
 supports the following metrics:
 
-- Internal Temperature
+- Temperature
 - Thermal Rate
+
+Hot Spot and display two kinds of temperatures:
+
+- *Internal Temperature* - The temperature of the interior of a part.
+- *Skin Temperature* - The temperature of the exposed surface of a part.
 
 Thermal rate is the rate at which thermal energy is added or removed from a part. It is measured as energy per unit
 time, i.e. [*power*][wiki-power]. Positive thermal rates indicate a part is gaining thermal energy, negative thermal
