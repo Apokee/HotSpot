@@ -117,7 +117,7 @@ namespace HotSpot
                 {
                     var scheme = Config.Instance.Overlay.GetActiveMetric().GetActiveScheme();
 
-                    var metricMsg = Config.Instance.Overlay.Metric.FriendlyName;
+                    var metricMsg = Config.Instance.Overlay.Metric.LongFriendlyName;
                     var schemMsg = scheme.FriendlyName == null ? string.Empty : $" ({scheme.FriendlyName})";
                     var stateMsg = PhysicsGlobals.ThermalColorsDebug ? "Enabled" : "Disabled";
 
@@ -194,7 +194,7 @@ namespace HotSpot
             {
                 GUILayout.BeginHorizontal();
 
-                metricNode.Enable = GUILayout.Toggle(metricNode.Enable, metricNode.Name.FriendlyName);
+                metricNode.Enable = GUILayout.Toggle(metricNode.Enable, metricNode.Name.LongFriendlyName);
 
                 var isTemperatureMetric = metricNode.Name.Name == "TemperatureInternal";
 
@@ -261,7 +261,7 @@ namespace HotSpot
 
             GUILayout.Label("Metric:",
                 new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, GUILayout.Width(55));
-            GUILayout.Label(Config.Instance.Overlay.Metric.FriendlyName);
+            GUILayout.Label(Config.Instance.Overlay.Metric.LongFriendlyName);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Select", GUILayout.Width(50)))
             {
@@ -285,7 +285,7 @@ namespace HotSpot
                 }
 
                 var newMetricIndex = GUILayout.SelectionGrid(
-                    metricIndex, metrics.Select(i => i.Name.FriendlyName).ToArray(), 1
+                    metricIndex, metrics.Select(i => i.Name.LongFriendlyName).ToArray(), 1
                 );
 
                 Config.Instance.Overlay.Metric = metrics[newMetricIndex].Name;

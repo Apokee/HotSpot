@@ -8,6 +8,7 @@ namespace HotSpot.Model
     internal sealed class Metric
     {
         public static readonly Metric TemperatureInternal = new Metric("TemperatureInternal",
+            "Temperature [I]",
             "Internal Temperature",
             vessel => new Dictionary<Variable, double>
             {
@@ -25,6 +26,7 @@ namespace HotSpot.Model
         );
 
         public static readonly Metric TemperatureSkin = new Metric("TemperatureSkin",
+            "Temperature [S]",
             "Skin Temperature",
             vessel => new Dictionary<Variable, double>
             {
@@ -43,6 +45,7 @@ namespace HotSpot.Model
 
         public static readonly Metric ThermalRate = new Metric("ThermalRate",
             "Thermal Rate",
+            "Thermal Rate",
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.GetThermalFlux()),
@@ -53,6 +56,7 @@ namespace HotSpot.Model
         );
 
         public static readonly Metric ThermalRateInternal = new Metric("ThermalRateInternal",
+            "Thermal Rate [I]",
             "Internal Thermal Rate",
             vessel => new Dictionary<Variable, double>
             {
@@ -64,6 +68,7 @@ namespace HotSpot.Model
         );
 
         public static readonly Metric ThermalRateConductive = new Metric("ThermalRateConductive",
+            "Thermal Rate [Cd]",
             "Conductive Thermal Rate",
             vessel => new Dictionary<Variable, double>
             {
@@ -75,6 +80,7 @@ namespace HotSpot.Model
         );
 
         public static readonly Metric ThermalRateConvective = new Metric("ThermalRateConvective",
+            "Thermal Rate [Cv]",
             "Convective Thermal Rate",
             vessel => new Dictionary<Variable, double>
             {
@@ -86,6 +92,7 @@ namespace HotSpot.Model
         );
 
         public static readonly Metric ThermalRateRadiative = new Metric("ThermalRateRadiative",
+            "Thermal Rate [R]",
             "Radiative Thermal Rate",
             vessel => new Dictionary<Variable, double>
             {
@@ -101,16 +108,18 @@ namespace HotSpot.Model
         private readonly Func<Part, double> _getPartCurrent;
 
         public string Name { get; }
-        public string FriendlyName { get; }
+        public string ShortFriendlyName { get; }
+        public string LongFriendlyName { get; }
 
-        private Metric(string name, string friendlyName,
+        private Metric(string name, string shortFriendlyName, string longFriendlyName,
             Func<Vessel, Dictionary<Variable, double>> getVesselValues,
             Func<Part, Dictionary<Variable, double>> getPartValues,
             Func<Part, double> getPartCurrent
         )
         {
             Name = name;
-            FriendlyName = friendlyName;
+            ShortFriendlyName = shortFriendlyName;
+            LongFriendlyName = longFriendlyName;
             _getVesselValues = getVesselValues;
             _getPartValues = getPartValues;
             _getPartCurrent = getPartCurrent;

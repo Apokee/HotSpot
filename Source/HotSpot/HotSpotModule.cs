@@ -1,42 +1,49 @@
 ﻿using System;
+using System.Globalization;
 using HotSpot.Model;
 
 namespace HotSpot
 {
     public sealed class HotSpotModule : PartModule
     {
-        [KSPField(guiActive = false, guiName = "Temperature [I]")]
-        // ReSharper disable once NotAccessedField.Global
+        [KSPField(guiActive = false)]
         public string TemperatureInternal;
 
-        [KSPField(guiActive = false, guiName = "Thermal Rate")]
-        // ReSharper disable once NotAccessedField.Global
+        [KSPField(guiActive = false)]
+        public string TemperatureSkin;
+
+        [KSPField(guiActive = false)]
         public string ThermalRate;
 
-        [KSPField(guiActive = false, guiName = "Thermal Rate [I]")]
-        // ReSharper disable once NotAccessedField.Global
+        [KSPField(guiActive = false)]
         public string ThermalRateInternal;
 
-        [KSPField(guiActive = false, guiName = "Thermal Rate [Cd]")]
-        // ReSharper disable once NotAccessedField.Global
+        [KSPField(guiActive = false)]
         public string ThermalRateConductive;
 
-        [KSPField(guiActive = false, guiName = "Thermal Rate [Cv]")]
-        // ReSharper disable once NotAccessedField.Global
+        [KSPField(guiActive = false)]
         public string ThermalRateConvective;
 
-        [KSPField(guiActive = false, guiName = "Thermal Rate [R]")]
-        // ReSharper disable once NotAccessedField.Global
+        [KSPField(guiActive = false)]
         public string ThermalRateRadiative;
 
         public override void OnUpdate()
         {
-            UpdateTemperature();
-            UpdateThermalRate();
-            UpdateThermalRateInternal();
-            UpdateThermalRateConductive();
-            UpdateThermalRateConvective();
-            UpdateThermalRateRadiative();
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                foreach (var metricNode in Config.Instance.ContextMenu.Metrics)
+                {
+                    var metric = metricNode.Name;
+                    var field = Fields[metric.Name];
+
+                    field.guiName = metric.ShortFriendlyName;
+                    field.guiActive = metricNode.Enable;
+
+                    var value = metric.GetPartCurrent(part).ToString(CultureInfo.InvariantCulture);
+
+                    field.SetValue(value, this);
+                }
+            }
         }
 
         #region Updaters
