@@ -1,6 +1,12 @@
-## v0.2.1-alpha
+## v0.3.0-alpha
+##### New
+- Skin temperature added as a new metric.
+
 ##### Fix
 - Fix Internal Thermal Rate metric always being 0kW.
+
+##### Change
+- *Incompatible:* Configuration structure for temperature metrics has changed.
 
 ## v0.2.0
 ##### New
