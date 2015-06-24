@@ -24,6 +24,23 @@ namespace HotSpot.Model
             part => part.temperature
         );
 
+        public static readonly Metric TemperatureSkin = new Metric("TemperatureSkin",
+            "Skin Temperature",
+            vessel => new Dictionary<Variable, double>
+            {
+                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.skinTemperature),
+                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.skinTemperature),
+                [Variable.VesselAbsoluteMinimum] = 0,
+                [Variable.VesselAbsoluteMaximum] = vessel.Parts.Max(i => i.skinMaxTemp)
+            },
+            part => new Dictionary<Variable, double>
+            {
+                [Variable.PartAbsoluteMinimum] = 0,
+                [Variable.PartAbsoluteMaximum] = part.skinMaxTemp
+            },
+            part => part.skinTemperature
+        );
+
         public static readonly Metric ThermalRate = new Metric("ThermalRate",
             "Thermal Rate",
             vessel => new Dictionary<Variable, double>

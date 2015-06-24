@@ -5,7 +5,7 @@ namespace HotSpot
 {
     public sealed class HotSpotModule : PartModule
     {
-        [KSPField(guiActive = false, guiName = "TemperatureInternal")]
+        [KSPField(guiActive = false, guiName = "Temperature [I]")]
         // ReSharper disable once NotAccessedField.Global
         public string TemperatureInternal;
 
