@@ -7,6 +7,7 @@
 
 ##### Change
 - *Incompatible:* Configuration structure for temperature metrics has changed.
+- "Temperature" in context menus abbreviated to "Temp."
 
 ## v0.2.0
 ##### New
