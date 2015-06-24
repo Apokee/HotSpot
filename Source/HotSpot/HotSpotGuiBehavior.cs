@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HotSpot.Model;
 using HotSpot.Reflection;
@@ -20,7 +21,7 @@ namespace HotSpot
         private bool _showConfigWindow;
         private Rect _configWindowRect;
         private ConfigWindowTab _configWindowTabActive = ConfigWindowTab.Context;
-        private bool _configWindowContextShowTemperatureUnit;
+        private readonly Dictionary<string, bool> _configWindowContextShowUnits = new Dictionary<string, bool>();
         private bool _configWindowOverlayShowMetrics;
         private bool _configWindowOverlayShowSchemes;
 
@@ -29,6 +30,11 @@ namespace HotSpot
         public void Start()
         {
             Log.Trace("Entering HotSpotGuiBehavior.Start()");
+
+            foreach (var metricNode in Config.Instance.ContextMenu.Metrics)
+            {
+                _configWindowContextShowUnits[metricNode.Name.Name] = false;
+            }
 
             var buttonTexture = GameDatabase
                 .Instance
@@ -117,7 +123,7 @@ namespace HotSpot
                 {
                     var scheme = Config.Instance.Overlay.GetActiveMetric().GetActiveScheme();
 
-                    var metricMsg = Config.Instance.Overlay.Metric.FriendlyName;
+                    var metricMsg = Config.Instance.Overlay.Metric.LongFriendlyName;
                     var schemMsg = scheme.FriendlyName == null ? string.Empty : $" ({scheme.FriendlyName})";
                     var stateMsg = PhysicsGlobals.ThermalColorsDebug ? "Enabled" : "Disabled";
 
@@ -194,60 +200,40 @@ namespace HotSpot
             {
                 GUILayout.BeginHorizontal();
 
-                metricNode.Enable = GUILayout.Toggle(metricNode.Enable, metricNode.Name.FriendlyName);
+                metricNode.Enable = GUILayout.Toggle(metricNode.Enable, metricNode.Name.LongFriendlyName);
 
-                var isTemperatureMetric = metricNode.Name.Name == "Temperature";
-
-                if (isTemperatureMetric)
+                if (metricNode.Name.Units.Length > 1)
                 {
                     GUILayout.FlexibleSpace();
 
                     if (GUILayout.Button("Unit"))
                     {
-                        _configWindowContextShowTemperatureUnit = !_configWindowContextShowTemperatureUnit;
+                        _configWindowContextShowUnits[metricNode.Name.Name] =
+                            !_configWindowContextShowUnits[metricNode.Name.Name];
                     }
                 }
 
                 GUILayout.EndHorizontal();
 
-                if (_configWindowContextShowTemperatureUnit && isTemperatureMetric)
+                if (_configWindowContextShowUnits[metricNode.Name.Name])
                 {
-                    var temperatureMetricNode = Config
-                        .Instance
-                        .ContextMenu
-                        .Metrics
-                        .SingleOrDefault(i => i.Name.Name == "Temperature");
+                    GUILayout.BeginVertical();
 
-                    if (temperatureMetricNode != null)
+                    var unitIndex = 0;
+                    for (var i = 0; i < metricNode.Name.Units.Length; i++)
                     {
-                        GUILayout.BeginVertical();
-                        var units = new[] { Unit.Kelvin, Unit.Rankine, Unit.Celsius, Unit.Fahrenheit };
-
-                        int unitIndex;
-                        switch (temperatureMetricNode.Unit)
+                        if (metricNode.Name.Units[i] == metricNode.Unit)
                         {
-                            case Unit.Kelvin:
-                                unitIndex = 0;
-                                break;
-                            case Unit.Rankine:
-                                unitIndex = 1;
-                                break;
-                            case Unit.Celsius:
-                                unitIndex = 2;
-                                break;
-                            case Unit.Fahrenheit:
-                                unitIndex = 3;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
+                            unitIndex = i;
+                            break;
                         }
-
-                        var newUnitIndex = GUILayout.SelectionGrid(unitIndex, units.Select(i => i.ToString()).ToArray(), 2);
-
-                        temperatureMetricNode.Unit = units[newUnitIndex];
-
-                        GUILayout.EndVertical();
                     }
+
+                    var newUnitIndex = GUILayout.SelectionGrid(unitIndex, metricNode.Name.Units.Select(i => i.ToString()).ToArray(), 2);
+
+                    metricNode.Unit = metricNode.Name.Units[newUnitIndex];
+
+                    GUILayout.EndVertical();
                 }
             }
             GUILayout.EndVertical();
@@ -261,7 +247,7 @@ namespace HotSpot
 
             GUILayout.Label("Metric:",
                 new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, GUILayout.Width(55));
-            GUILayout.Label(Config.Instance.Overlay.Metric.FriendlyName);
+            GUILayout.Label(Config.Instance.Overlay.Metric.LongFriendlyName);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Select", GUILayout.Width(50)))
             {
@@ -285,7 +271,7 @@ namespace HotSpot
                 }
 
                 var newMetricIndex = GUILayout.SelectionGrid(
-                    metricIndex, metrics.Select(i => i.Name.FriendlyName).ToArray(), 1
+                    metricIndex, metrics.Select(i => i.Name.LongFriendlyName).ToArray(), 1
                 );
 
                 Config.Instance.Overlay.Metric = metrics[newMetricIndex].Name;

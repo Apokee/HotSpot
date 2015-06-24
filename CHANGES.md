@@ -1,3 +1,14 @@
+## v0.3.0
+##### New
+- Skin temperature added as a new metric.
+
+##### Changes
+- *Incompatible:* Configuration structure for temperature metrics has changed.
+- "Temperature" in context menus abbreviated to "Temp."
+
+##### Fixes
+- Fix Internal Thermal Rate metric always being 0kW.
+
 ## v0.2.0
 ##### New
 - Added thermal rate metrics to both overlays and context menu. These measure the change in thermal energy of a part
@@ -11,11 +22,11 @@
   the temperature unit, the overlay metric, and the gradient scheme for the metric. Currently this options are not
   persisted between loads.
 
-##### Change
+##### Changes
 - *Incompatible:* Configuration structure has changed significantly.
 
 ## v0.1.1
-##### Fix
+##### Fixes
 - Fix settings being loaded multiple times which would eventually cause the thermal overlays to fail.
 
 ## v0.1.0
