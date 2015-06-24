@@ -1,3 +1,7 @@
+## v0.2.1-alpha
+##### Fix
+- Fix Internal Thermal Rate metric always being 0kW.
+
 ## v0.2.0
 ##### New
 - Added thermal rate metrics to both overlays and context menu. These measure the change in thermal energy of a part

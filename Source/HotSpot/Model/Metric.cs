@@ -39,11 +39,11 @@ namespace HotSpot.Model
             "Internal Thermal Rate",
             vessel => new Dictionary<Variable, double>
             {
-                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalInternalFlux),
-                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.thermalInternalFlux)
+                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalInternalFluxPrevious),
+                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.thermalInternalFluxPrevious)
             },
             part => new Dictionary<Variable, double>(),
-            part => part.thermalInternalFlux
+            part => part.thermalInternalFluxPrevious
         );
 
         public static readonly Metric ThermalRateConductive = new Metric("ThermalRateConductive",

@@ -92,7 +92,7 @@ namespace HotSpot
             var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRateInternal);
 
             Fields["ThermalRateInternal"].guiActive = metric.Enable;
-            ThermalRateInternal = metric.Enable ? $"{part.thermalInternalFlux:F2}kW" : null;
+            ThermalRateInternal = metric.Enable ? $"{part.thermalInternalFluxPrevious:F2}kW" : null;
         }
 
         private void UpdateThermalRateConductive()
