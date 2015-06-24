@@ -50,6 +50,16 @@ The *Maximum* value depends on the scheme used:
 - *Vessel Current* - The maximum current temperature of any part in the vessel.
 - *Vessel Absolute* - The maximum temperature of any part in the vessel.
 
+#### Thermal Rate
+The color gradient used for thermal rates is as follows:
+
+- Purple (*Vessel Current Minimum*, if negative)
+- Blue (0.1×*Vessel Current Minimum*, if negative)
+- Transparent (0)
+- Yellow (0.1×*Vessel Current Maxmimum*, if positive)
+- Orange (0.5×*Vessel Current Maxmimum*, if positive)
+- Red (*Vessel Current Maxmimum*, if positive)
+
 ## Installation
 ### CKAN
 Hot Spot's CKAN identifier is `HotSpot`. It may be installed from the command line with:
@@ -58,7 +68,7 @@ Hot Spot's CKAN identifier is `HotSpot`. It may be installed from the command li
 > ckan install HotSpot
 ```
 
-It can be installed from the GUI.
+It can also be installed from the GUI.
 
 ### Manual
 1. Download the distribution package from [Kerbal Stuff][kerbalstuff] or [GitHub][github-releases].
