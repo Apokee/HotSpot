@@ -1,8 +1,4 @@
-﻿using System;
-using System.Globalization;
-using HotSpot.Model;
-
-namespace HotSpot
+﻿namespace HotSpot
 {
     public sealed class HotSpotModule : PartModule
     {
@@ -39,112 +35,11 @@ namespace HotSpot
                     field.guiName = metric.ShortFriendlyName;
                     field.guiActive = metricNode.Enable;
 
-                    var value = metric.GetPartCurrent(part).ToString(CultureInfo.InvariantCulture);
+                    var value = metric.GetPartCurrentString(part, metricNode.Unit);
 
                     field.SetValue(value, this);
                 }
             }
         }
-
-        #region Updaters
-
-        private void UpdateTemperature()
-        {
-            var metric = Config.Instance.ContextMenu.GetMetric(Metric.TemperatureInternal);
-
-            double temp;
-            double maxTemp;
-            string unit;
-
-            switch (metric.Unit)
-            {
-                case Unit.Kelvin:
-                    temp = part.temperature;
-                    maxTemp = part.maxTemp;
-                    unit = "K";
-                    break;
-                case Unit.Rankine:
-                    temp = ConvertKelvinToRankine(part.temperature);
-                    maxTemp = ConvertKelvinToRankine(part.maxTemp);
-                    unit = "°R";
-                    break;
-                case Unit.Celsius:
-                    temp = ConvertKelvinToCelsius(part.temperature);
-                    maxTemp = ConvertKelvinToCelsius(part.maxTemp);
-                    unit = "°C";
-                    break;
-                case Unit.Fahrenheit:
-                    temp = ConvertKelvinToFahrenheit(part.temperature);
-                    maxTemp = ConvertKelvinToFahrenheit(part.maxTemp);
-                    unit = "°F";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            Fields["TemperatureInternal"].guiActive = metric.Enable;
-            TemperatureInternal = metric.Enable ? $"{temp:F2}{unit} / {maxTemp:F2}{unit}" : null;
-        }
-
-        private void UpdateThermalRate()
-        {
-            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRate);
-
-            Fields["ThermalRate"].guiActive = metric.Enable;
-            ThermalRate = metric.Enable ? $"{part.GetThermalFlux():F2}kW" : null;
-        }
-
-        private void UpdateThermalRateInternal()
-        {
-            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRateInternal);
-
-            Fields["ThermalRateInternal"].guiActive = metric.Enable;
-            ThermalRateInternal = metric.Enable ? $"{part.thermalInternalFluxPrevious:F2}kW" : null;
-        }
-
-        private void UpdateThermalRateConductive()
-        {
-            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRateConductive);
-
-            Fields["ThermalRateConductive"].guiActive = metric.Enable;
-            ThermalRateConductive = metric.Enable ? $"{part.thermalConductionFlux:F2}kW" : null;
-        }
-
-        private void UpdateThermalRateConvective()
-        {
-            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRateConvective);
-
-            Fields["ThermalRateConvective"].guiActive = metric.Enable;
-            ThermalRateConvective = metric.Enable ? $"{part.thermalConvectionFlux:F2}kW" : null;
-        }
-
-        private void UpdateThermalRateRadiative()
-        {
-            var metric = Config.Instance.ContextMenu.GetMetric(Metric.ThermalRateRadiative);
-
-            Fields["ThermalRateRadiative"].guiActive = metric.Enable;
-            ThermalRateRadiative = metric.Enable ? $"{part.thermalRadiationFlux:F2}kW" : null;
-        }
-
-        #endregion
-
-        #region Helpers
-
-        private static double ConvertKelvinToRankine(double temp)
-        {
-            return temp * (9.0 / 5.0);
-        }
-
-        private static double ConvertKelvinToCelsius(double temp)
-        {
-            return temp - 273.15;
-        }
-
-        private static double ConvertKelvinToFahrenheit(double temp)
-        {
-            return temp * (9.0 / 5.0) - 459.67;
-        }
-
-        #endregion
     }
 }
