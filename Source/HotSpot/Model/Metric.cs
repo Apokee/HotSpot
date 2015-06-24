@@ -7,8 +7,8 @@ namespace HotSpot.Model
 {
     internal sealed class Metric
     {
-        public static readonly Metric Temperature = new Metric("Temperature",
-            "Temperature",
+        public static readonly Metric TemperatureInternal = new Metric("TemperatureInternal",
+            "Internal Temperature",
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.temperature),

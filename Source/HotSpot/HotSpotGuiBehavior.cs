@@ -196,7 +196,7 @@ namespace HotSpot
 
                 metricNode.Enable = GUILayout.Toggle(metricNode.Enable, metricNode.Name.FriendlyName);
 
-                var isTemperatureMetric = metricNode.Name.Name == "Temperature";
+                var isTemperatureMetric = metricNode.Name.Name == "TemperatureInternal";
 
                 if (isTemperatureMetric)
                 {
@@ -216,7 +216,7 @@ namespace HotSpot
                         .Instance
                         .ContextMenu
                         .Metrics
-                        .SingleOrDefault(i => i.Name.Name == "Temperature");
+                        .SingleOrDefault(i => i.Name.Name == "TemperatureInternal");
 
                     if (temperatureMetricNode != null)
                     {

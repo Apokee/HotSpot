@@ -5,9 +5,9 @@ namespace HotSpot
 {
     public sealed class HotSpotModule : PartModule
     {
-        [KSPField(guiActive = false, guiName = "Temperature")]
+        [KSPField(guiActive = false, guiName = "TemperatureInternal")]
         // ReSharper disable once NotAccessedField.Global
-        public string Temperature;
+        public string TemperatureInternal;
 
         [KSPField(guiActive = false, guiName = "Thermal Rate")]
         // ReSharper disable once NotAccessedField.Global
@@ -43,7 +43,7 @@ namespace HotSpot
 
         private void UpdateTemperature()
         {
-            var metric = Config.Instance.ContextMenu.GetMetric(Metric.Temperature);
+            var metric = Config.Instance.ContextMenu.GetMetric(Metric.TemperatureInternal);
 
             double temp;
             double maxTemp;
@@ -75,8 +75,8 @@ namespace HotSpot
                     throw new ArgumentOutOfRangeException();
             }
 
-            Fields["Temperature"].guiActive = metric.Enable;
-            Temperature = metric.Enable ? $"{temp:F2}{unit} / {maxTemp:F2}{unit}" : null;
+            Fields["TemperatureInternal"].guiActive = metric.Enable;
+            TemperatureInternal = metric.Enable ? $"{temp:F2}{unit} / {maxTemp:F2}{unit}" : null;
         }
 
         private void UpdateThermalRate()
