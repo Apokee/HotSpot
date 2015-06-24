@@ -10,6 +10,7 @@ namespace HotSpot.Model
         public static readonly Metric TemperatureInternal = new Metric("TemperatureInternal",
             "Temperature [I]",
             "Internal Temperature",
+            new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.temperature),
@@ -62,6 +63,7 @@ namespace HotSpot.Model
         public static readonly Metric TemperatureSkin = new Metric("TemperatureSkin",
             "Temperature [S]",
             "Skin Temperature",
+            new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.skinTemperature),
@@ -114,6 +116,7 @@ namespace HotSpot.Model
         public static readonly Metric ThermalRate = new Metric("ThermalRate",
             "Thermal Rate",
             "Thermal Rate",
+            new[] { Unit.Kilowatt },
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.GetThermalFlux()),
@@ -127,6 +130,7 @@ namespace HotSpot.Model
         public static readonly Metric ThermalRateInternal = new Metric("ThermalRateInternal",
             "Thermal Rate [I]",
             "Internal Thermal Rate",
+            new[] { Unit.Kilowatt },
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalInternalFluxPrevious),
@@ -140,6 +144,7 @@ namespace HotSpot.Model
         public static readonly Metric ThermalRateConductive = new Metric("ThermalRateConductive",
             "Thermal Rate [Cd]",
             "Conductive Thermal Rate",
+            new[] { Unit.Kilowatt },
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalConductionFlux),
@@ -153,6 +158,7 @@ namespace HotSpot.Model
         public static readonly Metric ThermalRateConvective = new Metric("ThermalRateConvective",
             "Thermal Rate [Cv]",
             "Convective Thermal Rate",
+            new[] { Unit.Kilowatt },
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalConvectionFlux),
@@ -166,6 +172,7 @@ namespace HotSpot.Model
         public static readonly Metric ThermalRateRadiative = new Metric("ThermalRateRadiative",
             "Thermal Rate [R]",
             "Radiative Thermal Rate",
+            new[] { Unit.Kilowatt },
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalRadiationFlux),
@@ -184,8 +191,9 @@ namespace HotSpot.Model
         public string Name { get; }
         public string ShortFriendlyName { get; }
         public string LongFriendlyName { get; }
+        public Unit[] Units { get; }
 
-        private Metric(string name, string shortFriendlyName, string longFriendlyName,
+        private Metric(string name, string shortFriendlyName, string longFriendlyName, Unit[] units,
             Func<Vessel, Dictionary<Variable, double>> getVesselValues,
             Func<Part, Dictionary<Variable, double>> getPartValues,
             Func<Part, double> getPartCurrent,
@@ -195,6 +203,7 @@ namespace HotSpot.Model
             Name = name;
             ShortFriendlyName = shortFriendlyName;
             LongFriendlyName = longFriendlyName;
+            Units = units;
             _getVesselValues = getVesselValues;
             _getPartValues = getPartValues;
             _getPartCurrent = getPartCurrent;
