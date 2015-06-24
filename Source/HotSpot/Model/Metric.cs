@@ -8,7 +8,7 @@ namespace HotSpot.Model
     internal sealed class Metric
     {
         public static readonly Metric TemperatureInternal = new Metric("TemperatureInternal",
-            "Temperature [I]",
+            "Temp. [I]",
             "Internal Temperature",
             new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
             vessel => new Dictionary<Variable, double>
@@ -61,7 +61,7 @@ namespace HotSpot.Model
         );
 
         public static readonly Metric TemperatureSkin = new Metric("TemperatureSkin",
-            "Temperature [S]",
+            "Temp. [S]",
             "Skin Temperature",
             new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
             vessel => new Dictionary<Variable, double>
