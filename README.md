@@ -3,8 +3,13 @@
 **Hot Spot** is a [MIT-licensed](LICENSE.md) Kerbal Space Program mod that displays better thermal data. It currently
 supports the following metrics:
 
-- Internal Temperature
+- Temperature
 - Thermal Rate
+
+Hot Spot and display two kinds of temperatures:
+
+- *Internal Temperature* - The temperature of the interior of a part.
+- *Skin Temperature* - The temperature of the exposed surface of a part.
 
 Thermal rate is the rate at which thermal energy is added or removed from a part. It is measured as energy per unit
 time, i.e. [*power*][wiki-power]. Positive thermal rates indicate a part is gaining thermal energy, negative thermal
@@ -44,6 +49,16 @@ The *Maximum* value depends on the scheme used:
 - *Part Absolute* - The maximum temperature of the current part.
 - *Vessel Current* - The maximum current temperature of any part in the vessel.
 - *Vessel Absolute* - The maximum temperature of any part in the vessel.
+
+#### Thermal Rate
+The color gradient used for thermal rates is as follows:
+
+- Purple (*Vessel Current Minimum*, if negative)
+- Blue (0.1×*Vessel Current Minimum*, if negative)
+- Transparent (0)
+- Yellow (0.1×*Vessel Current Maxmimum*, if positive)
+- Orange (0.5×*Vessel Current Maxmimum*, if positive)
+- Red (*Vessel Current Maxmimum*, if positive)
 
 ## Installation
 ### CKAN

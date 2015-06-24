@@ -2,7 +2,7 @@
 {
     internal enum Unit
     {
-        // Temperature
+        // TemperatureInternal
         Kelvin,
         Rankine,
         Celsius,

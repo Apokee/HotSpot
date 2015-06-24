@@ -31,7 +31,7 @@ namespace HotSpot.Configuration
 
         public static OverlayNode GetDefault()
         {
-            return new OverlayNode(false, true, Metric.Temperature, new MetricNode[] { });
+            return new OverlayNode(false, true, Metric.TemperatureInternal, new MetricNode[] { });
         }
 
         public static OverlayNode TryParse(ConfigNode node)
