@@ -6,7 +6,7 @@ supports the following metrics:
 - Temperature
 - Thermal Rate
 
-Hot Spot and display two kinds of temperatures:
+Hot Spot can display two kinds of temperatures:
 
 - *Internal Temperature* - The temperature of the interior of a part.
 - *Skin Temperature* - The temperature of the exposed surface of a part.

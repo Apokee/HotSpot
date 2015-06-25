@@ -1,3 +1,7 @@
+## v0.4.1
+##### Fixes
+- Fix for configuration settings reverting to default after two reloads of KSP.
+
 ## v0.4.0
 ##### New
 - Configuration settings are now persisted on scene change.
