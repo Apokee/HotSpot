@@ -5,15 +5,40 @@ namespace HotSpot.Configuration.ContextMenu
 {
     internal sealed class MetricNode
     {
+        private readonly bool _origEnable;
+        private readonly Unit _origUnit;
+
         public Metric Name { get; }
         public bool Enable { get; set; }
-        public Unit Unit { get; set;  }
+        public Unit Unit { get; set; }
 
         private MetricNode(Metric name, bool enable, Unit unit)
         {
+            _origEnable = enable;
+            _origUnit = unit;
+
             Name = name;
             Enable = enable;
             Unit = unit;
+        }
+
+        public bool Save(ConfigNode node)
+        {
+            var save = false;
+
+            if (_origEnable != Enable)
+            {
+                node.AddValue("%enable", Enable);
+                save = true;
+            }
+
+            if (_origUnit != Unit)
+            {
+                node.AddValue("%unit", Unit);
+                save = true;
+            }
+
+            return save;
         }
 
         public static MetricNode TryParse(ConfigNode node)

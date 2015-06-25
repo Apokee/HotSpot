@@ -22,6 +22,24 @@ namespace HotSpot.Configuration
             return _metricsDictionary[metric.Name];
         }
 
+        public bool Save(ConfigNode node)
+        {
+            var save = false;
+
+            foreach (var metric in Metrics)
+            {
+                var metricNode = new ConfigNode($"%METRIC[{metric.Name.Name}]");
+
+                if (metric.Save(metricNode))
+                {
+                    node.AddNode(metricNode);
+                    save = true;
+                }
+            }
+
+            return save;
+        }
+
         public static ContextMenuNode GetDefault()
         {
             return new ContextMenuNode(new MetricNode[] { });

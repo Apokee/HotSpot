@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using HotSpot.Configuration;
 
 namespace HotSpot
@@ -46,6 +48,8 @@ namespace HotSpot
                 $"Exploded Configuration:{Environment.NewLine}{node}" :
                 "No configuration found."
             );
+
+            GameEvents.onGameSceneSwitchRequested.Add(e => Instance.Save());
         }
 
         #endregion
@@ -69,6 +73,43 @@ namespace HotSpot
             ContextMenu = contextMenu;
             Overlay = overlay;
             Diagnostics = diagnostics;
+        }
+
+        public void Save()
+        {
+            // It appears the top-most node cannot use an edit-or-create operation (%) so use an edit operation (@)
+            var node = new ConfigNode("@HOT_SPOT:AFTER[HotSpot]");
+
+            var guiNode = new ConfigNode("%GUI");
+            var contextMenuNode = new ConfigNode("%CONTEXT_MENU");
+            var overlayNode = new ConfigNode("%OVERLAY");
+            var diagnosticsNode = new ConfigNode("%DIAGNOSTICS");
+
+            if (Gui.Save(guiNode))
+            {
+                node.AddNode(guiNode);
+            }
+
+            if (ContextMenu.Save(contextMenuNode))
+            {
+                node.AddNode(contextMenuNode);
+            }
+
+            if (Overlay.Save(overlayNode))
+            {
+                node.AddNode(overlayNode);
+            }
+
+            if (Diagnostics.Save(diagnosticsNode))
+            {
+                node.AddNode(diagnosticsNode);
+            }
+
+            File.WriteAllText(
+                $"{KSPUtil.ApplicationRootPath}/GameData/HotSpot/Configuration/HotSpotPlayer.cfg",
+                node.ToString(),
+                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+            );
         }
 
         public static Config TryParse(ConfigNode node)

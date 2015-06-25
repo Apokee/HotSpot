@@ -7,6 +7,8 @@ namespace HotSpot.Configuration.Overlay
 {
     internal sealed class MetricNode
     {
+        private readonly string _origScheme;
+
         private readonly Dictionary<string, SchemeNode> _schemesDictionary;
 
         public Metric Name { get; }
@@ -15,6 +17,8 @@ namespace HotSpot.Configuration.Overlay
 
         private MetricNode(Metric name, string scheme, SchemeNode[] schemes)
         {
+            _origScheme = scheme;
+
             Name = name;
             Scheme = scheme;
             Schemes = schemes;
@@ -24,6 +28,19 @@ namespace HotSpot.Configuration.Overlay
         public SchemeNode GetActiveScheme()
         {
             return _schemesDictionary[Scheme];
+        }
+
+        public bool Save(ConfigNode node)
+        {
+            var save = false;
+
+            if (_origScheme != Scheme)
+            {
+                node.AddValue("%scheme", Scheme);
+                save = true;
+            }
+
+            return save;
         }
 
         public static MetricNode TryParse(ConfigNode node)
