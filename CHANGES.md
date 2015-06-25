@@ -1,3 +1,5 @@
+## v0.4.2-alpha
+
 ## v0.4.1
 ##### Fixes
 - Fix for configuration settings reverting to default after two reloads of KSP.
