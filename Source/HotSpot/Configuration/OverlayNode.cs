@@ -10,8 +10,6 @@ namespace HotSpot.Configuration
     {
         private readonly Dictionary<string, MetricNode> _metricsDictionary;
 
-        private readonly string _origMetric;
-
         public bool Enable { get; }
         public bool EnableScreenMessage { get; }
         public Metric Metric { get; set; }
@@ -19,8 +17,6 @@ namespace HotSpot.Configuration
 
         private OverlayNode(bool enable, bool enableScreenMessage, Metric metric, MetricNode[] metrics)
         {
-            _origMetric = metric.Name;
-
             Enable = enable;
             EnableScreenMessage = enableScreenMessage;
             Metric = metric;
@@ -35,13 +31,7 @@ namespace HotSpot.Configuration
 
         public bool Save(ConfigNode node)
         {
-            var save = false;
-
-            if (_origMetric != Metric.Name)
-            {
-                node.AddValue("%metric", Metric.Name);
-                save = true;
-            }
+            node.AddValue("%metric", Metric.Name);
 
             foreach (var metric in Metrics)
             {
@@ -50,11 +40,10 @@ namespace HotSpot.Configuration
                 if (metric.Save(metricNode))
                 {
                     node.AddNode(metricNode);
-                    save = true;
                 }
             }
 
-            return save;
+            return true;
         }
 
         public static OverlayNode GetDefault()
