@@ -1,3 +1,5 @@
+## v0.4.1-alpha
+
 ## v0.4.0
 ##### New
 - Configuration settings are now persisted on scene change.
