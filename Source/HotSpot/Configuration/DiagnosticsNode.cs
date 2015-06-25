@@ -14,6 +14,8 @@
             return new DiagnosticsNode(LogLevel.Info);
         }
 
+        public bool Save(ConfigNode node) => false;
+
         public static DiagnosticsNode TryParse(ConfigNode node)
         {
             if (node != null)

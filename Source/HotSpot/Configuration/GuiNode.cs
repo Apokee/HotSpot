@@ -9,10 +9,9 @@
             ButtonTexture = buttonTexture;
         }
 
-        public static GuiNode GetDefault()
-        {
-            return new GuiNode(buttonTexture: null);
-        }
+        public bool Save(ConfigNode node) => false;
+
+        public static GuiNode GetDefault() => new GuiNode(buttonTexture: null);
 
         public static GuiNode TryParse(ConfigNode node)
         {

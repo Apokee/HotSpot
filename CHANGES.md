@@ -1,3 +1,7 @@
+## v0.4.0
+##### New
+- Configuration settings are now persisted on scene change.
+
 ## v0.3.0
 ##### New
 - Skin temperature added as a new metric.

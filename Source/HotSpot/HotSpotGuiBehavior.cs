@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HotSpot.Model;
 using HotSpot.Reflection;
 using UnityEngine;
 
