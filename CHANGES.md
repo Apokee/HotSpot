@@ -1,3 +1,7 @@
+## v0.4.2
+##### Fixes
+- Fix aggregate thermal rate calculation. It was double counting radiative thermal rate.
+
 ## v0.4.1
 ##### Fixes
 - Fix for configuration settings reverting to default after two reloads of KSP.
