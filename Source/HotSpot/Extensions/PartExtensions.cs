@@ -7,7 +7,6 @@
             return part.thermalInternalFluxPrevious
                 + part.thermalConductionFlux
                 + part.thermalConvectionFlux
-                + part.thermalRadiationFlux
                 + part.thermalRadiationFlux;
         }
     }
