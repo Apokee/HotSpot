@@ -1,4 +1,4 @@
-## v0.4.2-alpha
+## v0.4.2
 ##### Fixes
 - Fix aggregate thermal rate calculation. It was double counting radiative thermal rate.
 
