@@ -1,4 +1,6 @@
 ## v0.4.3-alpha
+##### Fixes
+- Add aggregte thermal rate metric to overlay configuration.
 
 ## v0.4.2
 ##### Fixes
