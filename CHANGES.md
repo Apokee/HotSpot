@@ -1,3 +1,7 @@
+## v0.4.3
+##### Fixes
+- Add aggregte thermal rate metric to overlay configuration.
+
 ## v0.4.2
 ##### Fixes
 - Fix aggregate thermal rate calculation. It was double counting radiative thermal rate.
