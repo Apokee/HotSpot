@@ -1,4 +1,4 @@
-## v0.4.4-alpha
+## v0.4.4
 ##### Fixes
 - Support for [KIS](http://forum.kerbalspaceprogram.com/threads/113111) stackables. 
 
