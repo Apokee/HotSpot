@@ -1,6 +1,10 @@
+## v0.4.4
+##### Fixes
+- Support for [KIS](http://forum.kerbalspaceprogram.com/threads/113111) stackables. 
+
 ## v0.4.3
 ##### Fixes
-- Add aggregte thermal rate metric to overlay configuration.
+- Add aggregate thermal rate metric to overlay configuration.
 
 ## v0.4.2
 ##### Fixes
