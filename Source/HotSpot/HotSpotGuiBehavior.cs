@@ -16,6 +16,7 @@ namespace HotSpot
 
         private bool _lastThermalColorsDebug;
         private ApplicationLauncherButton _applicationLauncherButton;
+        private IButton _toolbarButton;
 
         private bool _showConfigWindow;
         private Rect _configWindowRect;
@@ -35,31 +36,42 @@ namespace HotSpot
                 _configWindowContextShowUnits[metricNode.Name.Name] = false;
             }
 
-            var buttonTexture = GameDatabase
-                .Instance
-                .GetTexture(Config.Instance.Gui.ButtonTexture, asNormalMap: false);
-
-            if (buttonTexture != null)
+            if(ToolbarManager.ToolbarAvailable)
             {
-                Log.Debug($"Found button texture at: {Config.Instance.Gui.ButtonTexture}");
-
-                _applicationLauncherButton = ApplicationLauncher.Instance.AddModApplication(
-                    () => OnAppLauncherEvent(AppLauncherEvent.OnTrue),
-                    () => OnAppLauncherEvent(AppLauncherEvent.OnFalse),
-                    () => OnAppLauncherEvent(AppLauncherEvent.OnHover),
-                    () => OnAppLauncherEvent(AppLauncherEvent.OnHoverOut),
-                    () => OnAppLauncherEvent(AppLauncherEvent.OnEnable),
-                    () => OnAppLauncherEvent(AppLauncherEvent.OnDisable),
-                    ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW,
-                    buttonTexture
-                );
+                _toolbarButton = ToolbarManager.Instance.add("HotSpot", "config");
+                _toolbarButton.TexturePath = Config.Instance.Gui.ButtonTexture24;
+                _toolbarButton.ToolTip = "HotSpot Configuration";
+                _toolbarButton.Enabled = true;
+                _toolbarButton.OnClick += (e) => OnAppLauncherEvent(AppLauncherEvent.OnToggle);
             }
             else
             {
-                Log.Warning(
-                    $"Could not find button texture at: {Config.Instance.Gui.ButtonTexture} not creating" +
-                    " Application Launcher button."
-                );
+                var buttonTexture = GameDatabase
+                    .Instance
+                    .GetTexture(Config.Instance.Gui.ButtonTexture, asNormalMap: false);
+
+                if(buttonTexture != null)
+                {
+                    Log.Debug($"Found button texture at: {Config.Instance.Gui.ButtonTexture}");
+
+                    _applicationLauncherButton = ApplicationLauncher.Instance.AddModApplication(
+                        () => OnAppLauncherEvent(AppLauncherEvent.OnTrue),
+                        () => OnAppLauncherEvent(AppLauncherEvent.OnFalse),
+                        () => OnAppLauncherEvent(AppLauncherEvent.OnHover),
+                        () => OnAppLauncherEvent(AppLauncherEvent.OnHoverOut),
+                        () => OnAppLauncherEvent(AppLauncherEvent.OnEnable),
+                        () => OnAppLauncherEvent(AppLauncherEvent.OnDisable),
+                        ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW,
+                        buttonTexture
+                    );
+                }
+                else
+                {
+                    Log.Warning(
+                        $"Could not find button texture at: {Config.Instance.Gui.ButtonTexture} not creating" +
+                        " Application Launcher button."
+                    );
+                }
             }
 
             Log.Trace("Leaving HotSpotGuiBehavior.Start()");
@@ -67,7 +79,16 @@ namespace HotSpot
 
         public void OnDestroy()
         {
-            ApplicationLauncher.Instance.RemoveModApplication(_applicationLauncherButton);
+            if(_applicationLauncherButton != null)
+            {
+                ApplicationLauncher.Instance.RemoveModApplication(_applicationLauncherButton);
+                _applicationLauncherButton = null;
+            }
+            if(_toolbarButton != null)
+            {
+                _toolbarButton.Destroy();
+                _toolbarButton = null;
+            }
         }
 
         // ReSharper disable once InconsistentNaming
@@ -148,6 +169,9 @@ namespace HotSpot
                     break;
                 case AppLauncherEvent.OnFalse:
                     _showConfigWindow = false;
+                    break;
+                case AppLauncherEvent.OnToggle:
+                    _showConfigWindow = !_showConfigWindow;
                     break;
                 case AppLauncherEvent.OnHover:
                     break;
@@ -322,6 +346,7 @@ namespace HotSpot
         {
             OnTrue,
             OnFalse,
+            OnToggle,
             OnHover,
             OnHoverOut,
             OnEnable,
