@@ -81,7 +81,7 @@ namespace HotSpot
 
             if (enableAppLauncher)
             {
-                var buttonTexturePath = Config.Instance.Gui.AppLauncher.Texture ?? Config.Instance.Gui.ButtonTexture;
+                var buttonTexturePath = Config.Instance.Gui.AppLauncher.Texture;
                 var buttonTexture = GameDatabase.Instance.GetTexture(buttonTexturePath, asNormalMap: false);
 
                 if (buttonTexture != null)
