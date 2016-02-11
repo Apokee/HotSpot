@@ -23,15 +23,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
+// ReSharper disable All
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-
-// TODO: Change to your plugin's namespace here.
-namespace HotSpot
+namespace HotSpot.Compat.Toolbar
 {
 
 
@@ -53,6 +54,7 @@ namespace HotSpot
     /// <summary>
     /// The global tool bar manager.
     /// </summary>
+    
     public partial class ToolbarManager : IToolbarManager
     {
         /// <summary>

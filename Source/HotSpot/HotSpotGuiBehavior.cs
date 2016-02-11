@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HotSpot.Compat.Toolbar;
 using HotSpot.Configuration;
 using HotSpot.Reflection;
 using UnityEngine;
@@ -67,7 +68,7 @@ namespace HotSpot
                     _toolbarButton.TexturePath = buttonTexturePath;
                     _toolbarButton.ToolTip = "HotSpot Configuration";
                     _toolbarButton.Enabled = true;
-                    _toolbarButton.OnClick += (e) => OnAppLauncherEvent(AppLauncherEvent.OnToggle);
+                    _toolbarButton.OnClick += e => OnAppLauncherEvent(AppLauncherEvent.OnToggle);
                 }
                 else
                 {
