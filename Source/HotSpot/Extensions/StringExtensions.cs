@@ -1,4 +1,5 @@
 ﻿using System;
+using HotSpot.Configuration;
 
 namespace HotSpot
 {
@@ -11,6 +12,14 @@ namespace HotSpot
                 if (typeof(T).IsEnum)
                 {
                     return Enum.IsDefined(typeof(T), s) ? (T)Enum.Parse(typeof(T), s) : (T?)null;
+                }
+                else if (typeof(T) == typeof(AutoBoolean))
+                {
+                    AutoBoolean result;
+                    if (AutoBoolean.TryParse(s, out result))
+                        return (T)(object)result;
+                    else
+                        return null;
                 }
                 else
                 {

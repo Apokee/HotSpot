@@ -151,6 +151,7 @@ Task("Stage")
     CopyDirectory("Configuration", $"{stageModDirectory}/Configuration");
     CopyDirectory("Patches", $"{stageModDirectory}/Patches");
     CopyFile($"{artworkDirectory}/hotspot-white-38x38.png", $"{texturesDirectory}/AppLauncher.png");
+    CopyFile($"{artworkDirectory}/hotspot-white-24x24.png", $"{texturesDirectory}/Toolbar.png");
     CopyFileToDirectory("CHANGES.md", stageModDirectory);
     CopyFileToDirectory("LICENSE.md", stageModDirectory);
     CopyFileToDirectory("README.md", stageModDirectory);
