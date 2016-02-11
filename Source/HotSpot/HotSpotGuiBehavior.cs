@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HotSpot.Configuration;
 using HotSpot.Reflection;
 using UnityEngine;
 
@@ -36,23 +37,55 @@ namespace HotSpot
                 _configWindowContextShowUnits[metricNode.Name.Name] = false;
             }
 
-            if(ToolbarManager.ToolbarAvailable)
-            {
-                _toolbarButton = ToolbarManager.Instance.add("HotSpot", "config");
-                _toolbarButton.TexturePath = Config.Instance.Gui.ButtonTexture24;
-                _toolbarButton.ToolTip = "HotSpot Configuration";
-                _toolbarButton.Enabled = true;
-                _toolbarButton.OnClick += (e) => OnAppLauncherEvent(AppLauncherEvent.OnToggle);
-            }
-            else
-            {
-                var buttonTexture = GameDatabase
-                    .Instance
-                    .GetTexture(Config.Instance.Gui.ButtonTexture, asNormalMap: false);
+            bool enableToolbar;
+            bool enableAppLauncher;
 
-                if(buttonTexture != null)
+            if (Config.Instance.Gui.Toolbar.Enable == AutoBoolean.Auto)
+                enableToolbar = ToolbarManager.ToolbarAvailable;
+            else if (Config.Instance.Gui.Toolbar.Enable == AutoBoolean.False)
+                enableToolbar = false;
+            else
+                enableToolbar = true;
+
+            if (Config.Instance.Gui.AppLauncher.Enable == AutoBoolean.Auto)
+                enableAppLauncher = !enableToolbar;
+            else if (Config.Instance.Gui.AppLauncher.Enable == AutoBoolean.False)
+                enableAppLauncher = false;
+            else
+                enableAppLauncher = true;
+
+            if (enableToolbar)
+            {
+                var buttonTexturePath = Config.Instance.Gui.Toolbar.Texture;
+                var buttonTexture = GameDatabase.Instance.GetTexture(buttonTexturePath, asNormalMap: false);
+
+                if (buttonTexture != null)
                 {
-                    Log.Debug($"Found button texture at: {Config.Instance.Gui.ButtonTexture}");
+                    Log.Debug($"Found toolbar button texture at: {buttonTexturePath}");
+
+                    _toolbarButton = ToolbarManager.Instance.add("HotSpot", "config");
+                    _toolbarButton.TexturePath = buttonTexturePath;
+                    _toolbarButton.ToolTip = "HotSpot Configuration";
+                    _toolbarButton.Enabled = true;
+                    _toolbarButton.OnClick += (e) => OnAppLauncherEvent(AppLauncherEvent.OnToggle);
+                }
+                else
+                {
+                    Log.Warning(
+                        $"Could not find toolbar button texture at: {buttonTexturePath} not creating" +
+                        " Toolbar button."
+                    );
+                }
+            }
+
+            if (enableAppLauncher)
+            {
+                var buttonTexturePath = Config.Instance.Gui.AppLauncher.Texture ?? Config.Instance.Gui.ButtonTexture;
+                var buttonTexture = GameDatabase.Instance.GetTexture(buttonTexturePath, asNormalMap: false);
+
+                if (buttonTexture != null)
+                {
+                    Log.Debug($"Found applauncher button texture at: {buttonTexturePath}");
 
                     _applicationLauncherButton = ApplicationLauncher.Instance.AddModApplication(
                         () => OnAppLauncherEvent(AppLauncherEvent.OnTrue),
@@ -68,7 +101,7 @@ namespace HotSpot
                 else
                 {
                     Log.Warning(
-                        $"Could not find button texture at: {Config.Instance.Gui.ButtonTexture} not creating" +
+                        $"Could not find applauncher button texture at: {buttonTexturePath} not creating" +
                         " Application Launcher button."
                     );
                 }
