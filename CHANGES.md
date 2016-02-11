@@ -1,4 +1,7 @@
-## v0.4.5-alpha
+## v0.5.0-alpha
+##### New
+- Support for [Toolbar](http://forum.kerbalspaceprogram.com/index.php?/topic/55420-/) contributed by
+  [nanathan](https://github.com/nanathan).
 
 ## v0.4.4
 ##### Fixes
