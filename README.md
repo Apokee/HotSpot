@@ -71,7 +71,7 @@ Hot Spot's CKAN identifier is `HotSpot`. It may be installed from the command li
 It can also be installed from the GUI.
 
 ### Manual
-1. Download the distribution package from [Kerbal Stuff][kerbalstuff] or [GitHub][github-releases].
+1. Download the distribution package from [GitHub][github-releases].
 2. Extract the contents of the archive to your KSP directory. This should create an `HotSpot` directory under
 the `<KSP>/GameData` directory.
 3. Follow the installation instructions for all dependencies.
@@ -92,7 +92,6 @@ please see the Module Manager documentation for more information.
 [build]: https://ci.appveyor.com/project/Apokee/hotspot/branch/develop
 [build-badge]: https://ci.appveyor.com/api/projects/status/ik9la5jusinnpu5n/branch/develop?svg=true
 [github-releases]: https://github.com/Apokee/HotSpot/releases
-[kerbalstuff]: https://kerbalstuff.com/mod/937/Hot%20Spot
 [module-manager]: http://forum.kerbalspaceprogram.com/threads/55219
 [wiki-celsius]: https://en.wikipedia.org/wiki/Celsius
 [wiki-fahrenheit]: https://en.wikipedia.org/wiki/Fahrenheit
