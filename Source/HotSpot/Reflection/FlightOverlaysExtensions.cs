@@ -8,7 +8,7 @@ namespace HotSpot.Reflection
 
         static FlightOverlaysExtensions()
         {
-            var field = typeof(FlightOverlays).GetField("\u0001", BindingFlags.NonPublic | BindingFlags.Instance);
+            var field = typeof(FlightOverlays).GetField("statusMessage", BindingFlags.NonPublic | BindingFlags.Instance);
 
             if (field != null && field.FieldType == typeof(ScreenMessage))
             {

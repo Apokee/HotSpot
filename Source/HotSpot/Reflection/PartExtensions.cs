@@ -8,7 +8,7 @@ namespace HotSpot.Reflection
 
         static PartExtensions()
         {
-            var field = typeof(Part).GetField("\u0006", BindingFlags.NonPublic | BindingFlags.Instance);
+            var field = typeof(Part).GetField("temperatureRenderer", BindingFlags.NonPublic | BindingFlags.Instance);
 
             if (field != null && field.FieldType == typeof(MaterialColorUpdater))
             {
