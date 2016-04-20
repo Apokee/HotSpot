@@ -1,4 +1,6 @@
 ## v0.5.1-alpha
+##### Changes
+- Compatability with KSP 1.1
 
 ## v0.5.0
 ##### New
