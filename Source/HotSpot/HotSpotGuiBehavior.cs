@@ -4,6 +4,7 @@ using System.Linq;
 using HotSpot.Compat.Toolbar;
 using HotSpot.Configuration;
 using HotSpot.Reflection;
+using KSP.UI.Screens;
 using UnityEngine;
 
 namespace HotSpot
@@ -170,7 +171,11 @@ namespace HotSpot
                 {
                     Log.Debug("Found FlightOverlays, removing its ScreenMessage");
 
-                    ScreenMessages.RemoveMessage(flightOverlays.TryGetScreenMessage());
+                    var screenMessage = flightOverlays.TryGetScreenMessage();
+                    if (screenMessage != null)
+                    {
+                        ScreenMessages.RemoveMessage(screenMessage);
+                    }
                 }
 
                 if (Config.Instance.Overlay.EnableScreenMessage)

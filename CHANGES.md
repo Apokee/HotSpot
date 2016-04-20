@@ -1,3 +1,7 @@
+## v0.5.1
+##### Changes
+- Compatability with KSP 1.1
+
 ## v0.5.0
 ##### New
 - Support for [Toolbar](http://forum.kerbalspaceprogram.com/index.php?/topic/55420-/) contributed by
