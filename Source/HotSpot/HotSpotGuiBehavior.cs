@@ -303,12 +303,13 @@ namespace HotSpot
 
         private void OnOverlayTab()
         {
+            var labelWidth = GUILayout.Width(60);
+
             GUILayout.BeginVertical();
 
             GUILayout.BeginHorizontal();
 
-            GUILayout.Label("Metric:",
-                new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, GUILayout.Width(55));
+            GUILayout.Label("Metric:", new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, labelWidth);
             GUILayout.Label(Config.Instance.Overlay.Metric.LongFriendlyName);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Select", GUILayout.Width(50)))
@@ -341,8 +342,7 @@ namespace HotSpot
 
             GUILayout.BeginHorizontal();
 
-            GUILayout.Label("Scheme:",
-                new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, GUILayout.Width(55));
+            GUILayout.Label("Scheme:", new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold }, labelWidth);
             GUILayout.Label(Config.Instance.Overlay.GetActiveMetric().GetActiveScheme().FriendlyName);
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Select", GUILayout.Width(50)))
