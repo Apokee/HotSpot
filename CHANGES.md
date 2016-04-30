@@ -1,4 +1,6 @@
 ## v0.5.2-alpha
+##### Fixes
+- "Scheme:" label no longer occupies multiple lines in the GUI.
 
 ## v0.5.1
 ##### Changes
