@@ -12,8 +12,8 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-    <OutputPath>..\..\Output\Build\$(Configuration)\Common\bin\</OutputPath>
-    <IntermediateOutputPath>..\..\Output\Build\$(Configuration)\Common\obj\</IntermediateOutputPath>
+    <OutputPath>..\..\.build\out\$(AssemblyName)\$(Configuration)\bin\</OutputPath>
+    <IntermediateOutputPath>..\..\.build\out\$(AssemblyName)\$(Configuration)\obj\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,29 +34,35 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\Library\KSP\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\.build\lib\ksp\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\Library\KSP\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\..\.build\lib\ksp\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="KSPUtil">
-      <HintPath>..\..\Library\KSP\KSPUtil.dll</HintPath>
+      <HintPath>..\..\.build\lib\ksp\KSPUtil.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\Library\KSP\UnityEngine.dll</HintPath>
+      <HintPath>..\..\.build\lib\ksp\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\Library\KSP\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\..\.build\lib\ksp\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\.build\meta\GlobalAssemblyKspVersionInfo.cs">
+      <Link>Properties\GlobalAssemblyKspVersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\.build\meta\GlobalAssemblyVersionInfo.cs">
+      <Link>Properties\GlobalAssemblyVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="Configuration\AutoBoolean.cs" />
     <Compile Include="Configuration\ContextMenuNode.cs" />
     <Compile Include="Configuration\ContextMenu\MetricNode.cs" />

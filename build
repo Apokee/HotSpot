@@ -1,0 +1,60 @@
+#!/bin/sh
+set -e
+
+arg0=""
+remainingArgs=""
+
+if [ $# -gt 0 ]; then
+    arg0="$1"
+fi
+
+if [ $# -gt 1 ]; then
+    for i in $(seq 2 $#); do
+        remainingArgs+="${!i} "
+    done
+fi
+
+nugetVersion="3.3.0"
+useExperimental=false
+rootDir=$(dirname $0)
+buildDir="$rootDir/.build"
+toolsDir="$buildDir/tools"
+packagesDir="$buildDir/lib/nuget"
+nugetExe="$toolsDir/nuget/$nugetVersion/NuGet.exe"
+packagesConfigFile="$rootDir/packages.config"
+cakeVersion="$(sed -nE "s|\s*<package\s+id=\"Cake\"\s+version=\"(.+)\"\s*/>\s*|\1|p" $packagesConfigFile)"
+cakeExe="$packagesDir/Cake.$cakeVersion/Cake.exe"
+
+nugetDir="$(dirname $nugetExe)"
+if [ ! -d "$nugetDir" ]; then
+    mkdir -p "$nugetDir"
+fi
+
+if [ ! -f "$nugetExe" ]; then
+    curl -L "https://dist.nuget.org/win-x86-commandline/v${nugetVersion}/nuget.exe" --output "$nugetExe"
+fi
+
+mono "$nugetExe" install "$packagesConfigFile" -OutputDirectory "$packagesDir"
+
+cakeArgs=""
+
+if [ -n "$arg0" ]; then
+    case $arg0 in
+        -*)
+            cakeArgs+="$arg0 "
+            ;;
+        *)
+            cakeArgs+="--target=$arg0 "
+            ;;
+    esac
+fi
+
+if $useExperimental; then
+    cakeArgs+="--experimental "
+fi
+
+echo "CAKE: mono $cakeExe $cakeArgs $remainingArgs"
+
+mono "$cakeExe" $cakeArgs $remainingArgs
+exit $?
+

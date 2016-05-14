@@ -3,47 +3,47 @@
 - "Scheme:" label no longer occupies multiple lines in the GUI.
 
 ## v0.5.1
-##### Changes
-- Compatability with KSP 1.1
+##### Changed
+- Compatability with KSP 1.1.
 
 ## v0.5.0
-##### New
+##### Added
 - Support for [Toolbar](http://forum.kerbalspaceprogram.com/index.php?/topic/55420-/) contributed by
   [nanathan](https://github.com/nanathan).
 
 ## v0.4.4
-##### Fixes
+##### Fixed
 - Support for [KIS](http://forum.kerbalspaceprogram.com/threads/113111) stackables.
 
 ## v0.4.3
-##### Fixes
+##### Fixed
 - Add aggregate thermal rate metric to overlay configuration.
 
 ## v0.4.2
-##### Fixes
+##### Fixed
 - Fix aggregate thermal rate calculation. It was double counting radiative thermal rate.
 
 ## v0.4.1
-##### Fixes
+##### Fixed
 - Fix for configuration settings reverting to default after two reloads of KSP.
 
 ## v0.4.0
-##### New
+##### Added
 - Configuration settings are now persisted on scene change.
 
 ## v0.3.0
-##### New
+##### Added
 - Skin temperature added as a new metric.
 
-##### Changes
+##### Changed
 - *Incompatible:* Configuration structure for temperature metrics has changed.
 - "Temperature" in context menus abbreviated to "Temp."
 
-##### Fixes
+##### Fixed
 - Fix Internal Thermal Rate metric always being 0kW.
 
 ## v0.2.0
-##### New
+##### Added
 - Added thermal rate metrics to both overlays and context menu. These measure the change in thermal energy of a part
   over time in units of energy/time, i.e. power. There are four discrete thermal rates: internal, conductive,
   convective, and radiative. There is also a general thermal rate metric which is the combination of the previous
@@ -55,14 +55,14 @@
   the temperature unit, the overlay metric, and the gradient scheme for the metric. Currently this options are not
   persisted between loads.
 
-##### Changes
+##### Changed
 - *Incompatible:* Configuration structure has changed significantly.
 
 ## v0.1.1
-##### Fixes
+##### Fixed
 - Fix settings being loaded multiple times which would eventually cause the thermal overlays to fail.
 
 ## v0.1.0
-##### New
+##### Added
 - Replace thermal overlay gradient colors with more intuitive scheme.
 - Add display of temperature and max temperature values to part context menu.
