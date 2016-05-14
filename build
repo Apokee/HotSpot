@@ -9,12 +9,17 @@ if [ $# -gt 0 ]; then
 fi
 
 if [ $# -gt 1 ]; then
-    for i in $(seq 2 $#); do
-        remainingArgs+="${!i} "
+    skippedFirst=false
+    for i in "$@"; do
+        if $skippedFirst; then
+            remainingArgs="$remainingArgs $i"
+        else
+            skippedFirst=true
+        fi
     done
 fi
 
-nugetVersion="3.3.0"
+nugetVersion="3.4.3"
 useExperimental=false
 rootDir=$(dirname $0)
 buildDir="$rootDir/.build"
@@ -41,20 +46,19 @@ cakeArgs=""
 if [ -n "$arg0" ]; then
     case $arg0 in
         -*)
-            cakeArgs+="$arg0 "
+            cakeArgs="$cakeArgs $arg0"
             ;;
         *)
-            cakeArgs+="--target=$arg0 "
+            cakeArgs="$cakeArgs --target=$arg0"
             ;;
     esac
 fi
 
 if $useExperimental; then
-    cakeArgs+="--experimental "
+    cakeArgs="$cakeArgs --experimental"
 fi
 
 echo "CAKE: mono $cakeExe $cakeArgs $remainingArgs"
 
 mono "$cakeExe" $cakeArgs $remainingArgs
 exit $?
-

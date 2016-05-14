@@ -7,8 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C3EA3B3-B34
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotSpot", "src\HotSpot\HotSpot.csproj", "{26BDAE1E-3F27-4A7B-81A1-C461F96A3064}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotSpotTests", "src\HotSpotTests\HotSpotTests.csproj", "{277D410A-9E8C-41DA-8235-FB7A9940681B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,16 +17,11 @@ Global
 		{26BDAE1E-3F27-4A7B-81A1-C461F96A3064}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26BDAE1E-3F27-4A7B-81A1-C461F96A3064}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26BDAE1E-3F27-4A7B-81A1-C461F96A3064}.Release|Any CPU.Build.0 = Release|Any CPU
-		{277D410A-9E8C-41DA-8235-FB7A9940681B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{277D410A-9E8C-41DA-8235-FB7A9940681B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{277D410A-9E8C-41DA-8235-FB7A9940681B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{277D410A-9E8C-41DA-8235-FB7A9940681B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{26BDAE1E-3F27-4A7B-81A1-C461F96A3064} = {3C3EA3B3-B34C-4C92-AC7B-031810073BAB}
-		{277D410A-9E8C-41DA-8235-FB7A9940681B} = {3C3EA3B3-B34C-4C92-AC7B-031810073BAB}
 	EndGlobalSection
 EndGlobal
