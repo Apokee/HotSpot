@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HotSpot.Compat.Toolbar;
 using HotSpot.Configuration;
+using HotSpot.Model;
 using HotSpot.Reflection;
 using KSP.UI.Screens;
 using UnityEngine;
@@ -25,6 +26,7 @@ namespace HotSpot
         private Rect _configWindowRect;
         private ConfigWindowTab _configWindowTabActive = ConfigWindowTab.Context;
         private readonly Dictionary<string, bool> _configWindowContextShowUnits = new Dictionary<string, bool>();
+        private readonly Dictionary<string, bool> _configWindowContextShowPrefixes = new Dictionary<string, bool>();
         private bool _configWindowOverlayShowMetrics;
         private bool _configWindowOverlayShowSchemes;
 
@@ -37,6 +39,7 @@ namespace HotSpot
             foreach (var metricNode in Config.Instance.ContextMenu.Metrics)
             {
                 _configWindowContextShowUnits[metricNode.Name.Name] = false;
+                _configWindowContextShowPrefixes[metricNode.Name.Name] = false;
             }
 
             bool enableToolbar;
@@ -264,14 +267,38 @@ namespace HotSpot
 
                 metricNode.Enable = GUILayout.Toggle(metricNode.Enable, metricNode.Name.LongFriendlyName);
 
-                if (metricNode.Name.Units.Length > 1)
+                if (metricNode.Name.Units.Length > 1 || metricNode.Name.EnablePrefixSelection)
                 {
                     GUILayout.FlexibleSpace();
 
-                    if (GUILayout.Button("Unit"))
+                    if (metricNode.Name.Units.Length > 1)
                     {
-                        _configWindowContextShowUnits[metricNode.Name.Name] =
-                            !_configWindowContextShowUnits[metricNode.Name.Name];
+                        if (GUILayout.Button("Unit"))
+                        {
+                            _configWindowContextShowUnits[metricNode.Name.Name] =
+                                !_configWindowContextShowUnits[metricNode.Name.Name];
+
+                            // Turn off prefixes if necessary
+                            if (_configWindowContextShowUnits[metricNode.Name.Name])
+                            {
+                                _configWindowContextShowPrefixes[metricNode.Name.Name] = false;
+                            }
+                        }
+                    }
+
+                    if (metricNode.Name.EnablePrefixSelection)
+                    {
+                        if (GUILayout.Button("Prefix"))
+                        {
+                            _configWindowContextShowPrefixes[metricNode.Name.Name] =
+                                !_configWindowContextShowPrefixes[metricNode.Name.Name];
+
+                            // Turn off units if necessary
+                            if (_configWindowContextShowPrefixes[metricNode.Name.Name])
+                            {
+                                _configWindowContextShowUnits[metricNode.Name.Name] = false;
+                            }
+                        }
                     }
                 }
 
@@ -294,6 +321,56 @@ namespace HotSpot
                     var newUnitIndex = GUILayout.SelectionGrid(unitIndex, metricNode.Name.Units.Select(i => i.ToString()).ToArray(), 2);
 
                     metricNode.Unit = metricNode.Name.Units[newUnitIndex];
+
+                    GUILayout.EndVertical();
+                }
+
+                if (_configWindowContextShowPrefixes[metricNode.Name.Name])
+                {
+                    GUILayout.BeginVertical();
+
+                    var prefixes = new[]
+                    {
+                        "Auto",
+                        Prefix.None.ToString(),
+                        Prefix.Yocto.ToString(),
+                        Prefix.Zepto.ToString(),
+                        Prefix.Atto.ToString(),
+                        Prefix.Femto.ToString(),
+                        Prefix.Pico.ToString(),
+                        Prefix.Nano.ToString(),
+                        Prefix.Micro.ToString(),
+                        Prefix.Milli.ToString(),
+                        Prefix.Centi.ToString(),
+                        Prefix.Deci.ToString(),
+                        Prefix.Deca.ToString(),
+                        Prefix.Hecto.ToString(),
+                        Prefix.Kilo.ToString(),
+                        Prefix.Mega.ToString(),
+                        Prefix.Giga.ToString(),
+                        Prefix.Tera.ToString(),
+                        Prefix.Peta.ToString(),
+                        Prefix.Exa.ToString(),
+                        Prefix.Zetta.ToString(),
+                        Prefix.Yotta.ToString()
+                    };
+
+                    var unitIndex = 0;
+                    for (var i = 0; i < prefixes.Length; i++)
+                    {
+                        if (prefixes[i] == (metricNode.Prefix?.ToString() ?? "Auto"))
+                        {
+                            unitIndex = i;
+                            break;
+                        }
+                    }
+
+                    var newUnitIndex = GUILayout.SelectionGrid(unitIndex, prefixes, 2);
+
+                    var selectedPrefixString = prefixes[newUnitIndex];
+                    metricNode.Prefix = selectedPrefixString == "Auto"
+                        ? null
+                        : (Prefix?)Enum.Parse(typeof(Prefix), selectedPrefixString);
 
                     GUILayout.EndVertical();
                 }

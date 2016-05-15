@@ -6,12 +6,17 @@
 - Added ideal metric values for applicable metrics (only core temperature as of now).
 - Added "Part Ideal" overlay scheme for the core temperature metric which is green when around ideal temperature,
   purple and blue when below ideal temperature, and yellow and red when above ideal temperature.
+- Added SI prefix selection for thermal rate metrics. By default, prefix is selected automatically.
 
 ##### Changed
 - Changed temperature formatting:
   - Unit symbol is only printed at the very end.
   - Only one decimal place is shown instead of two.
   - If there is an ideal temperature it is displayed between the current and maximum temperatures.
+
+##### Deprecated
+- Unit has changed from `Kilowatt` to `Watt` to more clearly identify what it represents now that prefixes can be
+  changed. `Kilowatt` will automatically be translated to `Watt` for now.
 
 ##### Fixed
 - "Scheme:" label no longer occupies multiple lines in the GUI.

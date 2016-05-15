@@ -11,6 +11,7 @@ namespace HotSpot.Model
             "Temp [I]",
             "Internal Temperature",
             new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
+            false,
             part => true,
             vessel => new Dictionary<Variable, double>
             {
@@ -25,13 +26,14 @@ namespace HotSpot.Model
                 [Variable.PartAbsoluteMaximum] = part.maxTemp
             },
             part => part.temperature,
-            (part, unit) => TemperatureToString(part.temperature, part.maxTemp, null, unit)
+            (part, unit, prefix) => TemperatureToString(part.temperature, part.maxTemp, null, unit)
         );
 
         public static readonly Metric TemperatureSkin = new Metric("TemperatureSkin",
             "Temp [S]",
             "Skin Temperature",
             new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
+            false,
             part => true,
             vessel => new Dictionary<Variable, double>
             {
@@ -46,13 +48,14 @@ namespace HotSpot.Model
                 [Variable.PartAbsoluteMaximum] = part.skinMaxTemp
             },
             part => part.skinTemperature,
-            (part, unit) => TemperatureToString(part.skinTemperature, part.skinMaxTemp, null, unit)
+            (part, unit, prefix) => TemperatureToString(part.skinTemperature, part.skinMaxTemp, null, unit)
         );
 
         public static readonly Metric TemperatureCore = new Metric("TemperatureCore",
             "Temp [C]",
             "Core Temperature",
             new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
+            false,
             part => part.FindModuleImplementing<ModuleCoreHeat>() != null,
             vessel =>
             {
@@ -96,7 +99,7 @@ namespace HotSpot.Model
                 }
             },
             part => part.FindModuleImplementing<ModuleCoreHeat>()?.CoreTemperature,
-            (part, unit) =>
+            (part, unit, prefix) =>
             {
                 var coreHeatModule = part.FindModuleImplementing<ModuleCoreHeat>();
 
@@ -114,7 +117,8 @@ namespace HotSpot.Model
         public static readonly Metric ThermalRate = new Metric("ThermalRate",
             "Thermal Rate",
             "Thermal Rate",
-            new[] { Unit.Kilowatt },
+            new[] { Unit.Watt },
+            true,
             part => true,
             vessel => new Dictionary<Variable, double>
             {
@@ -123,13 +127,14 @@ namespace HotSpot.Model
             },
             part => new Dictionary<Variable, double>(),
             part => part.GetThermalFlux(),
-            (part, unit) => $"{part.GetThermalFlux():F2}kW"
+            (part, unit, prefix) => (part.GetThermalFlux() * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
         public static readonly Metric ThermalRateInternal = new Metric("ThermalRateInternal",
             "Thermal Rate [I]",
             "Internal Thermal Rate",
-            new[] { Unit.Kilowatt },
+            new[] { Unit.Watt },
+            true,
             part => true,
             vessel => new Dictionary<Variable, double>
             {
@@ -138,13 +143,14 @@ namespace HotSpot.Model
             },
             part => new Dictionary<Variable, double>(),
             part => part.thermalInternalFluxPrevious,
-            (part, unit) => $"{part.thermalInternalFluxPrevious:F2}kW"
+            (part, unit, prefix) => (part.thermalInternalFluxPrevious * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
         public static readonly Metric ThermalRateConductive = new Metric("ThermalRateConductive",
             "Thermal Rate [Cd]",
             "Conductive Thermal Rate",
-            new[] { Unit.Kilowatt },
+            new[] { Unit.Watt },
+            true,
             part => true,
             vessel => new Dictionary<Variable, double>
             {
@@ -153,13 +159,14 @@ namespace HotSpot.Model
             },
             part => new Dictionary<Variable, double>(),
             part => part.thermalConductionFlux,
-            (part, unit) => $"{part.thermalConductionFlux:F2}kW"
+            (part, unit, prefix) => (part.thermalConductionFlux * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
         public static readonly Metric ThermalRateConvective = new Metric("ThermalRateConvective",
             "Thermal Rate [Cv]",
             "Convective Thermal Rate",
-            new[] { Unit.Kilowatt },
+            new[] { Unit.Watt },
+            true,
             part => true,
             vessel => new Dictionary<Variable, double>
             {
@@ -168,13 +175,14 @@ namespace HotSpot.Model
             },
             part => new Dictionary<Variable, double>(),
             part => part.thermalConvectionFlux,
-            (part, unit) => $"{part.thermalConvectionFlux:F2}kW"
+            (part, unit, prefix) => (part.thermalConvectionFlux * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
         public static readonly Metric ThermalRateRadiative = new Metric("ThermalRateRadiative",
             "Thermal Rate [R]",
             "Radiative Thermal Rate",
-            new[] { Unit.Kilowatt },
+            new[] { Unit.Watt },
+            true,
             part => true,
             vessel => new Dictionary<Variable, double>
             {
@@ -183,13 +191,14 @@ namespace HotSpot.Model
             },
             part => new Dictionary<Variable, double>(),
             part => part.thermalRadiationFlux,
-            (part, unit) => $"{part.thermalRadiationFlux:F2}kW"
+            (part, unit, prefix) => (part.thermalRadiationFlux * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
         public static readonly Metric ThermalRateSkinToInternal = new Metric("ThermalRateSkinToInternal",
             "Thermal Rate [S-I]",
             "Skin to Internal Thermal Rate",
-            new[] { Unit.Kilowatt },
+            new[] { Unit.Watt },
+            true,
             part => true,
             vessel => new Dictionary<Variable, double>
             {
@@ -198,13 +207,14 @@ namespace HotSpot.Model
             },
             part => new Dictionary<Variable, double>(),
             part => part.skinToInternalFlux,
-            (part, unit) => $"{part.skinToInternalFlux:F2}kW"
+            (part, unit, prefix) => (part.skinToInternalFlux * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
         public static readonly Metric ThermalRateInternalToSkin = new Metric("ThermalRateInternalToSkin",
             "Thermal Rate [I-S]",
             "Internal to Skin Thermal Rate",
-            new[] { Unit.Kilowatt },
+            new[] { Unit.Watt },
+            true,
             part => true,
             vessel => new Dictionary<Variable, double>
             {
@@ -213,32 +223,35 @@ namespace HotSpot.Model
             },
             part => new Dictionary<Variable, double>(),
             part => -part.skinToInternalFlux,
-            (part, unit) => $"{-part.skinToInternalFlux:F2}kW"
+            (part, unit, prefix) => (-part.skinToInternalFlux * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
         private readonly Func<Part, bool> _isApplicable;
         private readonly Func<Vessel, Dictionary<Variable, double>> _getVesselValues;
         private readonly Func<Part, Dictionary<Variable, double>> _getPartValues;
         private readonly Func<Part, double?> _getPartCurrent;
-        private readonly Func<Part, Unit, string> _getPartCurrentString;
+        private readonly Func<Part, Unit, Prefix?, string> _getPartCurrentString;
 
         public string Name { get; }
         public string ShortFriendlyName { get; }
         public string LongFriendlyName { get; }
         public Unit[] Units { get; }
+        public bool EnablePrefixSelection { get; }
 
-        private Metric(string name, string shortFriendlyName, string longFriendlyName, Unit[] units,
+        private Metric(string name, string shortFriendlyName, string longFriendlyName,
+            Unit[] units, bool enablePrefixSelection,
             Func<Part, bool> isApplicable,
             Func<Vessel, Dictionary<Variable, double>> getVesselValues,
             Func<Part, Dictionary<Variable, double>> getPartValues,
             Func<Part, double?> getPartCurrent,
-            Func<Part, Unit, string> getPartCurrentString
+            Func<Part, Unit, Prefix?, string> getPartCurrentString
         )
         {
             Name = name;
             ShortFriendlyName = shortFriendlyName;
             LongFriendlyName = longFriendlyName;
             Units = units;
+            EnablePrefixSelection = enablePrefixSelection;
             _isApplicable = isApplicable;
             _getVesselValues = getVesselValues;
             _getPartValues = getPartValues;
@@ -246,11 +259,20 @@ namespace HotSpot.Model
             _getPartCurrentString = getPartCurrentString;
         }
 
-        public bool IsApplicable(Part part) => _isApplicable(part);
-        public Dictionary<Variable, double> GetVesselValues(Vessel vessel) => _getVesselValues(vessel);
-        public Dictionary<Variable, double> GetPartValues(Part part) => _getPartValues(part);
-        public double? GetPartCurrent(Part part) => _getPartCurrent(part);
-        public string GetPartCurrentString(Part part, Unit unit) => _getPartCurrentString(part, unit);
+        public bool IsApplicable(Part part)
+            => _isApplicable(part);
+
+        public Dictionary<Variable, double> GetVesselValues(Vessel vessel)
+            => _getVesselValues(vessel);
+
+        public Dictionary<Variable, double> GetPartValues(Part part)
+            => _getPartValues(part);
+
+        public double? GetPartCurrent(Part part)
+            => _getPartCurrent(part);
+
+        public string GetPartCurrentString(Part part, Unit unit, Prefix? prefix)
+            => _getPartCurrentString(part, unit, prefix);
 
         public static Metric Parse(string s)
         {

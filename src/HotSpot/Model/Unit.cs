@@ -1,6 +1,6 @@
 ﻿namespace HotSpot.Model
 {
-    internal enum Unit
+    internal enum Unit : byte
     {
         // TemperatureInternal
         Kelvin,
@@ -9,6 +9,7 @@
         Fahrenheit,
 
         // Power
+        Watt,
         Kilowatt,
     }
 }
