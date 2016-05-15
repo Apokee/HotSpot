@@ -26,6 +26,12 @@
         [KSPField(guiActive = false)]
         public string ThermalRateRadiative;
 
+        [KSPField(guiActive = false)]
+        public string ThermalRateSkinToInternal;
+
+        [KSPField(guiActive = false)]
+        public string ThermalRateInternalToSkin;
+
         public override void OnStart(StartState state)
         {
             base.OnStart(state);
@@ -50,10 +56,17 @@
                     {
                         var field = Fields[metric.Name];
 
-                        field.guiName = metric.ShortFriendlyName;
-                        field.guiActive = metricNode.Enable;
+                        if (field != null)
+                        {
+                            field.guiName = metric.ShortFriendlyName;
+                            field.guiActive = metricNode.Enable;
 
-                        field.SetValue(value, this);
+                            field.SetValue(value, this);
+                        }
+                        else
+                        {
+                            Log.Warning($"Could not find field for metric `{metric.Name}`.");
+                        }
                     }
                     else
                     {
@@ -67,17 +80,12 @@
 
         private void DisableStockCoreTempDisplay()
         {
-            var overheatDisplayModule = part.FindModuleImplementing<ModuleOverheatDisplay>();
+            var coreTempDisplayField = part
+                .FindModuleImplementing<ModuleOverheatDisplay>()
+                ?.Fields["coreTempDisplay"];
 
-            if (overheatDisplayModule != null)
-            {
-                var coreTempDisplayField = overheatDisplayModule.Fields["coreTempDisplay"];
-
-                if (coreTempDisplayField != null)
-                {
-                    coreTempDisplayField.guiActive = false;
-                }
-            }
+            if (coreTempDisplayField != null)
+                coreTempDisplayField.guiActive = false;
         }
     }
 }

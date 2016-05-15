@@ -1,6 +1,7 @@
 ## v0.6.0-alpha
 ##### Added
 - Added core temperature as a new metric for applicable parts.
+- Added skin to internal and internal to skin thermal rate as new metrics.
 - Disable stock core temperature display in the part context menu by default.
 - Added ideal metric values for applicable metrics (only core temperature as of now).
 - Added "Part Ideal" overlay scheme for the core temperature metric which is green when around ideal temperature,

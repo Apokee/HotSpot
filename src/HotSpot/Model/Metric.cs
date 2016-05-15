@@ -186,6 +186,36 @@ namespace HotSpot.Model
             (part, unit) => $"{part.thermalRadiationFlux:F2}kW"
         );
 
+        public static readonly Metric ThermalRateSkinToInternal = new Metric("ThermalRateSkinToInternal",
+            "Thermal Rate [S-I]",
+            "Skin to Internal Thermal Rate",
+            new[] { Unit.Kilowatt },
+            part => true,
+            vessel => new Dictionary<Variable, double>
+            {
+                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.skinToInternalFlux),
+                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.skinToInternalFlux)
+            },
+            part => new Dictionary<Variable, double>(),
+            part => part.skinToInternalFlux,
+            (part, unit) => $"{part.skinToInternalFlux:F2}kW"
+        );
+
+        public static readonly Metric ThermalRateInternalToSkin = new Metric("ThermalRateInternalToSkin",
+            "Thermal Rate [I-S]",
+            "Internal to Skin Thermal Rate",
+            new[] { Unit.Kilowatt },
+            part => true,
+            vessel => new Dictionary<Variable, double>
+            {
+                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => -i.skinToInternalFlux),
+                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => -i.skinToInternalFlux)
+            },
+            part => new Dictionary<Variable, double>(),
+            part => -part.skinToInternalFlux,
+            (part, unit) => $"{-part.skinToInternalFlux:F2}kW"
+        );
+
         private readonly Func<Part, bool> _isApplicable;
         private readonly Func<Vessel, Dictionary<Variable, double>> _getVesselValues;
         private readonly Func<Part, Dictionary<Variable, double>> _getPartValues;
