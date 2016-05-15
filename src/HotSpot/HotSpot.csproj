@@ -72,6 +72,7 @@
     <Compile Include="Configuration\Gui\ToolbarNode.cs" />
     <Compile Include="Configuration\Gui\AppLauncherNode.cs" />
     <Compile Include="Configuration\OverlayNode.cs" />
+    <Compile Include="Extensions\DoubleExtensions.cs" />
     <Compile Include="HotSpotGuiBehavior.cs" />
     <Compile Include="Model\EvaluatedGradientNode.cs" />
     <Compile Include="Model\EvaluatedStopNode.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="Log.cs" />
     <Compile Include="HotSpotBehavior.cs" />
     <Compile Include="Model\Metric.cs" />
+    <Compile Include="Model\Prefix.cs" />
     <Compile Include="Model\Unit.cs" />
     <Compile Include="Model\Variable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

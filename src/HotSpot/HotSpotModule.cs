@@ -50,7 +50,7 @@
 
                 if (metric.IsApplicable(part))
                 {
-                    var value = metric.GetPartCurrentString(part, metricNode.Unit);
+                    var value = metric.GetPartCurrentString(part, metricNode.Unit, metricNode.Prefix);
 
                     if (value != null)
                     {
