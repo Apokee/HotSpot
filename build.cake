@@ -45,7 +45,7 @@ public sealed class Globals
 }
 
 // HACK: Terrible workaround for Mono's script compiler not supporting globals like Roslyn
-private Globals getGlobals()
+private Globals GetGlobals()
 {
     var globals = new Globals();
 
@@ -92,7 +92,7 @@ Task("InitLibKsp")
 {
     const string kspLibsUrlBase = "http://build.apokee.com/dependencies/ksp/1.1.2.1260";
 
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     CreateDirectory(globals.BuildLibKspDirectory);
     
@@ -112,7 +112,7 @@ Task("InitLibKsp")
 Task("CleanStage")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     CleanDirectories(new [] { globals.BuildStageDirectory }); 
 });
@@ -120,7 +120,7 @@ Task("CleanStage")
 Task("CleanPackage")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     CleanDirectories(new [] { globals.BuildPkgDirectory }); 
 });
@@ -128,7 +128,7 @@ Task("CleanPackage")
 Task("CleanDeploy")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     CleanDirectories(new [] {globals.DeployDirectory });
 });
@@ -136,7 +136,7 @@ Task("CleanDeploy")
 Task("Restore")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     NuGetRestore(globals.Solution);
 });
@@ -145,7 +145,7 @@ Task("BuildMeta")
     .IsDependentOn("BuildAssemblyInfo")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     CreateDirectory(globals.BuildMetaDirectory);
     
@@ -170,7 +170,7 @@ Task("BuildAssemblyInfo")
 Task("BuildGlobalAssemblyVersionInfo")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     CreateDirectory(globals.BuildMetaDirectory);
     
@@ -185,7 +185,7 @@ Task("BuildGlobalAssemblyVersionInfo")
 Task("BuildGlobalKspAssemblyVersionInfo")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     CreateDirectory(globals.BuildMetaDirectory);
     
@@ -213,7 +213,7 @@ Task("Build")
     .IsDependentOn("BuildMeta")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     DotNetBuild(globals.Solution, s => { s.Configuration = globals.Configuration; });
 });
@@ -224,7 +224,7 @@ Task("Stage")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     var artworkDirectory = GetNuGetPackageDirectory("Apokee.Artwork").Combine("Content");
     var binDirectory = globals
@@ -268,7 +268,7 @@ Task("Deploy")
     .IsDependentOn("CleanDeploy")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     CopyDirectory(globals.BuildStageGameDataModDirectory, globals.DeployDirectory);
 });
@@ -277,7 +277,7 @@ Task("Run")
     .IsDependentOn("Deploy")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     StartAndReturnProcess(globals.BuildConfiguration.KspPath(globals.BuildConfiguration.KspBin), new ProcessSettings
     {
@@ -290,7 +290,7 @@ Task("Package")
     .IsDependentOn("Stage")
     .Does(() =>
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     CreateDirectory(globals.BuildPkgDirectory);
 
@@ -314,7 +314,7 @@ Task("ChangeLog")
     Information(GetChangeLog().LatestChanges);
 });
 
-RunTarget(getGlobals().Target);
+RunTarget(GetGlobals().Target);
 
 public SemVer GetBuildVersion()
 {    
@@ -342,7 +342,7 @@ public SemVer GetBuildVersion()
 
 private DirectoryPath GetNuGetPackageDirectory(string package)
 {
-    var globals = getGlobals();
+    var globals = GetGlobals();
     
     return GetDirectories(string.Format("{0}/*", globals.BuildLibNugetDirectory))
         .Where(i => i.GetDirectoryName().StartsWith(package))
