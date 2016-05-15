@@ -8,9 +8,10 @@ namespace HotSpot.Model
     internal sealed class Metric
     {
         public static readonly Metric TemperatureInternal = new Metric("TemperatureInternal",
-            "Temp. [I]",
+            "Temp [I]",
             "Internal Temperature",
             new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
+            part => true,
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.temperature),
@@ -24,46 +25,14 @@ namespace HotSpot.Model
                 [Variable.PartAbsoluteMaximum] = part.maxTemp
             },
             part => part.temperature,
-            (part, unit) =>
-            {
-                double temp;
-                double maxTemp;
-                string unitSymbol;
-
-                switch (unit)
-                {
-                    case Unit.Kelvin:
-                        temp = part.temperature;
-                        maxTemp = part.maxTemp;
-                        unitSymbol = "K";
-                        break;
-                    case Unit.Rankine:
-                        temp = ConvertKelvinToRankine(part.temperature);
-                        maxTemp = ConvertKelvinToRankine(part.maxTemp);
-                        unitSymbol = "°R";
-                        break;
-                    case Unit.Celsius:
-                        temp = ConvertKelvinToCelsius(part.temperature);
-                        maxTemp = ConvertKelvinToCelsius(part.maxTemp);
-                        unitSymbol = "°C";
-                        break;
-                    case Unit.Fahrenheit:
-                        temp = ConvertKelvinToFahrenheit(part.temperature);
-                        maxTemp = ConvertKelvinToFahrenheit(part.maxTemp);
-                        unitSymbol = "°F";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                return $"{temp:F2}{unitSymbol} / {maxTemp:F2}{unitSymbol}";
-            }
+            (part, unit) => TemperatureToString(part.temperature, part.maxTemp, null, unit)
         );
 
         public static readonly Metric TemperatureSkin = new Metric("TemperatureSkin",
-            "Temp. [S]",
+            "Temp [S]",
             "Skin Temperature",
             new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
+            part => true,
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.skinTemperature),
@@ -77,39 +46,68 @@ namespace HotSpot.Model
                 [Variable.PartAbsoluteMaximum] = part.skinMaxTemp
             },
             part => part.skinTemperature,
+            (part, unit) => TemperatureToString(part.skinTemperature, part.skinMaxTemp, null, unit)
+        );
+
+        public static readonly Metric TemperatureCore = new Metric("TemperatureCore",
+            "Temp [C]",
+            "Core Temperature",
+            new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
+            part => part.FindModuleImplementing<ModuleCoreHeat>() != null,
+            vessel =>
+            {
+                var coreHeatModules = vessel
+                    .Parts
+                    .Select(i => i.FindModuleImplementing<ModuleCoreHeat>())
+                    .Where(i => i != null)
+                    .ToArray();
+
+                if (coreHeatModules.Any())
+                {
+                    return new Dictionary<Variable, double>
+                    {
+                        [Variable.VesselCurrentMinimum] = coreHeatModules.Min(i => i.CoreTemperature),
+                        [Variable.VesselCurrentMaximum] = coreHeatModules.Max(i => i.CoreTemperature),
+                        [Variable.VesselAbsoluteMinimum] = 0,
+                        [Variable.VesselAbsoluteMaximum] = coreHeatModules.Max(i => i.CoreShutdownTemp)
+                    };
+                }
+                else
+                {
+                    return null;
+                }
+            },
+            part =>
+            {
+                var coreHeatModule = part.FindModuleImplementing<ModuleCoreHeat>();
+
+                if (coreHeatModule != null)
+                {
+                    return new Dictionary<Variable, double>
+                    {
+                        [Variable.PartAbsoluteMinimum] = 0,
+                        [Variable.PartAbsoluteMaximum] = coreHeatModule.CoreShutdownTemp,
+                        [Variable.PartIdeal] = coreHeatModule.CoreTempGoal
+                    };
+                }
+                else
+                {
+                    return null;
+                }
+            },
+            part => part.FindModuleImplementing<ModuleCoreHeat>()?.CoreTemperature,
             (part, unit) =>
             {
-                double temp;
-                double maxTemp;
-                string unitSymbol;
+                var coreHeatModule = part.FindModuleImplementing<ModuleCoreHeat>();
 
-                switch (unit)
-                {
-                    case Unit.Kelvin:
-                        temp = part.skinTemperature;
-                        maxTemp = part.skinMaxTemp;
-                        unitSymbol = "K";
-                        break;
-                    case Unit.Rankine:
-                        temp = ConvertKelvinToRankine(part.skinTemperature);
-                        maxTemp = ConvertKelvinToRankine(part.skinMaxTemp);
-                        unitSymbol = "°R";
-                        break;
-                    case Unit.Celsius:
-                        temp = ConvertKelvinToCelsius(part.skinTemperature);
-                        maxTemp = ConvertKelvinToCelsius(part.skinMaxTemp);
-                        unitSymbol = "°C";
-                        break;
-                    case Unit.Fahrenheit:
-                        temp = ConvertKelvinToFahrenheit(part.skinTemperature);
-                        maxTemp = ConvertKelvinToFahrenheit(part.skinMaxTemp);
-                        unitSymbol = "°F";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                return $"{temp:F2}{unitSymbol} / {maxTemp:F2}{unitSymbol}";
+                return coreHeatModule != null
+                    ? TemperatureToString(
+                        coreHeatModule.CoreTemperature,
+                        coreHeatModule.CoreShutdownTemp,
+                        coreHeatModule.CoreTempGoal,
+                        unit
+                    )
+                    : null;
             }
         );
 
@@ -117,6 +115,7 @@ namespace HotSpot.Model
             "Thermal Rate",
             "Thermal Rate",
             new[] { Unit.Kilowatt },
+            part => true,
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.GetThermalFlux()),
@@ -131,6 +130,7 @@ namespace HotSpot.Model
             "Thermal Rate [I]",
             "Internal Thermal Rate",
             new[] { Unit.Kilowatt },
+            part => true,
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalInternalFluxPrevious),
@@ -145,6 +145,7 @@ namespace HotSpot.Model
             "Thermal Rate [Cd]",
             "Conductive Thermal Rate",
             new[] { Unit.Kilowatt },
+            part => true,
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalConductionFlux),
@@ -159,6 +160,7 @@ namespace HotSpot.Model
             "Thermal Rate [Cv]",
             "Convective Thermal Rate",
             new[] { Unit.Kilowatt },
+            part => true,
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalConvectionFlux),
@@ -173,6 +175,7 @@ namespace HotSpot.Model
             "Thermal Rate [R]",
             "Radiative Thermal Rate",
             new[] { Unit.Kilowatt },
+            part => true,
             vessel => new Dictionary<Variable, double>
             {
                 [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalRadiationFlux),
@@ -183,9 +186,10 @@ namespace HotSpot.Model
             (part, unit) => $"{part.thermalRadiationFlux:F2}kW"
         );
 
+        private readonly Func<Part, bool> _isApplicable;
         private readonly Func<Vessel, Dictionary<Variable, double>> _getVesselValues;
         private readonly Func<Part, Dictionary<Variable, double>> _getPartValues;
-        private readonly Func<Part, double> _getPartCurrent;
+        private readonly Func<Part, double?> _getPartCurrent;
         private readonly Func<Part, Unit, string> _getPartCurrentString;
 
         public string Name { get; }
@@ -194,9 +198,10 @@ namespace HotSpot.Model
         public Unit[] Units { get; }
 
         private Metric(string name, string shortFriendlyName, string longFriendlyName, Unit[] units,
+            Func<Part, bool> isApplicable,
             Func<Vessel, Dictionary<Variable, double>> getVesselValues,
             Func<Part, Dictionary<Variable, double>> getPartValues,
-            Func<Part, double> getPartCurrent,
+            Func<Part, double?> getPartCurrent,
             Func<Part, Unit, string> getPartCurrentString
         )
         {
@@ -204,31 +209,18 @@ namespace HotSpot.Model
             ShortFriendlyName = shortFriendlyName;
             LongFriendlyName = longFriendlyName;
             Units = units;
+            _isApplicable = isApplicable;
             _getVesselValues = getVesselValues;
             _getPartValues = getPartValues;
             _getPartCurrent = getPartCurrent;
             _getPartCurrentString = getPartCurrentString;
         }
 
-        public Dictionary<Variable, double> GetVesselValues(Vessel vessel)
-        {
-            return _getVesselValues(vessel);
-        }
-
-        public Dictionary<Variable, double> GetPartValues(Part part)
-        {
-            return _getPartValues(part);
-        }
-
-        public double GetPartCurrent(Part part)
-        {
-            return _getPartCurrent(part);
-        }
-
-        public string GetPartCurrentString(Part part, Unit unit)
-        {
-            return _getPartCurrentString(part, unit);
-        }
+        public bool IsApplicable(Part part) => _isApplicable(part);
+        public Dictionary<Variable, double> GetVesselValues(Vessel vessel) => _getVesselValues(vessel);
+        public Dictionary<Variable, double> GetPartValues(Part part) => _getPartValues(part);
+        public double? GetPartCurrent(Part part) => _getPartCurrent(part);
+        public string GetPartCurrentString(Part part, Unit unit) => _getPartCurrentString(part, unit);
 
         public static Metric Parse(string s)
         {
@@ -269,6 +261,60 @@ namespace HotSpot.Model
         private static double ConvertKelvinToFahrenheit(double temp)
         {
             return temp * (9.0 / 5.0) - 459.67;
+        }
+
+        private static string TemperatureToString(
+            double tempKelvin,
+            double maxTempKelvin,
+            double? idealTempKelvin,
+            Unit unit
+        )
+        {
+            double temp;
+            double maxTemp;
+            double? idealTemp = null;
+            string unitSymbol;
+
+            switch (unit)
+            {
+                case Unit.Kelvin:
+                    temp = tempKelvin;
+                    maxTemp = maxTempKelvin;
+                    if (idealTempKelvin != null) idealTemp = idealTempKelvin;
+                    unitSymbol = "K";
+                    break;
+                case Unit.Rankine:
+                    temp = ConvertKelvinToRankine(tempKelvin);
+                    maxTemp = ConvertKelvinToRankine(maxTempKelvin);
+                    if (idealTempKelvin != null) idealTemp = ConvertKelvinToRankine(idealTempKelvin.Value);
+                    unitSymbol = "°R";
+                    break;
+                case Unit.Celsius:
+                    temp = ConvertKelvinToCelsius(tempKelvin);
+                    maxTemp = ConvertKelvinToCelsius(maxTempKelvin);
+                    if (idealTempKelvin != null) idealTemp = ConvertKelvinToCelsius(idealTempKelvin.Value);
+                    unitSymbol = "°C";
+                    break;
+                case Unit.Fahrenheit:
+                    temp = ConvertKelvinToFahrenheit(tempKelvin);
+                    maxTemp = ConvertKelvinToFahrenheit(maxTempKelvin);
+                    if (idealTempKelvin != null) idealTemp = ConvertKelvinToFahrenheit(idealTempKelvin.Value);
+                    unitSymbol = "°F";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            var result = $"{temp:F1}";
+
+            if (idealTemp != null)
+            {
+                result += $" / {idealTemp.Value:F1}";
+            }
+
+            result += $" / {maxTemp:F1} {unitSymbol}";
+
+            return result;
         }
 
         #endregion

@@ -4,6 +4,7 @@
     {
         PartAbsoluteMinimum,
         PartAbsoluteMaximum,
+        PartIdeal,
         VesselCurrentMinimum,
         VesselCurrentMaximum,
         VesselAbsoluteMinimum,

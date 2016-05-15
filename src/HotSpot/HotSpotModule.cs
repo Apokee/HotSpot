@@ -9,6 +9,9 @@
         public string TemperatureSkin;
 
         [KSPField(guiActive = false)]
+        public string TemperatureCore;
+
+        [KSPField(guiActive = false)]
         public string ThermalRate;
 
         [KSPField(guiActive = false)]
@@ -23,21 +26,56 @@
         [KSPField(guiActive = false)]
         public string ThermalRateRadiative;
 
+        public override void OnStart(StartState state)
+        {
+            base.OnStart(state);
+
+            if (Config.Instance.Gui.ContextMenu.DisableStockCoreTemp)
+                DisableStockCoreTempDisplay();
+        }
+
         public override void OnUpdate()
         {
-            if (HighLogic.LoadedSceneIsFlight)
+            if (!HighLogic.LoadedSceneIsFlight) return;
+
+            foreach (var metricNode in Config.Instance.ContextMenu.Metrics)
             {
-                foreach (var metricNode in Config.Instance.ContextMenu.Metrics)
+                var metric = metricNode.Name;
+
+                if (metric.IsApplicable(part))
                 {
-                    var metric = metricNode.Name;
-                    var field = Fields[metric.Name];
-
-                    field.guiName = metric.ShortFriendlyName;
-                    field.guiActive = metricNode.Enable;
-
                     var value = metric.GetPartCurrentString(part, metricNode.Unit);
 
-                    field.SetValue(value, this);
+                    if (value != null)
+                    {
+                        var field = Fields[metric.Name];
+
+                        field.guiName = metric.ShortFriendlyName;
+                        field.guiActive = metricNode.Enable;
+
+                        field.SetValue(value, this);
+                    }
+                    else
+                    {
+                        Log.Warning(
+                            $"Received null value for for applicable metric `{metric.Name}` on part `{part.name}`."
+                        );
+                    }
+                }
+            }
+        }
+
+        private void DisableStockCoreTempDisplay()
+        {
+            var overheatDisplayModule = part.FindModuleImplementing<ModuleOverheatDisplay>();
+
+            if (overheatDisplayModule != null)
+            {
+                var coreTempDisplayField = overheatDisplayModule.Fields["coreTempDisplay"];
+
+                if (coreTempDisplayField != null)
+                {
+                    coreTempDisplayField.guiActive = false;
                 }
             }
         }

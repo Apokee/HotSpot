@@ -68,6 +68,7 @@
     <Compile Include="Configuration\ContextMenu\MetricNode.cs" />
     <Compile Include="Configuration\DiagnosticsNode.cs" />
     <Compile Include="Configuration\GuiNode.cs" />
+    <Compile Include="Configuration\Gui\ContextMenuNode.cs" />
     <Compile Include="Configuration\Gui\ToolbarNode.cs" />
     <Compile Include="Configuration\Gui\AppLauncherNode.cs" />
     <Compile Include="Configuration\OverlayNode.cs" />
