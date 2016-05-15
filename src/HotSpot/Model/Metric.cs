@@ -130,6 +130,7 @@ namespace HotSpot.Model
             (part, unit, prefix) => (part.GetThermalFlux() * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
+        // Use thermalInternalFluxPrevious since the current value is always zero at the time we read it.
         public static readonly Metric ThermalRateInternal = new Metric("ThermalRateInternal",
             "Thermal Rate [I]",
             "Internal Thermal Rate",
