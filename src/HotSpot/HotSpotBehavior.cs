@@ -35,15 +35,30 @@ namespace HotSpot
 
                     foreach (var part in vessel.Parts)
                     {
-                        var partVariables = metric.GetPartValues(part);
-                        var partCurrent = metric.GetPartCurrent(part);
+                        Color? color = null;
 
-                        var color = Config
-                            .Instance
-                            .Overlay
-                            .GetActiveMetric()
-                            .GetActiveScheme()
-                            .EvaluateColor(partCurrent, MergeVariables(vesselVariables, partVariables));
+                        if (metric.IsApplicable(part))
+                        {
+                            var partVariables = metric.GetPartValues(part);
+                            var partCurrent = metric.GetPartCurrent(part);
+
+                            if (partCurrent != null)
+                            {
+                                color = Config
+                                    .Instance
+                                    .Overlay
+                                    .GetActiveMetric()
+                                    .GetActiveScheme()
+                                    .EvaluateColor(partCurrent.Value, MergeVariables(vesselVariables, partVariables));
+                            }
+                            else
+                            {
+                                Log.Warning(
+                                    $"Received null value for for applicable metric `{metric.Name}` on part " +
+                                    $"`{part.name}`."
+                                );
+                            }
+                        }
 
                         part.TryGetMaterialColorUpdater()?.Update(color ?? Part.defaultHighlightNone);
                     }

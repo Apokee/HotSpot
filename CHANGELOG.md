@@ -1,5 +1,18 @@
-## v0.5.2-alpha
-##### Fixes
+## v0.6.0-alpha
+##### Added
+- Added core temperature as a new metric for applicable parts.
+- Disable stock core temperature display in the part context menu by default.
+- Added ideal metric values for applicable metrics (only core temperature as of now).
+- Added "Part Ideal" overlay scheme for the core temperature metric which is green when around ideal temperature,
+  purple and blue when below ideal temperature, and yellow and red when above ideal temperature.
+
+##### Changed
+- Changed temperature formatting:
+  - Unit symbol is only printed at the very end.
+  - Only one decimal place is shown instead of two.
+  - If there is an ideal temperature it is displayed between the current and maximum temperatures.
+
+##### Fixed
 - "Scheme:" label no longer occupies multiple lines in the GUI.
 
 ## v0.5.1

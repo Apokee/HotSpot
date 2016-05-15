@@ -50,6 +50,19 @@ The *Maximum* value depends on the scheme used:
 - *Vessel Current* - The maximum current temperature of any part in the vessel.
 - *Vessel Absolute* - The maximum temperature of any part in the vessel.
 
+#### Ideal Temperature
+
+The color gradient used for ideal temperatures is as follows:
+
+- Purple (0K)
+- Blue (0.8×*Ideal*)
+- Green (*Ideal*)
+- Yellow (1.2×*Ideal*)
+- Red (*Maximum*)
+
+Where *Ideal* is the part's "ideal" temperature, e.g. for resource converters its the temperature at which conversion
+is maximally efficient, and *Maximum* is the maximum temperature for the current part.
+
 #### Thermal Rate
 The color gradient used for thermal rates is as follows:
 
