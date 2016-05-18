@@ -1,4 +1,4 @@
-## v0.6.0-alpha
+## v0.6.0
 ##### Added
 - Added core temperature as a new metric for applicable parts.
 - Added skin to internal and internal to skin thermal rate as new metrics.
