@@ -1,3 +1,5 @@
+## v0.6.1-alpha
+
 ## v0.6.0
 ##### Added
 - Added core temperature as a new metric for applicable parts.
