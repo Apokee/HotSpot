@@ -1,14 +1,15 @@
-#l "utilities.cake"
+#addin "Cake.FileHelpers"
+#l "cake/utilities.cake"
 
 using System.Text.RegularExpressions;
 using YamlDotNet.Serialization;
 
 public sealed class BuildConfiguration
 {
-    [YamlAlias("ksp_dir")]
+    [YamlMember(Alias = "ksp_dir")]
     public string KspDir { get; set; }
 
-    [YamlAlias("ksp_bin")]
+    [YamlMember(Alias = "ksp_bin")]
     public string KspBin { get; set; }
 
     public string KspPath(params string[] paths)
@@ -17,30 +18,41 @@ public sealed class BuildConfiguration
     }
 }
 
-var target = Argument<string>("target", "Package");
-var configuration = Argument<string>("configuration", "Debug");
-var release = Argument<bool>("release", false);
-
-var buildConfiguration = GetBuildConfiguration<BuildConfiguration>();
-
-var solution = GetSolution();
-
-var identifier = "HotSpot";
-var outputDirectory = "Output";
-var artworkDirectory = Directory(GetNuGetPackageDirectory("Apokee.Artwork")) + Directory("Content");
-var buildDirectory = Directory($"{outputDirectory}/Build/{configuration}");
-var binDirectory = Directory($"{buildDirectory}/Common/bin");
-var stageDirectory = Directory($"{outputDirectory}/Stage/{configuration}");
-var stageGameDataDirectory = Directory($"{stageDirectory}/GameData");
-var stageModDirectory = Directory($"{stageGameDataDirectory}/{identifier}");
-var deployModDirectory = buildConfiguration.KspPath("GameData", identifier);
-var packageDirectory = Directory($"{outputDirectory}/Package/{configuration}");
-
-Task("Init")
-    .Does(() =>
+public sealed class Globals
 {
-    var kspLibDirectory = System.IO.Path.Combine("Library", "KSP");
-    var kspLibs = new []
+    public string ModIdentifier { get; set; }
+    public string ModName { get; set; }
+    public string ModCopyrightDates { get; set; }
+    public string[] KspLibs { get; set; }
+    public string Target { get; set; }
+    public string Configuration { get; set; }
+    public BuildConfiguration BuildConfiguration { get; set; }
+    public SemVer BuildVersion { get; set; }
+    public FilePath Solution { get; set; }
+    public DirectoryPath RootDirectory { get; set; }
+    public DirectoryPath BuildDirectory { get; set; }
+    public DirectoryPath BuildLibDirectory { get; set; }
+    public DirectoryPath BuildLibKspDirectory { get; set; }
+    public DirectoryPath BuildLibNugetDirectory { get; set; }
+    public DirectoryPath BuildMetaDirectory { get; set; }
+    public DirectoryPath BuildPkgDirectory { get; set; }
+    public DirectoryPath BuildStageDirectory { get; set; }
+    public DirectoryPath BuildStageGameDataDirectory { get; set; }
+    public DirectoryPath BuildStageGameDataModDirectory { get; set; }
+    public DirectoryPath BuildOutDirectory { get; set; }
+    public DirectoryPath SrcDirectory { get; set; }
+    public DirectoryPath DeployDirectory { get; set; }
+}
+
+// HACK: Terrible workaround for Mono's script compiler not supporting globals like Roslyn
+private Globals GetGlobals()
+{
+    var globals = new Globals();
+
+    globals.ModIdentifier = "HotSpot";
+    globals.ModName = "Hot Spot";
+    globals.ModCopyrightDates = "2015-2016";
+    globals.KspLibs = new []
     {
         "Assembly-CSharp.dll",
         "Assembly-CSharp-firstpass.dll",
@@ -48,120 +60,207 @@ Task("Init")
         "UnityEngine.dll",
         "UnityEngine.UI.dll"
     };
+    globals.Target = Argument<string>("target", "Package");
+    globals.Configuration = Argument<string>("configuration", "Debug");
+    globals.BuildConfiguration = GetBuildConfiguration<BuildConfiguration>();
+    globals.BuildVersion = GetBuildVersion();
+    globals.Solution = GetSolution();
+    globals.RootDirectory = Context.Environment.WorkingDirectory;
+    globals.BuildDirectory = globals.RootDirectory.Combine(".build");
+    globals.BuildLibDirectory = globals.BuildDirectory.Combine("lib");
+    globals.BuildLibKspDirectory = globals.BuildLibDirectory.Combine("ksp");
+    globals.BuildLibNugetDirectory = globals.BuildLibDirectory.Combine("nuget");
+    globals.BuildMetaDirectory = globals.BuildDirectory.Combine("meta");
+    globals.BuildPkgDirectory = globals.BuildDirectory.Combine("pkg").Combine(globals.Configuration);
+    globals.BuildStageDirectory = globals.BuildDirectory.Combine("stage");
+    globals.BuildStageGameDataDirectory = globals.BuildStageDirectory.Combine("GameData");
+    globals.BuildStageGameDataModDirectory = globals.BuildStageGameDataDirectory.Combine(globals.ModIdentifier);
+    globals.BuildOutDirectory = globals.BuildDirectory.Combine("out");
+    globals.SrcDirectory = globals.RootDirectory.Combine("src");
+    
+    var deployDirectory = globals.BuildConfiguration.KspPath("GameData", globals.ModIdentifier);    
+    if (deployDirectory != null) { globals.DeployDirectory =  deployDirectory; }
 
-    CreateDirectory(kspLibDirectory);
+    return globals;
+}
 
-    foreach (var kspLib in kspLibs)
-    {
-        if (!FileExists(System.IO.Path.Combine(kspLibDirectory, kspLib)))
-        {
-            CopyFileToDirectory(
-                buildConfiguration.KspPath("KSP_Data", "Managed", kspLib),
-                kspLibDirectory
-            );
-        }
-    }
-});
+Task("Init")
+    .IsDependentOn("InitLibKsp");
 
-Task("CleanBuild")
+Task("InitLibKsp")
     .Does(() =>
 {
-    CleanDirectories(new DirectoryPath[] { buildDirectory });
+    const string kspLibsUrlBase = "http://build.apokee.com/dependencies/ksp/1.1.2.1260";
+
+    var globals = GetGlobals();
+    
+    CreateDirectory(globals.BuildLibKspDirectory);
+    
+    var missingKspLibs = globals.KspLibs.Where(i => !FileExists(globals.BuildLibKspDirectory.CombineWithFilePath(i)));
+    foreach (var kspLib in missingKspLibs)
+    {
+        var destinationKspLibFilePath = globals.BuildLibKspDirectory.CombineWithFilePath(kspLib);
+        var localKspLib = globals.BuildConfiguration.KspPath("KSP_x64_Data", "Managed", kspLib);
+
+        if (localKspLib != null && FileExists(localKspLib))
+            CopyFile(localKspLib, destinationKspLibFilePath);
+        else
+            DownloadFile(string.Format("{0}/{1}", kspLibsUrlBase, kspLib), destinationKspLibFilePath);
+    }
 });
 
 Task("CleanStage")
     .Does(() =>
 {
-    CleanDirectories(new DirectoryPath[] { stageDirectory });
+    var globals = GetGlobals();
+    
+    CleanDirectories(new [] { globals.BuildStageDirectory }); 
 });
 
 Task("CleanPackage")
     .Does(() =>
 {
-    CleanDirectories(new DirectoryPath[] { packageDirectory });
+    var globals = GetGlobals();
+    
+    CleanDirectories(new [] { globals.BuildPkgDirectory }); 
 });
 
 Task("CleanDeploy")
     .Does(() =>
 {
-    CleanDirectories(new DirectoryPath[] { deployModDirectory });
+    var globals = GetGlobals();
+    
+    CleanDirectories(new [] {globals.DeployDirectory });
 });
 
 Task("Restore")
     .Does(() =>
 {
-    NuGetRestore(solution);
+    var globals = GetGlobals();
+    
+    NuGetRestore(globals.Solution);
 });
 
-Task("BuildVersionInfo")
-    .Does(() =>
-{
-    SemVer buildVersion;
-
-    var changeLog = GetChangeLog();
-    var version = changeLog.LatestVersion;
-    var rev = GetGitRevision(useShort: true);
-
-    if (rev != null && !release)
-    {
-        if (version.Build == null)
-        {
-            buildVersion = new SemVer(version.Major, version.Minor, version.Patch, version.Pre, rev);
-        }
-        else
-        {
-            throw new Exception("VERSION already contains build metadata");
-        }
-    }
-    else
-    {
-        buildVersion = version;
-    }
-
-    System.IO.File.WriteAllText("Output/VERSION", buildVersion);
-    System.IO.File.WriteAllText("Output/PRELEASE", (buildVersion.Pre != null).ToString().ToLower());
-    System.IO.File.WriteAllText("Output/CHANGELOG", changeLog.LatestChanges);
-});
-
-Task("BuildAssemblyInfo")
-    .Does(() =>
-{
-    BuildAssemblyInfo($"Source/{identifier}/Properties/AssemblyInfo.cs");
-    BuildAssemblyInfo($"Tests/{identifier}Tests/Properties/AssemblyInfo.cs");
-});
-
-Task("Build")
-    .IsDependentOn("CleanBuild")
-    .IsDependentOn("Init")
-    .IsDependentOn("Restore")
-    .IsDependentOn("BuildVersionInfo")
+Task("BuildMeta")
     .IsDependentOn("BuildAssemblyInfo")
     .Does(() =>
 {
-    MSBuild(solution, s => { s.Configuration = configuration; });
+    var globals = GetGlobals();
+    
+    CreateDirectory(globals.BuildMetaDirectory);
+    
+    FileWriteText(
+        globals.BuildMetaDirectory.CombineWithFilePath("VERSION"),
+        globals.BuildVersion
+    );
+    FileWriteText(
+        globals.BuildMetaDirectory.CombineWithFilePath("PRERELEASE"),
+        (globals.BuildVersion.Pre != null).ToString().ToLowerInvariant()
+    );
+    FileWriteText(
+        globals.BuildMetaDirectory.CombineWithFilePath("CHANGELOG"),
+        GetChangeLog().LatestChanges
+    );
+});
+
+Task("BuildAssemblyInfo")
+    .IsDependentOn("BuildGlobalAssemblyVersionInfo")
+    .IsDependentOn("BuildGlobalKspAssemblyVersionInfo");
+
+Task("BuildGlobalAssemblyVersionInfo")
+    .Does(() =>
+{
+    var globals = GetGlobals();
+    
+    CreateDirectory(globals.BuildMetaDirectory);
+    
+    CreateAssemblyInfo(globals.BuildMetaDirectory.CombineWithFilePath("GlobalAssemblyVersionInfo.cs"), new AssemblyInfoSettings
+    {
+        Version = string.Format("{0}.{1}", globals.BuildVersion.Major, globals.BuildVersion.Minor),
+        FileVersion = string.Format("{0}.{1}.{2}", globals.BuildVersion.Major, globals.BuildVersion.Minor, globals.BuildVersion.Patch),
+        InformationalVersion = globals.BuildVersion.ToString()
+    });
+});
+
+Task("BuildGlobalKspAssemblyVersionInfo")
+    .Does(() =>
+{
+    var globals = GetGlobals();
+    
+    CreateDirectory(globals.BuildMetaDirectory);
+    
+    var sb = new StringBuilder();
+    sb.AppendLine("//------------------------------------------------------------------------------");
+    sb.AppendLine("// <auto-generated>");
+    sb.AppendLine("//     This code was generated by Cake.");
+    sb.AppendLine("// </auto-generated>");
+    sb.AppendLine("//------------------------------------------------------------------------------");
+    sb.AppendLine();
+    sb.AppendLine(
+        string.Format(@"[assembly: KSPAssembly(""{0}"", {1}, {2})]",
+            globals.ModIdentifier,
+            globals.BuildVersion.Major,
+            globals.BuildVersion.Minor
+        )
+    );
+     
+    FileWriteText(globals.BuildMetaDirectory.CombineWithFilePath("GlobalAssemblyKspVersionInfo.cs"), sb.ToString());
+});
+
+Task("Build")
+    .IsDependentOn("Init")
+    .IsDependentOn("Restore")
+    .IsDependentOn("BuildMeta")
+    .Does(() =>
+{
+    var globals = GetGlobals();
+    
+    DotNetBuild(globals.Solution, s => { s.Configuration = globals.Configuration; });
 });
 
 Task("Stage")
     .IsDependentOn("CleanStage")
+    .IsDependentOn("Restore")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var pluginsDirectory = $"{stageModDirectory}/Plugins";
-    var texturesDirectory = $"{stageModDirectory}/Textures";
+    var globals = GetGlobals();
+    
+    var artworkDirectory = GetNuGetPackageDirectory("Apokee.Artwork").Combine("Content");
+    var binDirectory = globals
+        .BuildOutDirectory
+        .Combine(globals.ModIdentifier)
+        .Combine(globals.Configuration)
+        .Combine("bin");
+    var srcGameDataDirectory = globals.SrcDirectory.Combine("GameData");
+    
+    var buildStageGameDataModPluginsDirectory = globals.BuildStageGameDataModDirectory.Combine("Plugins");
+    var buildStageGameDataModTexturesDirectory = globals.BuildStageGameDataModDirectory.Combine("Textures");
 
-    CreateDirectory(stageGameDataDirectory);
-    CreateDirectory(stageModDirectory);
-    CreateDirectory(pluginsDirectory);
-    CreateDirectory(texturesDirectory);
+    CreateDirectory(globals.BuildStageGameDataDirectory);
+    CreateDirectory(globals.BuildStageGameDataModDirectory);
+    CreateDirectory(buildStageGameDataModPluginsDirectory);
+    CreateDirectory(buildStageGameDataModTexturesDirectory);
 
-    CopyFiles($"{binDirectory}/*", pluginsDirectory);
-    CopyDirectory("Configuration", $"{stageModDirectory}/Configuration");
-    CopyDirectory("Patches", $"{stageModDirectory}/Patches");
-    CopyFile($"{artworkDirectory}/hotspot-white-38x38.png", $"{texturesDirectory}/AppLauncher.png");
-    CopyFile($"{artworkDirectory}/hotspot-white-24x24.png", $"{texturesDirectory}/Toolbar.png");
-    CopyFileToDirectory("CHANGES.md", stageModDirectory);
-    CopyFileToDirectory("LICENSE.md", stageModDirectory);
-    CopyFileToDirectory("README.md", stageModDirectory);
+    CopyFiles(
+        GetFiles(string.Format("{0}/*", binDirectory)),
+        buildStageGameDataModPluginsDirectory
+    );
+    CopyDirectory(
+        srcGameDataDirectory,
+        globals.BuildStageGameDataModDirectory
+    );
+    CopyFile(
+        artworkDirectory.CombineWithFilePath("hotspot-white-38x38.png"),
+        buildStageGameDataModTexturesDirectory.CombineWithFilePath("AppLauncher.png")
+    );
+    CopyFile(
+        artworkDirectory.CombineWithFilePath("hotspot-white-24x24.png"),
+        buildStageGameDataModTexturesDirectory.CombineWithFilePath("Toolbar.png")
+    );
+    CopyFileToDirectory("CHANGELOG.md", globals.BuildStageGameDataModDirectory);
+    CopyFileToDirectory("LICENSE.md", globals.BuildStageGameDataModDirectory);
+    CopyFileToDirectory("README.md", globals.BuildStageGameDataModDirectory);
 });
 
 Task("Deploy")
@@ -169,17 +268,21 @@ Task("Deploy")
     .IsDependentOn("CleanDeploy")
     .Does(() =>
 {
-    CopyDirectory(stageModDirectory, $"{buildConfiguration.KspPath("GameData")}/{identifier}");
+    var globals = GetGlobals();
+    
+    CopyDirectory(globals.BuildStageGameDataModDirectory, globals.DeployDirectory);
 });
 
 Task("Run")
     .IsDependentOn("Deploy")
     .Does(() =>
 {
-    StartProcess(System.IO.Path.Combine(buildConfiguration.KspDir, buildConfiguration.KspBin), new ProcessSettings
-        {
-            WorkingDirectory = buildConfiguration.KspDir
-        });
+    var globals = GetGlobals();
+    
+    StartAndReturnProcess(globals.BuildConfiguration.KspPath(globals.BuildConfiguration.KspBin), new ProcessSettings
+    {
+        WorkingDirectory = globals.BuildConfiguration.KspDir
+    });
 });
 
 Task("Package")
@@ -187,53 +290,65 @@ Task("Package")
     .IsDependentOn("Stage")
     .Does(() =>
 {
-    CreateDirectory(packageDirectory);
+    var globals = GetGlobals();
+    
+    CreateDirectory(globals.BuildPkgDirectory);
 
-    Zip(stageDirectory, File($"{packageDirectory}/{identifier}-{GetBuildVersion()}.zip"));
+    Zip(
+        globals.BuildStageDirectory,
+        globals.BuildPkgDirectory.CombineWithFilePath(
+            string.Format("{0}-{1}.zip", globals.ModIdentifier, globals.BuildVersion)
+        )
+    );
 });
 
 Task("Version")
     .Does(() =>
-{
+{    
     Information(GetVersion());
 });
 
 Task("ChangeLog")
     .Does(() =>
-{
+{    
     Information(GetChangeLog().LatestChanges);
 });
 
-RunTarget(target);
+RunTarget(GetGlobals().Target);
 
-private void BuildAssemblyInfo(string file)
-{
-    var version = GetBuildVersion();
+public SemVer GetBuildVersion()
+{    
+    SemVer buildVersion;
 
-    var output = TransformTextFile($"{file}.in")
-        .WithToken("VERSION", version)
-        .WithToken("VERSION.MAJOR", version.Major)
-        .WithToken("VERSION.MINOR", version.Minor)
-        .WithToken("VERSION.PATCH", version.Patch)
-        .WithToken("VERSION.PRE", version.Pre)
-        .WithToken("VERSION.BUILD", version.Build)
-        .ToString();
+    var release = Argument<bool>("release", false);;
+    var changeLog = GetChangeLog();
+    var version = changeLog.LatestVersion;
+    var rev = GetGitRevision(useShort: true);
 
-    System.IO.File.WriteAllText(file, output);
+    if (rev != null && !release)
+    {
+        if (version.Build == null)
+            buildVersion = new SemVer(version.Major, version.Minor, version.Patch, version.Pre, rev);
+        else
+            throw new Exception("VERSION already contains build metadata");
+    }
+    else
+    {
+        buildVersion = version;
+    }
+    
+    return buildVersion;
 }
 
-private SemVer GetBuildVersion()
+private DirectoryPath GetNuGetPackageDirectory(string package)
 {
-    return new SemVer(System.IO.File.ReadAllText("Output/VERSION"));
-}
-
-private string GetNuGetPackageDirectory(string package)
-{
-    return System.IO.Directory
-        .GetDirectories("Library/NuGet")
-        .Select(i => new DirectoryInfo(i))
-        .Where(i => i.Name.StartsWith(package))
-        .OrderByDescending(i => new Version(i.Name.Substring(package.Length + 1, i.Name.Length - package.Length - 1)))
-        .First()
-        .FullName;
+    var globals = GetGlobals();
+    
+    return GetDirectories(string.Format("{0}/*", globals.BuildLibNugetDirectory))
+        .Where(i => i.GetDirectoryName().StartsWith(package))
+        .OrderByDescending(i => {
+            var directoryName = i.GetDirectoryName();
+            return new Version(directoryName.Substring(package.Length + 1, directoryName.Length - package.Length - 1));
+        })
+        .FirstOrDefault();
 }

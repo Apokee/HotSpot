@@ -1,4 +1,4 @@
-# Hot Spot [![Build status][build-badge]][build]
+# Hot Spot [![AppVeyor Status][build-badge-appveyor]][build-appveyor] [![Travis CI Status][build-badge-travis]][build-travis]
 
 **Hot Spot** is a [MIT-licensed](LICENSE.md) Kerbal Space Program mod that displays better thermal data. It currently
 supports the following metrics:
@@ -50,6 +50,19 @@ The *Maximum* value depends on the scheme used:
 - *Vessel Current* - The maximum current temperature of any part in the vessel.
 - *Vessel Absolute* - The maximum temperature of any part in the vessel.
 
+#### Ideal Temperature
+
+The color gradient used for ideal temperatures is as follows:
+
+- Purple (0K)
+- Blue (0.8×*Ideal*)
+- Green (*Ideal*)
+- Yellow (1.2×*Ideal*)
+- Red (*Maximum*)
+
+Where *Ideal* is the part's "ideal" temperature, e.g. for resource converters its the temperature at which conversion
+is maximally efficient, and *Maximum* is the maximum temperature for the current part.
+
 #### Thermal Rate
 The color gradient used for thermal rates is as follows:
 
@@ -89,8 +102,10 @@ More features of Hot Spot can be configured by creating Module Manager patches a
 `<KSP>/GameData/HotSpot/Configuration/HotSpot.cfg`. How to use Module Manager is outside the scope of this README,
 please see the Module Manager documentation for more information.
 
-[build]: https://ci.appveyor.com/project/Apokee/hotspot/branch/develop
-[build-badge]: https://ci.appveyor.com/api/projects/status/ik9la5jusinnpu5n/branch/develop?svg=true
+[build-appveyor]: https://ci.appveyor.com/project/Apokee/hotspot/branch/develop
+[build-travis]: https://travis-ci.org/Apokee/HotSpot
+[build-badge-appveyor]: https://ci.appveyor.com/api/projects/status/ik9la5jusinnpu5n/branch/develop?svg=true
+[build-badge-travis]: https://api.travis-ci.org/Apokee/HotSpot.svg?branch=develop
 [github-releases]: https://github.com/Apokee/HotSpot/releases
 [module-manager]: http://forum.kerbalspaceprogram.com/threads/55219
 [wiki-celsius]: https://en.wikipedia.org/wiki/Celsius
