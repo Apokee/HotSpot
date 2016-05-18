@@ -66,6 +66,17 @@
                     { "name": "Toolbar" }
                 ]
             }
+        },
+        {
+            "version": ">=0.6.0",
+            "override": {
+                "ksp_version_min": "1.1.2",
+                "ksp_version_max": "1.1.2",
+                "supports": [
+                    { "name": "KIS" },
+                    { "name": "Toolbar" }
+                ]
+            }
         }
     ]
 }
