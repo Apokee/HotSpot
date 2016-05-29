@@ -1,3 +1,5 @@
+## v0.7.1-alpha
+
 ## v0.7.0
 ##### Changed
 - *Incompatible:* "Dynamic" settings (anything changeable in the GUI) are now stored in
