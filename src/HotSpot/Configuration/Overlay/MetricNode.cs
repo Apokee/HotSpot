@@ -26,11 +26,10 @@ namespace HotSpot.Configuration.Overlay
             return _schemesDictionary[Scheme];
         }
 
-        public bool Save(ConfigNode node)
+        public void Save(ConfigNode node)
         {
-            node.AddValue("%scheme", Scheme);
-
-            return true;
+            node.AddValue("name", Name.Name);
+            node.AddValue("scheme", Scheme);
         }
 
         public static MetricNode TryParse(ConfigNode node)

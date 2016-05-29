@@ -14,21 +14,20 @@ namespace HotSpot.Configuration.ContextMenu
         {
             Name = name;
             Enable = enable;
-            // TODO: Legacy : Remove Kilowatt
+            // TODO: LEGACY: Remove Kilowatt
             Unit = unit == Unit.Kilowatt ? Unit.Watt : unit;
             Prefix = prefix;
         }
 
-        public bool Save(ConfigNode node)
+        public void Save(ConfigNode node)
         {
-            node.AddValue("%enable", Enable);
-            node.AddValue("%unit", Unit);
+            node.AddValue("name", Name.Name);
+            node.AddValue("enable", Enable);
+            node.AddValue("unit", Unit);
             if (Prefix != null)
-                node.AddValue("%prefix", Prefix.Value);
+                node.AddValue("prefix", Prefix.Value);
             else
-                node.AddValue("%prefix", "auto");
-
-            return true;
+                node.AddValue("prefix", "auto");
         }
 
         public static MetricNode TryParse(ConfigNode node)
@@ -52,7 +51,7 @@ namespace HotSpot.Configuration.ContextMenu
                 }
             }
 
-            Log.Warning($"Could not parse config node:{Environment.NewLine}{node}");
+            Log.Debug($"Could not parse config node:{Environment.NewLine}{node}");
             return null;
         }
     }

@@ -24,7 +24,6 @@
                 return new ContextMenuNode(disableStockCoreTemp);
             }
 
-            Log.Warning("Could not parse missing CONTEXT_MENU node");
             return null;
         }
     }

@@ -72,6 +72,7 @@
     <Compile Include="Configuration\Gui\ToolbarNode.cs" />
     <Compile Include="Configuration\Gui\AppLauncherNode.cs" />
     <Compile Include="Configuration\OverlayNode.cs" />
+    <Compile Include="FileSystem.cs" />
     <Compile Include="Extensions\DoubleExtensions.cs" />
     <Compile Include="HotSpotGuiBehavior.cs" />
     <Compile Include="Model\EvaluatedGradientNode.cs" />

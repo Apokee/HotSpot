@@ -27,7 +27,6 @@
                 return new AppLauncherNode(enable, texture);
             }
 
-            Log.Warning("Could not parse missing APPLAUNCHER node");
             return null;
         }
     }

@@ -29,7 +29,7 @@ after_build:
       $env:BUILD_VERSION = (cat .build/meta/VERSION)
       $env:BUILD_PRERELEASE = (cat .build/meta/PRERELEASE)
       $changeLog = (cat .build/meta/CHANGELOG)
-      if ($chaneLog -eq $null) {
+      if ($changeLog -eq $null) {
         $env:BUILD_CHANGELOG = ""
       } else {
         $env:BUILD_CHANGELOG = [System.String]::Join("\n", $changeLog)

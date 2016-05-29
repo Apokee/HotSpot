@@ -18,6 +18,31 @@ namespace HotSpot
         private readonly ScreenMessage _screenMessage =
             new ScreenMessage(string.Empty, 4, ScreenMessageStyle.LOWER_CENTER);
 
+        private readonly string[] _prefixStrings = {
+            "Auto",
+            Prefix.None.ToString(),
+            Prefix.Yocto.ToString(),
+            Prefix.Zepto.ToString(),
+            Prefix.Atto.ToString(),
+            Prefix.Femto.ToString(),
+            Prefix.Pico.ToString(),
+            Prefix.Nano.ToString(),
+            Prefix.Micro.ToString(),
+            Prefix.Milli.ToString(),
+            Prefix.Centi.ToString(),
+            Prefix.Deci.ToString(),
+            Prefix.Deca.ToString(),
+            Prefix.Hecto.ToString(),
+            Prefix.Kilo.ToString(),
+            Prefix.Mega.ToString(),
+            Prefix.Giga.ToString(),
+            Prefix.Tera.ToString(),
+            Prefix.Peta.ToString(),
+            Prefix.Exa.ToString(),
+            Prefix.Zetta.ToString(),
+            Prefix.Yotta.ToString()
+        };
+
         private bool _lastThermalColorsDebug;
         private ApplicationLauncherButton _applicationLauncherButton;
         private IButton _toolbarButton;
@@ -329,45 +354,19 @@ namespace HotSpot
                 {
                     GUILayout.BeginVertical();
 
-                    var prefixes = new[]
-                    {
-                        "Auto",
-                        Prefix.None.ToString(),
-                        Prefix.Yocto.ToString(),
-                        Prefix.Zepto.ToString(),
-                        Prefix.Atto.ToString(),
-                        Prefix.Femto.ToString(),
-                        Prefix.Pico.ToString(),
-                        Prefix.Nano.ToString(),
-                        Prefix.Micro.ToString(),
-                        Prefix.Milli.ToString(),
-                        Prefix.Centi.ToString(),
-                        Prefix.Deci.ToString(),
-                        Prefix.Deca.ToString(),
-                        Prefix.Hecto.ToString(),
-                        Prefix.Kilo.ToString(),
-                        Prefix.Mega.ToString(),
-                        Prefix.Giga.ToString(),
-                        Prefix.Tera.ToString(),
-                        Prefix.Peta.ToString(),
-                        Prefix.Exa.ToString(),
-                        Prefix.Zetta.ToString(),
-                        Prefix.Yotta.ToString()
-                    };
-
                     var unitIndex = 0;
-                    for (var i = 0; i < prefixes.Length; i++)
+                    for (var i = 0; i < _prefixStrings.Length; i++)
                     {
-                        if (prefixes[i] == (metricNode.Prefix?.ToString() ?? "Auto"))
+                        if (_prefixStrings[i] == (metricNode.Prefix?.ToString() ?? "Auto"))
                         {
                             unitIndex = i;
                             break;
                         }
                     }
 
-                    var newUnitIndex = GUILayout.SelectionGrid(unitIndex, prefixes, 2);
+                    var newUnitIndex = GUILayout.SelectionGrid(unitIndex, _prefixStrings, 2);
 
-                    var selectedPrefixString = prefixes[newUnitIndex];
+                    var selectedPrefixString = _prefixStrings[newUnitIndex];
                     metricNode.Prefix = selectedPrefixString == "Auto"
                         ? null
                         : (Prefix?)Enum.Parse(typeof(Prefix), selectedPrefixString);

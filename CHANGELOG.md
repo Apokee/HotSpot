@@ -1,3 +1,10 @@
+## v0.7.0
+##### Changed
+- *Incompatible:* "Dynamic" settings (anything changeable in the GUI) are now stored in
+  `HotSpot/PluginData/HotSpot.cfg` instead of `HotSpot/Configuration/HotSpotPlayer.cfg` and override any values in
+  "static" settings (anything loaded via the `GameDatabase`). This allows ModuleManager to ignore these settings for
+  caching purposes.
+
 ## v0.6.0
 ##### Added
 - Added core temperature as a new metric for applicable parts.

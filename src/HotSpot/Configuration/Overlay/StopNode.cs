@@ -48,7 +48,7 @@ namespace HotSpot.Configuration.Overlay
                 }
             }
 
-            Log.Warning($"Could not parse config node:{Environment.NewLine}{node}");
+            Log.Debug($"Could not parse config node:{Environment.NewLine}{node}");
             return null;
         }
 
@@ -63,7 +63,7 @@ namespace HotSpot.Configuration.Overlay
                 return TryConvertColor(match.Groups["color"].Value);
             }
 
-            Log.Warning($"Could not parse `color` property: {str}");
+            Log.Debug($"Could not parse `color` property: {str}");
             return null;
         }
 
