@@ -22,22 +22,16 @@ namespace HotSpot.Configuration
             return _metricsDictionary[metric.Name];
         }
 
-        public bool Save(ConfigNode node)
+        public void Save(ConfigNode node)
         {
-            var save = false;
-
             foreach (var metric in Metrics)
             {
-                var metricNode = new ConfigNode($"%METRIC[{metric.Name.Name}]");
+                var metricNode = new ConfigNode("METRIC");
 
-                if (metric.Save(metricNode))
-                {
-                    node.AddNode(metricNode);
-                    save = true;
-                }
+                metric.Save(metricNode);
+
+                node.AddNode(metricNode);
             }
-
-            return save;
         }
 
         public static ContextMenuNode GetDefault()
@@ -59,7 +53,6 @@ namespace HotSpot.Configuration
                 return new ContextMenuNode(metrics);
             }
 
-            Log.Warning("Could not parse missing CONTEXT_MENU node");
             return null;
         }
     }

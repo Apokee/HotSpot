@@ -48,7 +48,7 @@ namespace HotSpot.Configuration.Overlay
                 }
             }
 
-            Log.Warning($"Could not parse config node:{Environment.NewLine}{node}");
+            Log.Debug($"Could not parse config node:{Environment.NewLine}{node}");
             return null;
         }
     }
