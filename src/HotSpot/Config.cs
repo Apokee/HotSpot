@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using HotSpot.Configuration;
 
 namespace HotSpot
@@ -23,15 +22,22 @@ namespace HotSpot
                     {
                         if (_instance == null)
                         {
-                            
-                            var node = GameDatabase
-                                .Instance
-                                .GetConfigNodes("HOT_SPOT")
-                                .SingleOrDefault();
+                            Config staticConfig = null;
+                            Config dynamicConfig = null;
 
-                            _instance = TryParse(node) ?? new Config();
+                            var staticConfigNode = GetStaticConfigNode();
+                            if (staticConfigNode != null)
+                                staticConfig = TryParse(staticConfigNode);
 
-                            OnInitialLoad(node);
+                            var dynamicConfigNode = GetDynamicConfigNode();
+                            if (dynamicConfigNode != null)
+                                dynamicConfig = TryParse(dynamicConfigNode);
+
+                            var defaultConfig = new Config();
+
+                            _instance = Merge(dynamicConfig ?? defaultConfig, staticConfig ?? defaultConfig);
+
+                            OnInitialLoad(staticConfigNode, dynamicConfigNode);
                         }
                     }
                 }
@@ -40,13 +46,18 @@ namespace HotSpot
             }
         }
 
-        private static void OnInitialLoad(ConfigNode node)
+        private static void OnInitialLoad(ConfigNode staticNode, ConfigNode dynamicNode)
         {
             Log.Level = Instance.Diagnostics.LogLevel;
 
-            Log.Debug(node != null ?
-                $"Exploded Configuration:{Environment.NewLine}{node}" :
-                "No configuration found."
+            Log.Debug(staticNode != null ?
+                $"Static Configuration:{Environment.NewLine}{staticNode}" :
+                "No static configuration found."
+            );
+
+            Log.Debug(staticNode != null ?
+                $"Dynamic Configuration:{Environment.NewLine}{dynamicNode}" :
+                "No dynamic configuration found."
             );
 
             GameEvents.onGameSceneSwitchRequested.Add(e => Instance.Save());
@@ -77,39 +88,19 @@ namespace HotSpot
 
         public void Save()
         {
-            // It appears the top-most node cannot use an edit-or-create operation (%) so use an edit operation (@)
-            var node = new ConfigNode("@HOT_SPOT:AFTER[HotSpot]");
+            var node = new ConfigNode("HOT_SPOT");
 
-            var guiNode = new ConfigNode("%GUI");
-            var contextMenuNode = new ConfigNode("%CONTEXT_MENU");
-            var overlayNode = new ConfigNode("%OVERLAY");
-            var diagnosticsNode = new ConfigNode("%DIAGNOSTICS");
+            var contextMenuNode = new ConfigNode("CONTEXT_MENU");
+            var overlayNode = new ConfigNode("OVERLAY");
 
-            if (Gui.Save(guiNode))
-            {
-                node.AddNode(guiNode);
-            }
+            ContextMenu.Save(contextMenuNode);
+            node.AddNode(contextMenuNode);
 
-            if (ContextMenu.Save(contextMenuNode))
-            {
-                node.AddNode(contextMenuNode);
-            }
+            Overlay.Save(overlayNode);
+            node.AddNode(overlayNode);
 
-            if (Overlay.Save(overlayNode))
-            {
-                node.AddNode(overlayNode);
-            }
-
-            if (Diagnostics.Save(diagnosticsNode))
-            {
-                node.AddNode(diagnosticsNode);
-            }
-
-            File.WriteAllText(
-                $"{KSPUtil.ApplicationRootPath}/GameData/HotSpot/Configuration/HotSpotPlayer.cfg",
-                node.ToString(),
-                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
-            );
+            FileSystem.WriteDynamicConfiguration(node);
+            FileSystem.EnsureLegacyPlayerConfigFileDoesNotExist();
         }
 
         public static Config TryParse(ConfigNode node)
@@ -131,8 +122,58 @@ namespace HotSpot
                 return new Config(gui, contextMenu, overlay, diagnostics);
             }
 
-            Log.Warning("Could not parse missing HOT_SPOT node");
+            Log.Debug("Could not parse missing HOT_SPOT node");
             return null;
+        }
+
+        public static ConfigNode GetStaticConfigNode()
+        {
+            return GameDatabase.Instance.GetConfigNodes("HOT_SPOT").SingleOrDefault();
+        }
+
+        public static ConfigNode GetDynamicConfigNode()
+        {
+            if (File.Exists(FileSystem.DynamicConfigFilePath))
+            {
+                var hotSpotNode = ConfigNode.Load(FileSystem.DynamicConfigFilePath).GetNode("HOT_SPOT");
+                if (hotSpotNode != null)
+                    return hotSpotNode;
+            }
+
+            return null;
+        }
+
+        public static Config Merge(Config source, Config target)
+        {
+            // CONTEXT_MENU
+
+            var targetContextMenuMetrics = target.ContextMenu.Metrics.ToDictionary(i => i.Name.Name);
+            foreach (var sourceMetric in source.ContextMenu.Metrics)
+            {
+                Configuration.ContextMenu.MetricNode targetMetric;
+                if (targetContextMenuMetrics.TryGetValue(sourceMetric.Name.Name, out targetMetric))
+                {
+                    targetMetric.Enable = sourceMetric.Enable;
+                    targetMetric.Prefix = sourceMetric.Prefix;
+                    targetMetric.Unit = sourceMetric.Unit;
+                }
+            }
+
+            // OVERLAY
+
+            target.Overlay.Metric = source.Overlay.Metric;
+
+            var targetOverlayMetrics = target.Overlay.Metrics.ToDictionary(i => i.Name.Name);
+            foreach (var sourceMetric in source.Overlay.Metrics)
+            {
+                Configuration.Overlay.MetricNode targetMetric;
+                if (targetOverlayMetrics.TryGetValue(sourceMetric.Name.Name, out targetMetric))
+                {
+                    targetMetric.Scheme = sourceMetric.Scheme;
+                }
+            }
+
+            return target;
         }
     }
 }

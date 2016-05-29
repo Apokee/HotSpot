@@ -14,8 +14,6 @@
             return new DiagnosticsNode(LogLevel.Info);
         }
 
-        public bool Save(ConfigNode node) => false;
-
         public static DiagnosticsNode TryParse(ConfigNode node)
         {
             if (node != null)
@@ -25,7 +23,6 @@
                 return new DiagnosticsNode(logLevel);
             }
 
-            Log.Warning("Could not parse missing DIAGNOSTICS node");
             return null;
         }
     }

@@ -29,21 +29,17 @@ namespace HotSpot.Configuration
             return _metricsDictionary[Metric.Name];
         }
 
-        public bool Save(ConfigNode node)
+        public void Save(ConfigNode node)
         {
-            node.AddValue("%metric", Metric.Name);
+            node.AddValue("metric", Metric.Name);
 
             foreach (var metric in Metrics)
             {
-                var metricNode = new ConfigNode($"%METRIC[{metric.Name.Name}]");
+                var metricNode = new ConfigNode("METRIC");
 
-                if (metric.Save(metricNode))
-                {
-                    node.AddNode(metricNode);
-                }
+                metric.Save(metricNode);
+                node.AddNode(metricNode);
             }
-
-            return true;
         }
 
         public static OverlayNode GetDefault()
@@ -71,7 +67,7 @@ namespace HotSpot.Configuration
                 }
             }
 
-            Log.Warning($"Could not parse config node:{Environment.NewLine}{node}");
+            Log.Debug($"Could not parse config node:{Environment.NewLine}{node}");
             return null;
         }
     }

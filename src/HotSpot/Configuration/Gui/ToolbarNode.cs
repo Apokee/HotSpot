@@ -27,7 +27,6 @@
                 return new ToolbarNode(enable, texture);
             }
 
-            Log.Warning("Could not parse missing TOOLBAR node");
             return null;
         }
     }

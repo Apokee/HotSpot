@@ -15,9 +15,6 @@ namespace HotSpot.Configuration
             ContextMenu = contextMenu;
         }
 
-        public bool Save(ConfigNode node)
-            => false;
-
         public static GuiNode GetDefault()
             => new GuiNode(AppLauncherNode.GetDefault(), ToolbarNode.GetDefault(), Gui.ContextMenuNode.GetDefault());
 
@@ -35,7 +32,6 @@ namespace HotSpot.Configuration
                 return new GuiNode(appLauncher, toolbar, contextMenu);
             }
 
-            Log.Warning("Could not parse missing GUI node");
             return null;
         }
     }
