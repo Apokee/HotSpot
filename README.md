@@ -8,18 +8,21 @@ supports the following metrics:
 
 Hot Spot can display two kinds of temperatures:
 
-- *Internal Temperature* - The temperature of the interior of a part.
-- *Skin Temperature* - The temperature of the exposed surface of a part.
+- *Skin Temperature* &mdash; The temperature of the exposed surface of a part.
+- *Internal Temperature* &mdash; The temperature of the interior of a part.
+- *Core Temperature* &mdash; The temperature of the core of a part (for those parts with cores such as ISRU parts).
 
 Thermal rate is the rate at which thermal energy is added or removed from a part. It is measured as energy per unit
 time, i.e. [*power*][wiki-power]. Positive thermal rates indicate a part is gaining thermal energy, negative thermal
 rates indicate a part is losing thermal energy. There are multiple kinds of thermal rates:
 
-- *Internal Thermal Rate* - The change in thermal energy due to reactions/processes occuring within the part itself.
-- *Conductive Thermal Rate* - The change in thermal energy due to being in contact with other parts.
-- *Convective Thermal Rate* - The change in thermal energy due to being in contact with a fluid, like the atmosphere.
-- *Radiative Thermal Rate* - The change in thermal energy due to the emission or absorption of light.
-- *Thermal Rate* - An aggregate value of the four previous rates.
+- *Internal Thermal Rate* &mdash; The change in thermal energy due to reactions/processes occuring within the part itself.
+- *Conductive Thermal Rate* &mdash; The change in thermal energy due to being in contact with other parts.
+- *Convective Thermal Rate* &mdash; The change in thermal energy due to being in contact with a fluid, like the atmosphere.
+- *Radiative Thermal Rate* &mdash; The change in thermal energy due to the emission or absorption of light.
+- *Thermal Rate* &mdash; An aggregate value of the four previous rates.
+- *Skin to Internal Thermal Rate* The change in thermal energy due to transfer from the part's skin to its interior.
+- *Internal to Skin Thermal Rate* The change in thermal energy due to transfer from the part's interior to its skin.
 
 These metrics are can be displayed in one of two ways:
 
