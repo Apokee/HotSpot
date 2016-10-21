@@ -1,3 +1,5 @@
+## v0.7.3-alpha
+
 ## v0.7.2
 ##### Fixed
 - [#75](https://github.com/Apokee/HotSpot/issues/75) &mdash; Fixed `ToolbarWrapper` compatibility with Contract Configurator.
