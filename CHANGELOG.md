@@ -1,10 +1,14 @@
+## v0.7.3
+##### Changed
+- Compatibility with KSP 1.3.0.
+
 ## v0.7.2
 ##### Fixed
 - [#75](https://github.com/Apokee/HotSpot/issues/75) &mdash; Fixed `ToolbarWrapper` compatibility with Contract Configurator.
 
 ## v0.7.1
 ##### Changed
-- Compatability with KSP 1.2.
+- Compatibility with KSP 1.2.0.
 
 ## v0.7.0
 ##### Changed
@@ -38,7 +42,7 @@
 
 ## v0.5.1
 ##### Changed
-- Compatability with KSP 1.1.
+- Compatibility with KSP 1.1.0.
 
 ## v0.5.0
 ##### Added
