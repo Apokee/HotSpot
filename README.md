@@ -6,7 +6,7 @@ supports the following metrics:
 - Temperature
 - Thermal Rate
 
-Hot Spot can display two kinds of temperatures:
+Hot Spot can display three kinds of temperatures:
 
 - *Skin Temperature* &mdash; The temperature of the exposed surface of a part.
 - *Internal Temperature* &mdash; The temperature of the interior of a part.
@@ -35,7 +35,7 @@ of a part are displayed and the unit can be changed between [Kelvin][wiki-kelvin
 ### Part Overlay
 
 Hot Spot will also replace the stock *Thermal Debug Overlay* with one displaying the metric of the user's choice and
-will replace the standard black body color gradient with one more intuitive.
+will replace the standard black body color gradient with one that is more intuitive.
 
 #### Temperature
 The color gradient used for temperature is as follows:
