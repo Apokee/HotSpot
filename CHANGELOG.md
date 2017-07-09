@@ -1,3 +1,5 @@
+## v0.7.4-alpha
+
 ## v0.7.3
 ##### Changed
 - Compatibility with KSP 1.3.0.
