@@ -7,12 +7,15 @@ namespace HotSpot.Configuration
 {
     internal sealed class ContextMenuNode
     {
+        private const double DefaultUpdatePeriod = 0.250;
         private readonly Dictionary<string, MetricNode> _metricsDictionary;
         
-        public MetricNode[] Metrics { get; } 
+        public double UpdatePeriod { get; }
+        public MetricNode[] Metrics { get; }
 
-        private ContextMenuNode(MetricNode[] metrics)
+        private ContextMenuNode(double updatePeriod, MetricNode[] metrics)
         {
+            UpdatePeriod = updatePeriod;
             Metrics = metrics;
             _metricsDictionary = metrics.ToDictionary(i => i.Name.Name);
         }
@@ -36,13 +39,14 @@ namespace HotSpot.Configuration
 
         public static ContextMenuNode GetDefault()
         {
-            return new ContextMenuNode(new MetricNode[] { });
+            return new ContextMenuNode(DefaultUpdatePeriod, new MetricNode[] { });
         }
 
         public static ContextMenuNode TryParse(ConfigNode node)
         {
             if (node != null)
             {
+                var updatePeriod = node.TryParse<double>("updatePeriod") ?? DefaultUpdatePeriod;
                 var metrics = node
                     .GetNodes("METRIC")
                     .Where(i => !i.GetValue("name").EndsWith("Template"))
@@ -50,7 +54,7 @@ namespace HotSpot.Configuration
                     .Where(i => i != null)
                     .ToArray();
 
-                return new ContextMenuNode(metrics);
+                return new ContextMenuNode(updatePeriod, metrics);
             }
 
             return null;

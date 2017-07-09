@@ -2,6 +2,7 @@
 {
     public enum Variable
     {
+        PartCurrent,
         PartAbsoluteMinimum,
         PartAbsoluteMaximum,
         PartIdeal,

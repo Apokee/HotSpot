@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using HotSpot.Model;
@@ -27,7 +26,7 @@ namespace HotSpot.Configuration.Overlay
             Alpha = alpha;
         }
 
-        public EvaluatedStopNode Evaluate(Dictionary<Variable, double> variables)
+        public EvaluatedStopNode Evaluate(VariableBag variables)
         {
             return new EvaluatedStopNode(this, variables);
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace HotSpot.Model
@@ -19,19 +18,19 @@ namespace HotSpot.Model
             _variable = variable;
         }
 
-        public double Evaluate(Dictionary<Variable, double> variables)
+        public double Evaluate(VariableBag variables)
         {
             if (_constant != null)
             {
                 return _constant.Value;
             }
-            else if (_variable != null)
+
+            if (_variable != null)
             {
-                double value;
-                if (variables.TryGetValue(_variable.Value, out value))
-                {
+                var value = variables.GetValue(_variable.Value);
+
+                if (!double.IsNaN(value))
                     return value;
-                }
             }
 
             throw new InvalidOperationException($"Expression '{this}' could not be evaluated.");

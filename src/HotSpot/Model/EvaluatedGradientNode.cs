@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using HotSpot.Configuration.Overlay;
 using UnityEngine;
 
@@ -9,69 +8,65 @@ namespace HotSpot.Model
     internal sealed class EvaluatedGradientNode
     {
         private readonly GradientNode _gradient;
-        private Gradient _unityGradient;
+        private readonly Gradient _unityGradient;
 
         public string Name => _gradient.Name;
         public double Min { get; }
         public double Max { get; }
         public OnConflict OnConflict => _gradient.OnConflict;
 
-        public IEnumerable<EvaluatedStopNode> Stops { get; }
+        public List<EvaluatedStopNode> Stops { get; }
 
-        public EvaluatedGradientNode(GradientNode gradient, Dictionary<Variable, double> variables)
+        public EvaluatedGradientNode(GradientNode gradient, VariableBag variables)
         {
             _gradient = gradient;
             Min = gradient.Min.Evaluate(variables);
             Max = gradient.Max.Evaluate(variables);
-            Stops = FilterStopsForConflicts(gradient.Stops.Select(i => i.Evaluate(CalculateVariables(variables))))
-                .ToList();
+
+            variables.GradientMinimum = Min;
+            variables.GradientMaximum = Max;
+
+            var evaluatedStops = new List<EvaluatedStopNode>();
+
+            // ReSharper disable once ForCanBeConvertedToForeach
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            for (var i = 0; i < gradient.Stops.Length; i++)
+                evaluatedStops.Add(gradient.Stops[i].Evaluate(variables));
+
+            Stops = FilterStopsForConflicts(evaluatedStops);
+
+            var colorKeys = new List<GradientColorKey>();
+            var alphaKeys = new List<GradientAlphaKey>();
+
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (var i = 0; i < Stops.Count; i++)
+            {
+                var stop = Stops[i];
+
+                var colorKey = stop.TryConvertToColorKey(Min, Max);
+                var alphaKey = stop.TryConvertToAlphaKey(Min, Max);
+
+                if (colorKey != null)
+                    colorKeys.Add(colorKey.Value);
+
+                if (alphaKey != null)
+                    alphaKeys.Add(alphaKey.Value);
+            }
+
+            _unityGradient = new Gradient();
+            _unityGradient.SetKeys(colorKeys.ToArray(), alphaKeys.ToArray());
         }
 
         public Color EvaluateColor(double value)
         {
-            if (_unityGradient == null)
-            {
-                var colorKeys = Stops
-                    .Select(i => i.TryConvertToColorKey(Min, Max))
-                    .Where(i => i != null)
-                    .Select(i => i.Value)
-                    .ToArray();
-
-                var alphaKeys = Stops
-                    .Select(i => i.TryConvertToAlphaKey(Min, Max))
-                    .Where(i => i != null)
-                    .Select(i => i.Value)
-                    .ToArray();
-
-                _unityGradient = new Gradient();
-                _unityGradient.SetKeys(colorKeys, alphaKeys);
-            }
-
             return _unityGradient.Evaluate((float)((value - Min) / (Max - Min)));
         }
 
-        private Dictionary<Variable, double> CalculateVariables(Dictionary<Variable, double> variables)
+        private List<EvaluatedStopNode> FilterStopsForConflicts(List<EvaluatedStopNode> stops)
         {
-            var result = new Dictionary<Variable, double>();
-
-            foreach (var variable in variables)
-            {
-                result[variable.Key] = variable.Value;
-            }
-
-            result[Variable.GradientMinimum] = Min;
-            result[Variable.GradientMaximum] = Max;
-
-            return result;
-        }
-
-        private IEnumerable<EvaluatedStopNode> FilterStopsForConflicts(IEnumerable<EvaluatedStopNode> stops)
-        {
-            var stopList = stops.ToList();
-
             if (OnConflict == OnConflict.Ignore)
             {
-                return stopList;
+                return stops;
             }
 
             var iterationCheck = 0;
@@ -86,11 +81,11 @@ namespace HotSpot.Model
 
                 var filteredStops = new List<EvaluatedStopNode>();
 
-                for (var i = 0; i < stopList.Count; i++)
+                for (var i = 0; i < stops.Count; i++)
                 {
-                    var previous = i > 0 ? stopList[i - 1] : null;
-                    var current = stopList[i];
-                    var next = i < stopList.Count - 1 ? stopList[i + 1] : null;
+                    var previous = i > 0 ? stops[i - 1] : null;
+                    var current = stops[i];
+                    var next = i < stops.Count - 1 ? stops[i + 1] : null;
 
                     if (previous == null && next == null)
                     {
@@ -125,12 +120,12 @@ namespace HotSpot.Model
                     }
                 }
 
-                if (filteredStops.Count == stopList.Count)
+                if (filteredStops.Count == stops.Count)
                 {
                     return filteredStops;
                 }
 
-                stopList = filteredStops;
+                stops = filteredStops;
             }
         }
     }
