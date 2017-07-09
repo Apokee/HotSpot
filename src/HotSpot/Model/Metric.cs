@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace HotSpot.Model
 {
+    // TODO: Optimize, convert to subclasses
     internal sealed class Metric
     {
         public static readonly Metric TemperatureInternal = new Metric("TemperatureInternal",
@@ -13,19 +12,46 @@ namespace HotSpot.Model
             new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
             false,
             part => true,
-            vessel => new Dictionary<Variable, double>
+            (vessel, variables) =>
             {
-                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.temperature),
-                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.temperature),
-                [Variable.VesselAbsoluteMinimum] = 0,
-                [Variable.VesselAbsoluteMaximum] = vessel.Parts.Max(i => i.maxTemp)
+                var foundValidPart = false;
+
+                variables.VesselCurrentMinimum = double.PositiveInfinity;
+                variables.VesselCurrentMaximum = double.NegativeInfinity;
+                variables.VesselAbsoluteMinimum = 0;
+                variables.VesselAbsoluteMaximum = double.NegativeInfinity;
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < vessel.Parts.Count; i++)
+                {
+                    foundValidPart = true;
+
+                    var part = vessel.Parts[i];
+
+                    if (part.temperature < variables.VesselCurrentMinimum)
+                        variables.VesselCurrentMinimum = part.temperature;
+
+                    if (part.temperature > variables.VesselCurrentMaximum)
+                        variables.VesselCurrentMaximum = part.temperature;
+
+                    if (part.maxTemp > variables.VesselAbsoluteMaximum)
+                        variables.VesselAbsoluteMaximum = part.maxTemp;
+                }
+
+                if (!foundValidPart)
+                {
+                    variables.VesselCurrentMinimum = double.NaN;
+                    variables.VesselCurrentMaximum = double.NaN;
+                    variables.VesselAbsoluteMinimum = double.NaN;
+                    variables.VesselAbsoluteMaximum = double.NaN;
+                }
             },
-            part => new Dictionary<Variable, double>
+            (part, variables) =>
             {
-                [Variable.PartAbsoluteMinimum] = 0,
-                [Variable.PartAbsoluteMaximum] = part.maxTemp
+                variables.PartCurrent = part.temperature;
+                variables.PartAbsoluteMinimum = 0;
+                variables.PartAbsoluteMaximum = part.maxTemp;
             },
-            part => part.temperature,
             (part, unit, prefix) => TemperatureToString(part.temperature, part.maxTemp, null, unit)
         );
 
@@ -35,19 +61,41 @@ namespace HotSpot.Model
             new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
             false,
             part => true,
-            vessel => new Dictionary<Variable, double>
+            (vessel, variables) =>
             {
-                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.skinTemperature),
-                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.skinTemperature),
-                [Variable.VesselAbsoluteMinimum] = 0,
-                [Variable.VesselAbsoluteMaximum] = vessel.Parts.Max(i => i.skinMaxTemp)
+                var foundValidPart = false;
+
+                variables.VesselCurrentMinimum = double.PositiveInfinity;
+                variables.VesselCurrentMaximum = double.NegativeInfinity;
+                variables.VesselAbsoluteMinimum = 0;
+                variables.VesselAbsoluteMaximum = double.NegativeInfinity;
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < vessel.Parts.Count; i++)
+                {
+                    foundValidPart = true;
+
+                    var part = vessel.Parts[i];
+
+                    if (part.skinTemperature < variables.VesselCurrentMinimum)
+                        variables.VesselCurrentMinimum = part.skinTemperature;
+
+                    if (part.skinTemperature > variables.VesselCurrentMaximum)
+                        variables.VesselCurrentMaximum = part.skinTemperature;
+
+                    if (part.skinMaxTemp > variables.VesselAbsoluteMaximum)
+                        variables.VesselAbsoluteMaximum = part.skinMaxTemp;
+                }
+
+                if (!foundValidPart)
+                    variables.ResetVesselSpecific();
             },
-            part => new Dictionary<Variable, double>
+            (part, variables) =>
             {
-                [Variable.PartAbsoluteMinimum] = 0,
-                [Variable.PartAbsoluteMaximum] = part.skinMaxTemp
+                variables.PartCurrent = part.skinTemperature;
+                variables.PartAbsoluteMinimum = 0;
+                variables.PartAbsoluteMaximum = part.skinMaxTemp;
             },
-            part => part.skinTemperature,
             (part, unit, prefix) => TemperatureToString(part.skinTemperature, part.skinMaxTemp, null, unit)
         );
 
@@ -57,48 +105,51 @@ namespace HotSpot.Model
             new[] { Unit.Kelvin, Unit.Celsius, Unit.Rankine, Unit.Fahrenheit },
             false,
             part => part.FindModuleImplementing<ModuleCoreHeat>() != null,
-            vessel =>
+            (vessel, variables) =>
             {
-                var coreHeatModules = vessel
-                    .Parts
-                    .Select(i => i.FindModuleImplementing<ModuleCoreHeat>())
-                    .Where(i => i != null)
-                    .ToArray();
+                var foundValidPart = false;
 
-                if (coreHeatModules.Any())
+                variables.VesselCurrentMinimum = double.PositiveInfinity;
+                variables.VesselCurrentMaximum = double.NegativeInfinity;
+                variables.VesselAbsoluteMinimum = 0;
+                variables.VesselAbsoluteMaximum = double.NegativeInfinity;
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < vessel.Parts.Count; i++)
                 {
-                    return new Dictionary<Variable, double>
+                    var part = vessel.Parts[i];
+
+                    var coreHeat = part.FindModuleImplementing<ModuleCoreHeat>();
+
+                    if (coreHeat != null)
                     {
-                        [Variable.VesselCurrentMinimum] = coreHeatModules.Min(i => i.CoreTemperature),
-                        [Variable.VesselCurrentMaximum] = coreHeatModules.Max(i => i.CoreTemperature),
-                        [Variable.VesselAbsoluteMinimum] = 0,
-                        [Variable.VesselAbsoluteMaximum] = coreHeatModules.Max(i => i.CoreShutdownTemp)
-                    };
+                        foundValidPart = true;
+
+                        if (coreHeat.CoreTemperature < variables.VesselCurrentMinimum)
+                            variables.VesselCurrentMinimum = coreHeat.CoreTemperature;
+
+                        if (coreHeat.CoreTemperature > variables.VesselCurrentMaximum)
+                            variables.VesselCurrentMaximum = coreHeat.CoreTemperature;
+
+                        if (coreHeat.CoreShutdownTemp > variables.VesselAbsoluteMaximum)
+                            variables.VesselAbsoluteMaximum = coreHeat.CoreShutdownTemp;
+                    }
                 }
-                else
-                {
-                    return null;
-                }
+
+                if (!foundValidPart)
+                    variables.ResetVesselSpecific();
             },
-            part =>
+            (part, variables) =>
             {
                 var coreHeatModule = part.FindModuleImplementing<ModuleCoreHeat>();
 
                 if (coreHeatModule != null)
                 {
-                    return new Dictionary<Variable, double>
-                    {
-                        [Variable.PartAbsoluteMinimum] = 0,
-                        [Variable.PartAbsoluteMaximum] = coreHeatModule.CoreShutdownTemp,
-                        [Variable.PartIdeal] = coreHeatModule.CoreTempGoal
-                    };
-                }
-                else
-                {
-                    return null;
+                    variables.PartCurrent = coreHeatModule.CoreTemperature;
+                    variables.PartAbsoluteMinimum = 0;
+                    variables.PartAbsoluteMaximum = coreHeatModule.CoreShutdownTemp;
                 }
             },
-            part => part.FindModuleImplementing<ModuleCoreHeat>()?.CoreTemperature,
             (part, unit, prefix) =>
             {
                 var coreHeatModule = part.FindModuleImplementing<ModuleCoreHeat>();
@@ -120,13 +171,36 @@ namespace HotSpot.Model
             new[] { Unit.Watt },
             true,
             part => true,
-            vessel => new Dictionary<Variable, double>
+            (vessel, variables) =>
             {
-                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.GetThermalFlux()),
-                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.GetThermalFlux())
+                var foundValidPart = false;
+
+                variables.VesselCurrentMinimum = double.PositiveInfinity;
+                variables.VesselCurrentMaximum = double.NegativeInfinity;
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i<vessel.Parts.Count; i++)
+                {
+                    foundValidPart = true;
+
+                    var part = vessel.Parts[i];
+
+                    var thermalFlux = part.GetThermalFlux();
+
+                    if (thermalFlux < variables.VesselCurrentMinimum)
+                        variables.VesselCurrentMinimum = thermalFlux;
+
+                    if (thermalFlux > variables.VesselCurrentMaximum)
+                        variables.VesselCurrentMaximum = thermalFlux;
+                }
+
+                if (!foundValidPart)
+                    variables.ResetVesselSpecific();
             },
-            part => new Dictionary<Variable, double>(),
-            part => part.GetThermalFlux(),
+            (part, variables) =>
+            {
+                variables.PartCurrent = part.GetThermalFlux();
+            },
             (part, unit, prefix) => (part.GetThermalFlux() * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
@@ -137,13 +211,36 @@ namespace HotSpot.Model
             new[] { Unit.Watt },
             true,
             part => true,
-            vessel => new Dictionary<Variable, double>
+            (vessel, variables) =>
             {
-                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalInternalFluxPrevious),
-                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.thermalInternalFluxPrevious)
+                var foundValidPart = false;
+
+                variables.VesselCurrentMinimum = double.PositiveInfinity;
+                variables.VesselCurrentMaximum = double.NegativeInfinity;
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < vessel.Parts.Count; i++)
+                {
+                    foundValidPart = true;
+
+                    var part = vessel.Parts[i];
+
+                    var thermalFlux = part.thermalInternalFluxPrevious;
+
+                    if (thermalFlux < variables.VesselCurrentMinimum)
+                        variables.VesselCurrentMinimum = thermalFlux;
+
+                    if (thermalFlux > variables.VesselCurrentMaximum)
+                        variables.VesselCurrentMaximum = thermalFlux;
+                }
+
+                if (!foundValidPart)
+                    variables.ResetVesselSpecific();
             },
-            part => new Dictionary<Variable, double>(),
-            part => part.thermalInternalFluxPrevious,
+            (part, variables) =>
+            {
+                variables.PartCurrent = part.thermalInternalFluxPrevious;
+            },
             (part, unit, prefix) => (part.thermalInternalFluxPrevious * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
@@ -153,13 +250,36 @@ namespace HotSpot.Model
             new[] { Unit.Watt },
             true,
             part => true,
-            vessel => new Dictionary<Variable, double>
+            (vessel, variables) =>
             {
-                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalConductionFlux),
-                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.thermalConductionFlux)
+                var foundValidPart = false;
+
+                variables.VesselCurrentMinimum = double.PositiveInfinity;
+                variables.VesselCurrentMaximum = double.NegativeInfinity;
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < vessel.Parts.Count; i++)
+                {
+                    foundValidPart = true;
+
+                    var part = vessel.Parts[i];
+
+                    var thermalFlux = part.thermalConductionFlux;
+
+                    if (thermalFlux < variables.VesselCurrentMinimum)
+                        variables.VesselCurrentMinimum = thermalFlux;
+
+                    if (thermalFlux > variables.VesselCurrentMaximum)
+                        variables.VesselCurrentMaximum = thermalFlux;
+                }
+
+                if (!foundValidPart)
+                    variables.ResetVesselSpecific();
             },
-            part => new Dictionary<Variable, double>(),
-            part => part.thermalConductionFlux,
+            (part, variables) =>
+            {
+                variables.PartCurrent = part.thermalConductionFlux;
+            },
             (part, unit, prefix) => (part.thermalConductionFlux * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
@@ -169,13 +289,36 @@ namespace HotSpot.Model
             new[] { Unit.Watt },
             true,
             part => true,
-            vessel => new Dictionary<Variable, double>
+            (vessel, variables) =>
             {
-                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalConvectionFlux),
-                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.thermalConvectionFlux)
+                var foundValidPart = false;
+
+                variables.VesselCurrentMinimum = double.PositiveInfinity;
+                variables.VesselCurrentMaximum = double.NegativeInfinity;
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < vessel.Parts.Count; i++)
+                {
+                    foundValidPart = true;
+
+                    var part = vessel.Parts[i];
+
+                    var thermalFlux = part.thermalConvectionFlux;
+
+                    if (thermalFlux < variables.VesselCurrentMinimum)
+                        variables.VesselCurrentMinimum = thermalFlux;
+
+                    if (thermalFlux > variables.VesselCurrentMaximum)
+                        variables.VesselCurrentMaximum = thermalFlux;
+                }
+
+                if (!foundValidPart)
+                    variables.ResetVesselSpecific();
             },
-            part => new Dictionary<Variable, double>(),
-            part => part.thermalConvectionFlux,
+            (part, variables) =>
+            {
+                variables.PartCurrent = part.thermalConvectionFlux;
+            },
             (part, unit, prefix) => (part.thermalConvectionFlux * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
@@ -185,13 +328,36 @@ namespace HotSpot.Model
             new[] { Unit.Watt },
             true,
             part => true,
-            vessel => new Dictionary<Variable, double>
+            (vessel, variables) =>
             {
-                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.thermalRadiationFlux),
-                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.thermalRadiationFlux)
+                var foundValidPart = false;
+
+                variables.VesselCurrentMinimum = double.PositiveInfinity;
+                variables.VesselCurrentMaximum = double.NegativeInfinity;
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < vessel.Parts.Count; i++)
+                {
+                    foundValidPart = true;
+
+                    var part = vessel.Parts[i];
+
+                    var thermalFlux = part.thermalRadiationFlux;
+
+                    if (thermalFlux < variables.VesselCurrentMinimum)
+                        variables.VesselCurrentMinimum = thermalFlux;
+
+                    if (thermalFlux > variables.VesselCurrentMaximum)
+                        variables.VesselCurrentMaximum = thermalFlux;
+                }
+
+                if (!foundValidPart)
+                    variables.ResetVesselSpecific();
             },
-            part => new Dictionary<Variable, double>(),
-            part => part.thermalRadiationFlux,
+            (part, variables) =>
+            {
+                variables.PartCurrent = part.thermalRadiationFlux;
+            },
             (part, unit, prefix) => (part.thermalRadiationFlux * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
@@ -201,13 +367,36 @@ namespace HotSpot.Model
             new[] { Unit.Watt },
             true,
             part => true,
-            vessel => new Dictionary<Variable, double>
+            (vessel, variables) =>
             {
-                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => i.skinToInternalFlux),
-                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => i.skinToInternalFlux)
+                var foundValidPart = false;
+
+                variables.VesselCurrentMinimum = double.PositiveInfinity;
+                variables.VesselCurrentMaximum = double.NegativeInfinity;
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < vessel.Parts.Count; i++)
+                {
+                    foundValidPart = true;
+
+                    var part = vessel.Parts[i];
+
+                    var thermalFlux = part.skinToInternalFlux;
+
+                    if (thermalFlux < variables.VesselCurrentMinimum)
+                        variables.VesselCurrentMinimum = thermalFlux;
+
+                    if (thermalFlux > variables.VesselCurrentMaximum)
+                        variables.VesselCurrentMaximum = thermalFlux;
+                }
+
+                if (!foundValidPart)
+                    variables.ResetVesselSpecific();
             },
-            part => new Dictionary<Variable, double>(),
-            part => part.skinToInternalFlux,
+            (part, variables) =>
+            {
+                variables.PartCurrent = part.skinToInternalFlux;
+            },
             (part, unit, prefix) => (part.skinToInternalFlux * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
@@ -217,20 +406,42 @@ namespace HotSpot.Model
             new[] { Unit.Watt },
             true,
             part => true,
-            vessel => new Dictionary<Variable, double>
+            (vessel, variables) =>
             {
-                [Variable.VesselCurrentMinimum] = vessel.Parts.Min(i => -i.skinToInternalFlux),
-                [Variable.VesselCurrentMaximum] = vessel.Parts.Max(i => -i.skinToInternalFlux)
+                var foundValidPart = false;
+
+                variables.VesselCurrentMinimum = double.PositiveInfinity;
+                variables.VesselCurrentMaximum = double.NegativeInfinity;
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < vessel.Parts.Count; i++)
+                {
+                    foundValidPart = true;
+
+                    var part = vessel.Parts[i];
+
+                    var thermalFlux = -part.skinToInternalFlux;
+
+                    if (thermalFlux < variables.VesselCurrentMinimum)
+                        variables.VesselCurrentMinimum = thermalFlux;
+
+                    if (thermalFlux > variables.VesselCurrentMaximum)
+                        variables.VesselCurrentMaximum = thermalFlux;
+                }
+
+                if (!foundValidPart)
+                    variables.ResetVesselSpecific();
             },
-            part => new Dictionary<Variable, double>(),
-            part => -part.skinToInternalFlux,
+            (part, variables) =>
+            {
+                variables.PartCurrent = -part.skinToInternalFlux;
+            },
             (part, unit, prefix) => (-part.skinToInternalFlux * 1000.0).ToQuantityString(prefix, "W", "F2")
         );
 
         private readonly Func<Part, bool> _isApplicable;
-        private readonly Func<Vessel, Dictionary<Variable, double>> _getVesselValues;
-        private readonly Func<Part, Dictionary<Variable, double>> _getPartValues;
-        private readonly Func<Part, double?> _getPartCurrent;
+        private readonly Action<Vessel, VariableBag> _populateVesselVariables;
+        private readonly Action<Part, VariableBag> _populatePartVariables;
         private readonly Func<Part, Unit, Prefix?, string> _getPartCurrentString;
 
         public string Name { get; }
@@ -242,9 +453,8 @@ namespace HotSpot.Model
         private Metric(string name, string shortFriendlyName, string longFriendlyName,
             Unit[] units, bool enablePrefixSelection,
             Func<Part, bool> isApplicable,
-            Func<Vessel, Dictionary<Variable, double>> getVesselValues,
-            Func<Part, Dictionary<Variable, double>> getPartValues,
-            Func<Part, double?> getPartCurrent,
+            Action<Vessel, VariableBag> populateVesselVariables,
+            Action<Part, VariableBag> populatePartVariables,
             Func<Part, Unit, Prefix?, string> getPartCurrentString
         )
         {
@@ -254,23 +464,19 @@ namespace HotSpot.Model
             Units = units;
             EnablePrefixSelection = enablePrefixSelection;
             _isApplicable = isApplicable;
-            _getVesselValues = getVesselValues;
-            _getPartValues = getPartValues;
-            _getPartCurrent = getPartCurrent;
+            _populateVesselVariables = populateVesselVariables;
+            _populatePartVariables = populatePartVariables;
             _getPartCurrentString = getPartCurrentString;
         }
 
         public bool IsApplicable(Part part)
             => _isApplicable(part);
 
-        public Dictionary<Variable, double> GetVesselValues(Vessel vessel)
-            => _getVesselValues(vessel);
+        public void PopulateVesselVariables(Vessel vessel, VariableBag variables)
+            => _populateVesselVariables(vessel, variables);
 
-        public Dictionary<Variable, double> GetPartValues(Part part)
-            => _getPartValues(part);
-
-        public double? GetPartCurrent(Part part)
-            => _getPartCurrent(part);
+        public void PopulatePartVariables(Part part, VariableBag variables)
+            => _populatePartVariables(part, variables);
 
         public string GetPartCurrentString(Part part, Unit unit, Prefix? prefix)
             => _getPartCurrentString(part, unit, prefix);

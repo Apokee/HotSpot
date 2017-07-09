@@ -1,4 +1,6 @@
-﻿namespace HotSpot
+﻿using UnityEngine;
+
+namespace HotSpot
 {
     public sealed class HotSpotModule : PartModule
     {
@@ -32,6 +34,8 @@
         [KSPField(guiActive = false)]
         public string ThermalRateInternalToSkin;
 
+        private float _timeSinceLastUpdate = float.PositiveInfinity;
+
         public override void OnStart(StartState state)
         {
             base.OnStart(state);
@@ -42,40 +46,57 @@
 
         public override void OnUpdate()
         {
-            if (!HighLogic.LoadedSceneIsFlight) return;
-
-            foreach (var metricNode in Config.Instance.ContextMenu.Metrics)
+            if (ShouldUpdate())
             {
-                var metric = metricNode.Name;
+                var metrics = Config.Instance.ContextMenu.Metrics;
 
-                if (metric.IsApplicable(part))
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < metrics.Length; i++)
                 {
-                    var value = metric.GetPartCurrentString(part, metricNode.Unit, metricNode.Prefix);
+                    var metricNode = metrics[i];
 
-                    if (value != null)
+                    var metric = metricNode.Name;
+
+                    if (metric.IsApplicable(part))
                     {
-                        var field = Fields[metric.Name];
+                        var value = metric.GetPartCurrentString(part, metricNode.Unit, metricNode.Prefix);
 
-                        if (field != null)
+                        if (value != null)
                         {
-                            field.guiName = metric.ShortFriendlyName;
-                            field.guiActive = metricNode.Enable;
+                            var field = Fields[metric.Name];
 
-                            field.SetValue(value, this);
+                            if (field != null)
+                            {
+                                field.guiName = metric.ShortFriendlyName;
+                                field.guiActive = metricNode.Enable;
+
+                                field.SetValue(value, this);
+                            }
+                            else
+                            {
+                                Log.Warning($"Could not find field for metric `{metric.Name}`.");
+                            }
                         }
                         else
                         {
-                            Log.Warning($"Could not find field for metric `{metric.Name}`.");
+                            Log.Warning(
+                                $"Received null value for for applicable metric `{metric.Name}` on part `{part.name}`."
+                            );
                         }
                     }
-                    else
-                    {
-                        Log.Warning(
-                            $"Received null value for for applicable metric `{metric.Name}` on part `{part.name}`."
-                        );
-                    }
                 }
+
+                _timeSinceLastUpdate = 0;
             }
+            else
+            {
+                _timeSinceLastUpdate += Time.deltaTime;
+            }
+        }
+
+        private bool ShouldUpdate()
+        {
+            return HighLogic.LoadedSceneIsFlight && _timeSinceLastUpdate >= Config.Instance.ContextMenu.UpdatePeriod;
         }
 
         private void DisableStockCoreTempDisplay()

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using HotSpot.Configuration.Overlay;
+﻿using HotSpot.Configuration.Overlay;
 using UnityEngine;
 
 namespace HotSpot.Model
@@ -13,7 +12,7 @@ namespace HotSpot.Model
         public Color? Color => _stop.Color;
         public float? Alpha => _stop.Alpha;
 
-        public EvaluatedStopNode(StopNode stop, Dictionary<Variable, double> variables)
+        public EvaluatedStopNode(StopNode stop, VariableBag variables)
         {
             _stop = stop;
             Value = stop.Value.Evaluate(variables) * stop.Factor;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using HotSpot.Model;
 using UnityEngine;
@@ -20,13 +19,22 @@ namespace HotSpot.Configuration.Overlay
             _gradients = gradients;
         }
 
-        public Color? EvaluateColor(double partCurrent, Dictionary<Variable, double> variables)
+        public Color? EvaluateColor(VariableBag variables)
         {
-            return _gradients
-                .Select(i => i.Evaluate(variables))
-                .Where(i => i.Min < i.Max)
-                .FirstOrDefault(i => i.Min <= partCurrent && partCurrent <= i.Max)
-                ?.EvaluateColor(partCurrent);
+            var partCurrent = variables.PartCurrent;
+
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (var i = 0; i < _gradients.Length; i++)
+            {
+                var gradient = _gradients[i];
+                var evaluatedGradient = gradient.Evaluate(variables);
+
+                if (evaluatedGradient.Min < evaluatedGradient.Max)
+                    if (evaluatedGradient.Min <= partCurrent && partCurrent <= evaluatedGradient.Max)
+                        return evaluatedGradient.EvaluateColor(partCurrent);
+            }
+
+            return null;
         }
 
         public static SchemeNode TryParse(ConfigNode node)
