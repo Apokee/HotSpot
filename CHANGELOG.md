@@ -1,4 +1,4 @@
-## v0.8.0-alpha
+## v0.8.0
 ##### Changed
 - Added new setting to `CONTEXT_MENU` node named `updatePeriod`. Its value is the number of seconds to wait between
   updates of context menu values. Defaults to a value of `0.250` (250 milliseconds or 4 times per second).
