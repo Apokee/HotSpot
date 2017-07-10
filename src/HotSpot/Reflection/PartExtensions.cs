@@ -22,7 +22,7 @@ namespace HotSpot.Reflection
 
         public static MaterialColorUpdater TryGetMaterialColorUpdater(this Part part)
         {
-            return (MaterialColorUpdater) MaterialColorUpdaterField?.GetValue(part);
+            return (MaterialColorUpdater)MaterialColorUpdaterField?.GetValue(part);
         }
     }
 }

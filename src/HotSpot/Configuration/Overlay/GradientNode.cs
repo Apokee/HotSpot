@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using HotSpot.Model;
 
@@ -22,7 +21,7 @@ namespace HotSpot.Configuration.Overlay
             Stops = stops;
         }
 
-        public EvaluatedGradientNode Evaluate(Dictionary<Variable, double> variables)
+        public EvaluatedGradientNode Evaluate(VariableBag variables)
         {
             return new EvaluatedGradientNode(this, variables);
         }

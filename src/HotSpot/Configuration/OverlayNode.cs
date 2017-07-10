@@ -15,7 +15,12 @@ namespace HotSpot.Configuration
         public Metric Metric { get; set; }
         public MetricNode[] Metrics { get; }
 
-        private OverlayNode(bool enable, bool enableScreenMessage, Metric metric, MetricNode[] metrics)
+        private OverlayNode(
+            bool enable,
+            bool enableScreenMessage,
+            Metric metric,
+            MetricNode[] metrics
+        )
         {
             Enable = enable;
             EnableScreenMessage = enableScreenMessage;

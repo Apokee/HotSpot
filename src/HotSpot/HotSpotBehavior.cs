@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using HotSpot.Model;
 using HotSpot.Reflection;
 using UnityEngine;
@@ -9,84 +7,59 @@ namespace HotSpot
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class HotSpotBehavior : MonoBehaviour
     {
+        private readonly VariableBag _variables = new VariableBag();
+
         #region MonoBehaviour
 
         public void LateUpdate()
         {
             Log.Trace("Entering HotSpotBehavior.LateUpdate()");
 
-            if (Config.Instance.Overlay.Enable)
+            if (ShouldUpdate())
             {
-                LateUpdateColor();
-            }
+                _variables.ResetAll();
 
-            Log.Trace("Leaving HotSpotBehavior.LateUpdate()");
-        }
-
-        private static void LateUpdateColor()
-        {
-            if (PhysicsGlobals.ThermalColorsDebug)
-            {
                 var metric = Config.Instance.Overlay.Metric;
+                var scheme = Config.Instance.Overlay.GetActiveMetric().GetActiveScheme();
 
-                foreach (var vessel in FlightGlobals.Vessels.Where(i => i.loaded))
+                var vessels = FlightGlobals.Vessels;
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var iv = 0; iv < vessels.Count; iv++)
                 {
-                    var vesselVariables = metric.GetVesselValues(vessel);
+                    var vessel = vessels[iv];
+                    if (!vessel.loaded) continue;
 
-                    foreach (var part in vessel.Parts)
+                    _variables.ResetVesselSpecific();
+                    metric.PopulateVesselVariables(vessel, _variables);
+
+                    var parts = vessel.Parts;
+                    // ReSharper disable once ForCanBeConvertedToForeach
+                    for (var ip = 0; ip < parts.Count; ip++)
                     {
+                        var part = parts[ip];
+
                         Color? color = null;
 
                         if (metric.IsApplicable(part))
                         {
-                            var partVariables = metric.GetPartValues(part);
-                            var partCurrent = metric.GetPartCurrent(part);
+                            _variables.ResetPartSpecific();
+                            metric.PopulatePartVariables(part, _variables);
 
-                            if (partCurrent != null)
-                            {
-                                color = Config
-                                    .Instance
-                                    .Overlay
-                                    .GetActiveMetric()
-                                    .GetActiveScheme()
-                                    .EvaluateColor(partCurrent.Value, MergeVariables(vesselVariables, partVariables));
-                            }
-                            else
-                            {
-                                Log.Warning(
-                                    $"Received null value for for applicable metric `{metric.Name}` on part " +
-                                    $"`{part.name}`."
-                                );
-                            }
+                            color = scheme.EvaluateColor(_variables);
                         }
 
                         part.TryGetMaterialColorUpdater()?.Update(color ?? Part.defaultHighlightNone);
                     }
                 }
             }
+
+            Log.Trace("Leaving HotSpotBehavior.LateUpdate()");
         }
 
-        #endregion
-
-        #region Helpers
-
-        private static Dictionary<Variable, double> MergeVariables(
-            Dictionary<Variable, double> vesselVariables, Dictionary<Variable, double> partVariables
-        )
+        private static bool ShouldUpdate()
         {
-            var result = new Dictionary<Variable, double>();
-
-            foreach(var kv in vesselVariables)
-            {
-                result[kv.Key] = kv.Value;
-            }
-
-            foreach (var kv in partVariables)
-            {
-                result[kv.Key] = kv.Value;
-            }
-
-            return result;
+            return Config.Instance.Overlay.Enable
+                && PhysicsGlobals.ThermalColorsDebug;
         }
 
         #endregion
