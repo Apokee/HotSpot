@@ -4,36 +4,39 @@ namespace HotSpot
 {
     public sealed class HotSpotModule : PartModule
     {
-        [KSPField(guiActive = false)]
+        [KSPField(groupName = HOTSPOT_UI_GROUP_NAME, groupDisplayName = HOTSPOT_UI_GROUP_DISPLAY_NAME, groupStartCollapsed = HOTSPOT_UI_GROUP_START_COLLAPSED, guiActive = false)]
         public string TemperatureInternal;
 
-        [KSPField(guiActive = false)]
+        [KSPField(groupName = HOTSPOT_UI_GROUP_NAME, groupDisplayName = HOTSPOT_UI_GROUP_DISPLAY_NAME, groupStartCollapsed = HOTSPOT_UI_GROUP_START_COLLAPSED, guiActive = false)]
         public string TemperatureSkin;
 
-        [KSPField(guiActive = false)]
+        [KSPField(groupName = HOTSPOT_UI_GROUP_NAME, groupDisplayName = HOTSPOT_UI_GROUP_DISPLAY_NAME, groupStartCollapsed = HOTSPOT_UI_GROUP_START_COLLAPSED, guiActive = false)]
         public string TemperatureCore;
 
-        [KSPField(guiActive = false)]
+        [KSPField(groupName = HOTSPOT_UI_GROUP_NAME, groupDisplayName = HOTSPOT_UI_GROUP_DISPLAY_NAME, groupStartCollapsed = HOTSPOT_UI_GROUP_START_COLLAPSED, guiActive = false)]
         public string ThermalRate;
 
-        [KSPField(guiActive = false)]
+        [KSPField(groupName = HOTSPOT_UI_GROUP_NAME, groupDisplayName = HOTSPOT_UI_GROUP_DISPLAY_NAME, groupStartCollapsed = HOTSPOT_UI_GROUP_START_COLLAPSED, guiActive = false)]
         public string ThermalRateInternal;
 
-        [KSPField(guiActive = false)]
+        [KSPField(groupName = HOTSPOT_UI_GROUP_NAME, groupDisplayName = HOTSPOT_UI_GROUP_DISPLAY_NAME, groupStartCollapsed = HOTSPOT_UI_GROUP_START_COLLAPSED, guiActive = false)]
         public string ThermalRateConductive;
 
-        [KSPField(guiActive = false)]
+        [KSPField(groupName = HOTSPOT_UI_GROUP_NAME, groupDisplayName = HOTSPOT_UI_GROUP_DISPLAY_NAME, groupStartCollapsed = HOTSPOT_UI_GROUP_START_COLLAPSED, guiActive = false)]
         public string ThermalRateConvective;
 
-        [KSPField(guiActive = false)]
+        [KSPField(groupName = HOTSPOT_UI_GROUP_NAME, groupDisplayName = HOTSPOT_UI_GROUP_DISPLAY_NAME, groupStartCollapsed = HOTSPOT_UI_GROUP_START_COLLAPSED, guiActive = false)]
         public string ThermalRateRadiative;
 
-        [KSPField(guiActive = false)]
+        [KSPField(groupName = HOTSPOT_UI_GROUP_NAME, groupDisplayName = HOTSPOT_UI_GROUP_DISPLAY_NAME, groupStartCollapsed = HOTSPOT_UI_GROUP_START_COLLAPSED, guiActive = false)]
         public string ThermalRateSkinToInternal;
 
-        [KSPField(guiActive = false)]
+        [KSPField(groupName = HOTSPOT_UI_GROUP_NAME, groupDisplayName = HOTSPOT_UI_GROUP_DISPLAY_NAME, groupStartCollapsed = HOTSPOT_UI_GROUP_START_COLLAPSED, guiActive = false)]
         public string ThermalRateInternalToSkin;
 
+        private const bool HOTSPOT_UI_GROUP_START_COLLAPSED = true;
+        private const string HOTSPOT_UI_GROUP_NAME = "thermal_data";
+        private const string HOTSPOT_UI_GROUP_DISPLAY_NAME = "Thermal Data";
         private float _timeSinceLastUpdate = float.PositiveInfinity;
 
         public override void OnStart(StartState state)
