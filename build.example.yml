@@ -1,5 +1,5 @@
 # Path to your KSP installation.
-# Example: "C:/Program Files (x86)/Steam/SteamApps/common/Kerbal Space Program"
+# Example: "C:/Program Files (x86)/Steam/steamapps/common/Kerbal Space Program"
 ksp_dir: null
 
 # Executable file to run.
