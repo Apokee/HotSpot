@@ -51,7 +51,7 @@ deploy:
     release: v$(BUILD_VERSION)
     description: $(BUILD_CHANGELOG)
     auth_token:
-      secure: EmsGaC6JRUeanKOhuSCl3ka+kK0czrAG7LHBaYONuUWfV/rIARRFkwoSKZiZHWTe
+      secure: DeybnBneYj+8rA/aC23jBo0XPTw7r6jfE1BkSmbUurSc1PMeZIudi6lX4/zvoqCP
     artifact: ZipPackage
     draft: false
     prerelease: $(BUILD_PRERELEASE)

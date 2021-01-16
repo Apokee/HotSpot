@@ -1,4 +1,4 @@
-## v0.9.0-alpha
+## v0.9.0
 ##### Added
 - Context menu items are now grouped (Thanks [suma-ksp](https://github.com/suma-ksp))
 
