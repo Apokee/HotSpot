@@ -1,4 +1,9 @@
-## v0.8.1-alpha
+## v0.9.0-alpha
+##### Added
+- Context menu items are now grouped (Thanks [suma-ksp](https://github.com/suma-ksp))
+
+##### Changed
+- Compatibility with KSP 1.11.0.
 
 ## v0.8.0
 ##### Changed
