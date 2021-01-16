@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>..\..\.build\out\$(MSBuildProjectName)\$(Configuration)\obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\..\.build\out\$(MSBuildProjectName)\$(Configuration)\obj\</IntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(IntermediateOutputPath)\</MSBuildProjectExtensionsPath>
+    <OutputPath>..\..\.build\out\$(MSBuildProjectName)\$(Configuration)\bin\</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+  </PropertyGroup>
+</Project>

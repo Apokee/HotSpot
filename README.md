@@ -116,3 +116,4 @@ please see the Module Manager documentation for more information.
 [wiki-kelvin]: https://en.wikipedia.org/wiki/Kelvin
 [wiki-power]: https://en.wikipedia.org/wiki/Power_%28physics%29
 [wiki-rankine]: https://en.wikipedia.org/wiki/Rankine_scale
+
