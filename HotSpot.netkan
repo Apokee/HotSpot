@@ -137,7 +137,7 @@
             "version": [ ">=0.9.0" ],
             "override": {
                 "ksp_version_min": "1.11.0",
-                "ksp_version_max": "1.12.3",
+                "ksp_version_max": "1.12.5",
                 "supports": [
                     { "name": "KIS" },
                     { "name": "Toolbar" }
